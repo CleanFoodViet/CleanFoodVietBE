@@ -12,12 +12,10 @@ namespace CleanFoodVietAPI.Presentation.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly IRoleService _roleService;
 
-        public AuthenticationController(IAccountService accountService, IRoleService roleService)
+        public AuthenticationController(IAccountService accountService)
         {
             _accountService = accountService;
-            _roleService = roleService;
         }
 
         [HttpPost(ApiEndpointConstant.Authentication.LoginEndpoint)]

@@ -797,7 +797,6 @@ namespace CleanFoodVietAPI.Data.Entities
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
                 entity.Property(e => e.ProductName).IsRequired().HasMaxLength(150);
-                entity.Property(e => e.ProductPrices).HasColumnType("decimal(14,2)");
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");

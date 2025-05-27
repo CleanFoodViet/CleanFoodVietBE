@@ -22,7 +22,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Account", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("AccountId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -68,7 +68,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
 
-                    b.HasKey("Id")
+                    b.HasKey("AccountId")
                         .HasName("PK_Account");
 
                     b.HasIndex("Email")
@@ -87,7 +87,12 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Address", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("AddressId")
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("AccountId")
+                        .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -120,15 +125,10 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.HasKey("Id")
+                    b.HasKey("AddressId")
                         .HasName("PK_Address");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("AccountId")
                         .HasDatabaseName("IX_Address_UserId");
 
                     b.ToTable("Address", (string)null);
@@ -136,7 +136,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Appointment", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("AppointmentId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -147,6 +147,14 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("CancelledBy")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
@@ -185,7 +193,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
 
-                    b.HasKey("Id")
+                    b.HasKey("AppointmentId")
                         .HasName("PK_Appointment");
 
                     b.HasIndex("GardenerId")
@@ -199,7 +207,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Cart", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("CartId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -219,7 +227,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
 
-                    b.HasKey("Id")
+                    b.HasKey("CartId")
                         .HasName("PK_Cart");
 
                     b.HasIndex("GardenerId")
@@ -233,7 +241,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.CartItem", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("CartItemId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -246,30 +254,37 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("PostId")
+                        .HasColumnType("char(26)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<string>("ProductId")
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.Property<string>("Price")
+                    b.Property<string>("ProductUnit")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
 
-                    b.HasKey("Id")
+                    b.HasKey("CartItemId")
                         .HasName("PK_CartItem");
 
                     b.HasIndex("CartId")
                         .HasDatabaseName("IX_CartItem_CartId");
 
                     b.HasIndex("PostId")
+                        .HasDatabaseName("IX_CartItem_PostId1");
+
+                    b.HasIndex("ProductId")
                         .HasDatabaseName("IX_CartItem_PostId");
 
                     b.ToTable("CartItem", (string)null);
@@ -277,7 +292,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Certificate", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("CertificateId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -311,7 +326,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.HasKey("Id")
+                    b.HasKey("CertificateId")
                         .HasName("PK_Certificate");
 
                     b.HasIndex("GardenerId")
@@ -322,12 +337,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ChatMessage", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<string>("ChatRoomId")
-                        .IsRequired()
+                    b.Property<string>("ChatMessageId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -339,6 +349,11 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<string>("MessageText")
                         .HasColumnType("text");
 
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
                     b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("char(26)")
@@ -347,11 +362,11 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime");
 
-                    b.HasKey("Id")
+                    b.HasKey("ChatMessageId")
                         .HasName("PK_ChatMessage");
 
-                    b.HasIndex("ChatRoomId")
-                        .HasDatabaseName("IX_ChatMessage_ChatRoomId");
+                    b.HasIndex("ReceiverId")
+                        .HasDatabaseName("IX_ChatMessage_ReceiverId");
 
                     b.HasIndex("SenderId")
                         .HasDatabaseName("IX_ChatMessage_SenderId");
@@ -359,63 +374,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.ToTable("ChatMessage", (string)null);
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ChatRoom", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("GardenerId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("RetailerId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.HasKey("Id")
-                        .HasName("PK_ChatRoom");
-
-                    b.HasIndex("GardenerId")
-                        .HasDatabaseName("IX_ChatRoom_GardenerId");
-
-                    b.HasIndex("RetailerId")
-                        .HasDatabaseName("IX_ChatRoom_RetailerId");
-
-                    b.ToTable("ChatRoom", (string)null);
-                });
-
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.CleanFoodCategory", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_CleanFoodCategory");
-
-                    b.ToTable("CleanFoodCategory", (string)null);
-                });
-
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Favorite", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("FavoriteId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -432,7 +393,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.HasKey("Id")
+                    b.HasKey("FavoriteId")
                         .HasName("PK_Favorite");
 
                     b.HasIndex("PostId")
@@ -444,9 +405,40 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.ToTable("Favorite", (string)null);
                 });
 
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.GardenerIncome", b =>
+                {
+                    b.Property<string>("GardenerIncomeId")
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<string>("GardenerId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("GardenerIncomeId")
+                        .HasName("PK_GardenerIncome");
+
+                    b.HasIndex("GardenerId")
+                        .HasDatabaseName("IX_GardenerIncome_GardenerId");
+
+                    b.ToTable("GardenerIncome", (string)null);
+                });
+
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Notification", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("NotificationId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -470,7 +462,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)");
 
-                    b.HasKey("Id")
+                    b.HasKey("NotificationId")
                         .HasName("PK_Notification");
 
                     b.HasIndex("AccountId")
@@ -481,7 +473,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Order", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("OrderId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -493,6 +485,11 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
                     b.Property<string>("RetailerId")
                         .IsRequired()
                         .HasColumnType("char(26)")
@@ -503,7 +500,10 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.HasKey("Id")
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.HasKey("OrderId")
                         .HasName("PK_Order");
 
                     b.HasIndex("GardenerId")
@@ -517,7 +517,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.OrderItem", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("OrderItemId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -526,44 +526,75 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.Property<string>("PostId")
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<string>("ProductId")
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.Property<string>("Price")
+                    b.Property<string>("ProductUnit")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
-                    b.Property<string>("ProductName")
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShippingStatus")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasMaxLength(25)
+                        .HasColumnType("varchar(25)");
 
-                    b.HasKey("Id")
+                    b.HasKey("OrderItemId")
                         .HasName("PK_OrderItem");
 
                     b.HasIndex("OrderId")
                         .HasDatabaseName("IX_OrderItem_OrderId");
 
-                    b.HasIndex("PostId")
-                        .HasDatabaseName("IX_OrderItem_PostId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_OrderItem_ProductId");
 
                     b.ToTable("OrderItem", (string)null);
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Post", b =>
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.PackageServiceFeature", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("PackageServiceFeatureId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.Property<decimal>("AvgRating")
-                        .HasColumnType("decimal(3,2)");
-
-                    b.Property<string>("CategoryId")
+                    b.Property<string>("FeatureValue")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ServiceFeatureId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("ServicePackageId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.HasKey("PackageServiceFeatureId")
+                        .HasName("PK_ServicePackageFeature");
+
+                    b.HasIndex("ServiceFeatureId")
+                        .HasDatabaseName("IX_ServicePackageFeature_ServiceFeatureId");
+
+                    b.HasIndex("ServicePackageId")
+                        .HasDatabaseName("IX_ServicePackageFeature_ServicePackageId");
+
+                    b.ToTable("ServicePackageFeature", (string)null);
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Post", b =>
+                {
+                    b.Property<string>("PostId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -574,6 +605,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
+                    b.Property<DateTime>("EstimatedEndDate")
+                        .HasColumnType("datetime");
+
                     b.Property<string>("GardenerId")
                         .IsRequired()
                         .HasColumnType("char(26)")
@@ -582,19 +616,16 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("HarvestDate")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ProductPrice")
+                    b.Property<string>("ProductId")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
 
-                    b.Property<string>("ShippingCost")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("decimal(3,2)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -606,21 +637,21 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("Id")
+                    b.HasKey("PostId")
                         .HasName("PK_Post");
-
-                    b.HasIndex("CategoryId")
-                        .HasDatabaseName("IX_Post_CategoryId");
 
                     b.HasIndex("GardenerId")
                         .HasDatabaseName("IX_Post_GardenerId");
 
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_Post_CategoryId");
+
                     b.ToTable("Post", (string)null);
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.PostMedium", b =>
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.PostMedia", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("PostMediaId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -637,53 +668,115 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(26)");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime>("UploadedAt")
                         .HasColumnType("datetime");
 
-                    b.HasKey("Id")
-                        .HasName("PK_PostMedium");
+                    b.HasKey("PostMediaId")
+                        .HasName("PK_PostMedia");
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostMedium", (string)null);
+                    b.ToTable("PostMedia", (string)null);
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.RefreshToken", b =>
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Product", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<string>("AccountId")
-                        .IsRequired()
+                    b.Property<string>("ProductId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime>("ExpiredAt")
+                    b.Property<string>("ProductCategoryId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("tinyint(1)");
+                    b.HasKey("ProductId")
+                        .HasName("PK_Product");
 
-                    b.Property<string>("Token")
+                    b.HasIndex("ProductCategoryId");
+
+                    b.HasIndex("ProductName")
+                        .HasDatabaseName("IX_Product_ProductName");
+
+                    b.ToTable("Product", (string)null);
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ProductCategory", b =>
+                {
+                    b.Property<string>("ProductCategoryId")
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
-                    b.HasKey("Id")
-                        .HasName("PK_RefreshToken");
+                    b.HasKey("ProductCategoryId")
+                        .HasName("PK_CleanFoodCategory");
 
-                    b.HasIndex("AccountId")
-                        .HasDatabaseName("IX_RefreshToken_AccountId");
+                    b.ToTable("CleanFoodCategory", (string)null);
+                });
 
-                    b.ToTable("RefreshToken", (string)null);
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ProductPrice", b =>
+                {
+                    b.Property<string>("ProductPriceId")
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<DateTime>("AvailabledDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Productd")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("ProductPriceId")
+                        .HasName("PK_ProductPrice");
+
+                    b.HasIndex("Productd")
+                        .HasDatabaseName("IX_ProductPrice_ProductId");
+
+                    b.ToTable("ProductPrice", (string)null);
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Report", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("ReportId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -718,7 +811,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("Id")
+                    b.HasKey("ReportId")
                         .HasName("PK_Report");
 
                     b.HasIndex("AccountId")
@@ -729,7 +822,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Review", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("ReviewId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -753,7 +846,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.HasKey("Id")
+                    b.HasKey("ReviewId")
                         .HasName("PK_Review");
 
                     b.HasIndex("OrderItemId")
@@ -767,7 +860,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Role", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("RoleId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -780,7 +873,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.HasKey("Id")
+                    b.HasKey("RoleId")
                         .HasName("PK_Role");
 
                     b.ToTable("Role", (string)null);
@@ -788,7 +881,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServiceFeature", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("ServiceFeatureId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -805,7 +898,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("Id")
+                    b.HasKey("ServiceFeatureId")
                         .HasName("PK_ServiceFeature");
 
                     b.ToTable("ServiceFeature", (string)null);
@@ -813,7 +906,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackage", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("ServicePackageId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -834,18 +927,103 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
 
-                    b.HasKey("Id")
+                    b.HasKey("ServicePackageId")
                         .HasName("PK_ServicePackage");
 
                     b.ToTable("ServicePackage", (string)null);
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageContract", b =>
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrder", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("ServicePackageOrderId")
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("GardenerId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("ServicePackageId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("ServicePackageOrderId")
+                        .HasName("PK_ServicePackageOrder");
+
+                    b.HasIndex("GardenerId")
+                        .HasDatabaseName("IX_ServicePackageOrder_GardenerId");
+
+                    b.HasIndex("ServicePackageId")
+                        .HasDatabaseName("IX_ServicePackageOrder_ServicePackageId");
+
+                    b.ToTable("ServicePackageOrder", (string)null);
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrderPayment", b =>
+                {
+                    b.Property<string>("ServicePackageOrderPaymentId")
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<decimal>("PaymentAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("ServicePackageOrderId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.HasKey("ServicePackageOrderPaymentId")
+                        .HasName("PK_ServicePackageOrderPayment");
+
+                    b.HasIndex("ServicePackageOrderId")
+                        .HasDatabaseName("IX_ServicePackageOrderPayment_ServicePackageOrderId");
+
+                    b.ToTable("ServicePackageOrderPayment", (string)null);
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.SubscriptionContract", b =>
+                {
+                    b.Property<string>("SubscriptionId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -873,10 +1051,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime");
+                    b.Property<string>("SubscriptionType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
-                    b.HasKey("Id")
+                    b.HasKey("SubscriptionId")
                         .HasName("PK_ServicePackageContract");
 
                     b.HasIndex("GardenerId")
@@ -888,117 +1068,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.ToTable("ServicePackageContract", (string)null);
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageFeature", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<string>("FeatureValue")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("ServiceFeatureId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<string>("ServicePackageId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.HasKey("Id")
-                        .HasName("PK_ServicePackageFeature");
-
-                    b.HasIndex("ServiceFeatureId")
-                        .HasDatabaseName("IX_ServicePackageFeature_ServiceFeatureId");
-
-                    b.HasIndex("ServicePackageId")
-                        .HasDatabaseName("IX_ServicePackageFeature_ServicePackageId");
-
-                    b.ToTable("ServicePackageFeature", (string)null);
-                });
-
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrder", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("GardenerId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<string>("ServicePackageId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_ServicePackageOrder");
-
-                    b.HasIndex("GardenerId")
-                        .HasDatabaseName("IX_ServicePackageOrder_GardenerId");
-
-                    b.HasIndex("ServicePackageId")
-                        .HasDatabaseName("IX_ServicePackageOrder_ServicePackageId");
-
-                    b.ToTable("ServicePackageOrder", (string)null);
-                });
-
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrderPayment", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<decimal>("PaymentAmount")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("ServicePackageOrderId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_ServicePackageOrderPayment");
-
-                    b.HasIndex("ServicePackageOrderId")
-                        .HasDatabaseName("IX_ServicePackageOrderPayment_ServicePackageOrderId");
-
-                    b.ToTable("ServicePackageOrderPayment", (string)null);
-                });
-
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.SystemLog", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("LogId")
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
@@ -1028,7 +1100,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.HasKey("Id")
+                    b.HasKey("LogId")
                         .HasName("PK_SystemLog");
 
                     b.HasIndex("AdminId")
@@ -1053,7 +1125,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                 {
                     b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Account")
                         .WithMany("Addresses")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Address_Account");
@@ -1112,16 +1184,20 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_CartItem_Cart");
 
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Post", "Post")
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Post", null)
                         .WithMany("CartItems")
-                        .HasForeignKey("PostId")
+                        .HasForeignKey("PostId");
+
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Product", "Product")
+                        .WithMany("CartItems")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_CartItem_Post");
+                        .HasConstraintName("FK_CartItem_Product");
 
                     b.Navigation("Cart");
 
-                    b.Navigation("Post");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Certificate", b =>
@@ -1138,44 +1214,23 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ChatMessage", b =>
                 {
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.ChatRoom", "ChatRoom")
-                        .WithMany("ChatMessages")
-                        .HasForeignKey("ChatRoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Receiver")
+                        .WithMany("ReceiverMessages")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_ChatMessage_ChatRoom");
+                        .HasConstraintName("FK_ChatMessage_Receiver");
 
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Account")
-                        .WithMany("ChatMessages")
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Sender")
+                        .WithMany("SenderMessages")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_ChatMessage_Account");
+                        .HasConstraintName("FK_ChatMessage_Sender");
 
-                    b.Navigation("Account");
+                    b.Navigation("Receiver");
 
-                    b.Navigation("ChatRoom");
-                });
-
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ChatRoom", b =>
-                {
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Gardener")
-                        .WithMany("GardenerChatRooms")
-                        .HasForeignKey("GardenerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_ChatRoom_Gardeners");
-
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Retailer")
-                        .WithMany("RetailerChatRooms")
-                        .HasForeignKey("RetailerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_ChatRoom_Retailers");
-
-                    b.Navigation("Gardener");
-
-                    b.Navigation("Retailer");
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Favorite", b =>
@@ -1197,6 +1252,18 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.GardenerIncome", b =>
+                {
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Account")
+                        .WithMany("GardenerIncomes")
+                        .HasForeignKey("GardenerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_GardenerIncome_Account");
+
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Notification", b =>
@@ -1241,27 +1308,41 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_OrderItem_Order");
 
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Post", "Post")
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Product", "Product")
                         .WithMany("OrderItems")
-                        .HasForeignKey("PostId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_OrderItem_Post");
+                        .HasConstraintName("FK_OrderItem_Product");
 
                     b.Navigation("Order");
 
-                    b.Navigation("Post");
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.PackageServiceFeature", b =>
+                {
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.ServiceFeature", "ServiceFeature")
+                        .WithMany("ServicePackageFeatures")
+                        .HasForeignKey("ServiceFeatureId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_ServicePackageFeature_ServiceFeature");
+
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.ServicePackage", "ServicePackage")
+                        .WithMany("ServicePackageFeatures")
+                        .HasForeignKey("ServicePackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ServicePackageFeature_ServicePackage");
+
+                    b.Navigation("ServiceFeature");
+
+                    b.Navigation("ServicePackage");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Post", b =>
                 {
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.CleanFoodCategory", "CleanFoodCategory")
-                        .WithMany("Posts")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Post_CleanFoodCategory");
-
                     b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Account")
                         .WithMany("Posts")
                         .HasForeignKey("GardenerId")
@@ -1269,33 +1350,52 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Post_Account");
 
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Product", "Product")
+                        .WithMany("Posts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Post_Product");
+
                     b.Navigation("Account");
 
-                    b.Navigation("CleanFoodCategory");
+                    b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.PostMedium", b =>
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.PostMedia", b =>
                 {
                     b.HasOne("CleanFoodVietAPI.Data.Entities.Post", "Post")
-                        .WithMany("PostMedia")
+                        .WithMany("PostMedias")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_PostMedium_Post");
+                        .HasConstraintName("FK_PostMedia_Post");
 
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.RefreshToken", b =>
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Product", b =>
                 {
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Account")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("AccountId")
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.ProductCategory", "ProductCategory")
+                        .WithMany("Products")
+                        .HasForeignKey("ProductCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Product_ProductCategory");
+
+                    b.Navigation("ProductCategory");
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ProductPrice", b =>
+                {
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Product", "Product")
+                        .WithMany("ProductPrices")
+                        .HasForeignKey("Productd")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_RefreshToken_Account");
+                        .HasConstraintName("FK_ProductPrice_Product");
 
-                    b.Navigation("Account");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Report", b =>
@@ -1331,7 +1431,40 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Navigation("OrderItem");
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageContract", b =>
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrder", b =>
+                {
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Gardener")
+                        .WithMany("ServicePackageOrders")
+                        .HasForeignKey("GardenerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_ServicePackageOrder_Account");
+
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.ServicePackage", "ServicePackage")
+                        .WithMany("ServicePackageOrders")
+                        .HasForeignKey("ServicePackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_ServicePackageOrder_ServicePackage");
+
+                    b.Navigation("Gardener");
+
+                    b.Navigation("ServicePackage");
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrderPayment", b =>
+                {
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.ServicePackageOrder", "ServicePackageOrder")
+                        .WithMany("ServicePackageOrderPayments")
+                        .HasForeignKey("ServicePackageOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ServicePackageOrderPayment_ServicePackageOrder");
+
+                    b.Navigation("ServicePackageOrder");
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.SubscriptionContract", b =>
                 {
                     b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Account")
                         .WithMany("ServicePackageContracts")
@@ -1352,70 +1485,16 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Navigation("ServicePackage");
                 });
 
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageFeature", b =>
-                {
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.ServiceFeature", "ServiceFeature")
-                        .WithMany("ServicePackageFeatures")
-                        .HasForeignKey("ServiceFeatureId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_ServicePackageFeature_ServiceFeature");
-
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.ServicePackage", "ServicePackage")
-                        .WithMany("ServicePackageFeatures")
-                        .HasForeignKey("ServicePackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_ServicePackageFeature_ServicePackage");
-
-                    b.Navigation("ServiceFeature");
-
-                    b.Navigation("ServicePackage");
-                });
-
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrder", b =>
-                {
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Account")
-                        .WithMany("ServicePackageOrders")
-                        .HasForeignKey("GardenerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_ServicePackageOrder_Account");
-
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.ServicePackage", "ServicePackage")
-                        .WithMany("ServicePackageOrders")
-                        .HasForeignKey("ServicePackageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_ServicePackageOrder_ServicePackage");
-
-                    b.Navigation("Account");
-
-                    b.Navigation("ServicePackage");
-                });
-
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrderPayment", b =>
-                {
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.ServicePackageOrder", "ServicePackageOrder")
-                        .WithMany("ServicePackageOrderPayments")
-                        .HasForeignKey("ServicePackageOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_ServicePackageOrderPayment_ServicePackageOrder");
-
-                    b.Navigation("ServicePackageOrder");
-                });
-
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.SystemLog", b =>
                 {
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Account")
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Admin")
                         .WithMany("SystemLogs")
                         .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("FK_SystemLog_Account");
 
-                    b.Navigation("Account");
+                    b.Navigation("Admin");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Account", b =>
@@ -1424,15 +1503,13 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Navigation("Certificates");
 
-                    b.Navigation("ChatMessages");
-
                     b.Navigation("Favorites");
 
                     b.Navigation("GardenerAppointments");
 
                     b.Navigation("GardenerCarts");
 
-                    b.Navigation("GardenerChatRooms");
+                    b.Navigation("GardenerIncomes");
 
                     b.Navigation("GardenerOrders");
 
@@ -1440,7 +1517,7 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Navigation("Posts");
 
-                    b.Navigation("RefreshTokens");
+                    b.Navigation("ReceiverMessages");
 
                     b.Navigation("Reports");
 
@@ -1448,11 +1525,11 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Navigation("RetailerCarts");
 
-                    b.Navigation("RetailerChatRooms");
-
                     b.Navigation("RetailerOrders");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("SenderMessages");
 
                     b.Navigation("ServicePackageContracts");
 
@@ -1464,16 +1541,6 @@ namespace CleanFoodVietAPI.Data.Migrations
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Cart", b =>
                 {
                     b.Navigation("CartItems");
-                });
-
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ChatRoom", b =>
-                {
-                    b.Navigation("ChatMessages");
-                });
-
-            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.CleanFoodCategory", b =>
-                {
-                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Order", b =>
@@ -1492,9 +1559,23 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Navigation("Favorites");
 
+                    b.Navigation("PostMedias");
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Product", b =>
+                {
+                    b.Navigation("CartItems");
+
                     b.Navigation("OrderItems");
 
-                    b.Navigation("PostMedia");
+                    b.Navigation("Posts");
+
+                    b.Navigation("ProductPrices");
+                });
+
+            modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ProductCategory", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Role", b =>
