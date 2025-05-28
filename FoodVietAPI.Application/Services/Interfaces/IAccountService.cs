@@ -12,6 +12,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 
         #region Authentication Functions
         Task<AuthDTO> Login(LoginDTO loginData);
+        Task<AuthDTO> Register(RegisterDTO registerData);
         #endregion
     }
 }

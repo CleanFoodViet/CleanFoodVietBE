@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     [DbContext(typeof(CleanFoodVietDbContext))]
-    [Migration("20250527141659_DBInit")]
-    partial class DBInit
+    [Migration("20250527153506_InitDB")]
+    partial class InitDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -256,9 +256,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("PostId")
-                        .HasColumnType("char(26)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(14,2)");
 
@@ -283,9 +280,6 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.HasIndex("CartId")
                         .HasDatabaseName("IX_CartItem_CartId");
-
-                    b.HasIndex("PostId")
-                        .HasDatabaseName("IX_CartItem_PostId1");
 
                     b.HasIndex("ProductId")
                         .HasDatabaseName("IX_CartItem_PostId");
@@ -584,15 +578,15 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsFixedLength();
 
                     b.HasKey("PackageServiceFeatureId")
-                        .HasName("PK_ServicePackageFeature");
+                        .HasName("PK_PackageServiceFeature");
 
                     b.HasIndex("ServiceFeatureId")
-                        .HasDatabaseName("IX_ServicePackageFeature_ServiceFeatureId");
+                        .HasDatabaseName("IX_PackageServiceFeature_ServiceFeatureId");
 
                     b.HasIndex("ServicePackageId")
-                        .HasDatabaseName("IX_ServicePackageFeature_ServicePackageId");
+                        .HasDatabaseName("IX_PackageServiceFeature_ServicePackageId");
 
-                    b.ToTable("ServicePackageFeature", (string)null);
+                    b.ToTable("PackageServiceFeature", (string)null);
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Post", b =>
@@ -735,9 +729,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("ProductCategoryId")
-                        .HasName("PK_CleanFoodCategory");
+                        .HasName("PK_ProductCategory");
 
-                    b.ToTable("CleanFoodCategory", (string)null);
+                    b.ToTable("ProductCategory", (string)null);
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ProductPrice", b =>
@@ -1060,15 +1054,15 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("varchar(20)");
 
                     b.HasKey("SubscriptionId")
-                        .HasName("PK_ServicePackageContract");
+                        .HasName("PK_SubscriptionContract");
 
                     b.HasIndex("GardenerId")
-                        .HasDatabaseName("IX_ServicePackageContract_GardenerId");
+                        .HasDatabaseName("IX_SubscriptionContract_GardenerId");
 
                     b.HasIndex("ServicePackageId")
-                        .HasDatabaseName("IX_ServicePackageContract_ServicePackageId");
+                        .HasDatabaseName("IX_SubscriptionContract_ServicePackageId");
 
-                    b.ToTable("ServicePackageContract", (string)null);
+                    b.ToTable("SubscriptionContract", (string)null);
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.SystemLog", b =>
@@ -1186,10 +1180,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_CartItem_Cart");
-
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Post", null)
-                        .WithMany("CartItems")
-                        .HasForeignKey("PostId");
 
                     b.HasOne("CleanFoodVietAPI.Data.Entities.Product", "Product")
                         .WithMany("CartItems")
@@ -1330,14 +1320,14 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasForeignKey("ServiceFeatureId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_ServicePackageFeature_ServiceFeature");
+                        .HasConstraintName("FK_PackageServiceFeature_ServiceFeature");
 
                     b.HasOne("CleanFoodVietAPI.Data.Entities.ServicePackage", "ServicePackage")
                         .WithMany("ServicePackageFeatures")
                         .HasForeignKey("ServicePackageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ServicePackageFeature_ServicePackage");
+                        .HasConstraintName("FK_PackageServiceFeature_ServicePackage");
 
                     b.Navigation("ServiceFeature");
 
@@ -1474,14 +1464,14 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasForeignKey("GardenerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_ServicePackageContract_Account");
+                        .HasConstraintName("FK_SubscriptionContract_Account");
 
                     b.HasOne("CleanFoodVietAPI.Data.Entities.ServicePackage", "ServicePackage")
-                        .WithMany("ServicePackageContracts")
+                        .WithMany("SubscriptionContracts")
                         .HasForeignKey("ServicePackageId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_ServicePackageContract_ServicePackage");
+                        .HasConstraintName("FK_SubscriptionContract_ServicePackage");
 
                     b.Navigation("Account");
 
@@ -1558,8 +1548,6 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Post", b =>
                 {
-                    b.Navigation("CartItems");
-
                     b.Navigation("Favorites");
 
                     b.Navigation("PostMedias");
@@ -1593,11 +1581,11 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackage", b =>
                 {
-                    b.Navigation("ServicePackageContracts");
-
                     b.Navigation("ServicePackageFeatures");
 
                     b.Navigation("ServicePackageOrders");
+
+                    b.Navigation("SubscriptionContracts");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.ServicePackageOrder", b =>

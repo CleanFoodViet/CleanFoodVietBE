@@ -19,11 +19,23 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpPost(ApiEndpointConstant.Authentication.LoginEndpoint)]
+        [ProducesResponseType(typeof(AuthDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> Login([FromBody] LoginDTO data)
         {
             var res = await _accountService.Login(data);
 
             return Ok(res);
         }
+
+        [HttpPost(ApiEndpointConstant.Authentication.RegisterEndpoint)]
+        [ProducesResponseType(typeof(AuthDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Register([FromBody] RegisterDTO data)
+        {
+            var res = await _accountService.Register(data);
+
+            return Ok(res);
+        }
+
+        //Gardener Registration?
     }
 }
