@@ -26,7 +26,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual Account Account { get; set; } = null!;
         public virtual Product Product { get; set; } = null!;
         public virtual ICollection<Favorite> Favorites { get; set; } = new HashSet<Favorite>();
-        public virtual ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();
         public virtual ICollection<PostMedia> PostMedias { get; set; } = new HashSet<PostMedia>();
     }
 }

@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class DBInit : Migration
+    public partial class InitDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CleanFoodCategory",
+                name: "ProductCategory",
                 columns: table => new
                 {
                     ProductCategoryId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
@@ -21,7 +21,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CleanFoodCategory", x => x.ProductCategoryId);
+                    table.PrimaryKey("PK_ProductCategory", x => x.ProductCategoryId);
                 })
                 .Annotation("Relational:Collation", "utf8mb4_0900_ai_ci");
 
@@ -90,7 +90,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                     table.ForeignKey(
                         name: "FK_Product_ProductCategory",
                         column: x => x.ProductCategoryId,
-                        principalTable: "CleanFoodCategory",
+                        principalTable: "ProductCategory",
                         principalColumn: "ProductCategoryId",
                         onDelete: ReferentialAction.Restrict);
                 })
@@ -125,7 +125,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                 .Annotation("Relational:Collation", "utf8mb4_0900_ai_ci");
 
             migrationBuilder.CreateTable(
-                name: "ServicePackageFeature",
+                name: "PackageServiceFeature",
                 columns: table => new
                 {
                     PackageServiceFeatureId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
@@ -135,15 +135,15 @@ namespace CleanFoodVietAPI.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServicePackageFeature", x => x.PackageServiceFeatureId);
+                    table.PrimaryKey("PK_PackageServiceFeature", x => x.PackageServiceFeatureId);
                     table.ForeignKey(
-                        name: "FK_ServicePackageFeature_ServiceFeature",
+                        name: "FK_PackageServiceFeature_ServiceFeature",
                         column: x => x.ServiceFeatureId,
                         principalTable: "ServiceFeature",
                         principalColumn: "ServiceFeatureId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ServicePackageFeature_ServicePackage",
+                        name: "FK_PackageServiceFeature_ServicePackage",
                         column: x => x.ServicePackageId,
                         principalTable: "ServicePackage",
                         principalColumn: "ServicePackageId",
@@ -454,37 +454,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                 .Annotation("Relational:Collation", "utf8mb4_0900_ai_ci");
 
             migrationBuilder.CreateTable(
-                name: "ServicePackageContract",
-                columns: table => new
-                {
-                    SubscriptionId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    GardenerId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    ServicePackageId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Status = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
-                    SubscriptionType = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ServicePackageContract", x => x.SubscriptionId);
-                    table.ForeignKey(
-                        name: "FK_ServicePackageContract_Account",
-                        column: x => x.GardenerId,
-                        principalTable: "Account",
-                        principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ServicePackageContract_ServicePackage",
-                        column: x => x.ServicePackageId,
-                        principalTable: "ServicePackage",
-                        principalColumn: "ServicePackageId",
-                        onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("Relational:Collation", "utf8mb4_0900_ai_ci");
-
-            migrationBuilder.CreateTable(
                 name: "ServicePackageOrder",
                 columns: table => new
                 {
@@ -506,6 +475,37 @@ namespace CleanFoodVietAPI.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ServicePackageOrder_ServicePackage",
+                        column: x => x.ServicePackageId,
+                        principalTable: "ServicePackage",
+                        principalColumn: "ServicePackageId",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("Relational:Collation", "utf8mb4_0900_ai_ci");
+
+            migrationBuilder.CreateTable(
+                name: "SubscriptionContract",
+                columns: table => new
+                {
+                    SubscriptionId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    GardenerId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    ServicePackageId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Status = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    SubscriptionType = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionContract", x => x.SubscriptionId);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionContract_Account",
+                        column: x => x.GardenerId,
+                        principalTable: "Account",
+                        principalColumn: "AccountId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionContract_ServicePackage",
                         column: x => x.ServicePackageId,
                         principalTable: "ServicePackage",
                         principalColumn: "ServicePackageId",
@@ -538,6 +538,37 @@ namespace CleanFoodVietAPI.Data.Migrations
                 .Annotation("Relational:Collation", "utf8mb4_0900_ai_ci");
 
             migrationBuilder.CreateTable(
+                name: "CartItem",
+                columns: table => new
+                {
+                    CartItemId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    CartId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    ProductId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    ProductUnit = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartItem", x => x.CartItemId);
+                    table.ForeignKey(
+                        name: "FK_CartItem_Cart",
+                        column: x => x.CartId,
+                        principalTable: "Cart",
+                        principalColumn: "CartId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartItem_Product",
+                        column: x => x.ProductId,
+                        principalTable: "Product",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("Relational:Collation", "utf8mb4_0900_ai_ci");
+
+            migrationBuilder.CreateTable(
                 name: "OrderItem",
                 columns: table => new
                 {
@@ -560,43 +591,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderItem_Product",
-                        column: x => x.ProductId,
-                        principalTable: "Product",
-                        principalColumn: "ProductId",
-                        onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("Relational:Collation", "utf8mb4_0900_ai_ci");
-
-            migrationBuilder.CreateTable(
-                name: "CartItem",
-                columns: table => new
-                {
-                    CartItemId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    CartId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    ProductId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    ProductUnit = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    PostId = table.Column<string>(type: "char(26)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CartItem", x => x.CartItemId);
-                    table.ForeignKey(
-                        name: "FK_CartItem_Cart",
-                        column: x => x.CartId,
-                        principalTable: "Cart",
-                        principalColumn: "CartId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CartItem_Post_PostId",
-                        column: x => x.PostId,
-                        principalTable: "Post",
-                        principalColumn: "PostId");
-                    table.ForeignKey(
-                        name: "FK_CartItem_Product",
                         column: x => x.ProductId,
                         principalTable: "Product",
                         principalColumn: "ProductId",
@@ -759,11 +753,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartItem_PostId1",
-                table: "CartItem",
-                column: "PostId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Certificate_GardenerId",
                 table: "Certificate",
                 column: "GardenerId");
@@ -819,6 +808,16 @@ namespace CleanFoodVietAPI.Data.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PackageServiceFeature_ServiceFeatureId",
+                table: "PackageServiceFeature",
+                column: "ServiceFeatureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PackageServiceFeature_ServicePackageId",
+                table: "PackageServiceFeature",
+                column: "ServicePackageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Post_CategoryId",
                 table: "Post",
                 column: "ProductId");
@@ -864,26 +863,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                 column: "RetailerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServicePackageContract_GardenerId",
-                table: "ServicePackageContract",
-                column: "GardenerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServicePackageContract_ServicePackageId",
-                table: "ServicePackageContract",
-                column: "ServicePackageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServicePackageFeature_ServiceFeatureId",
-                table: "ServicePackageFeature",
-                column: "ServiceFeatureId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServicePackageFeature_ServicePackageId",
-                table: "ServicePackageFeature",
-                column: "ServicePackageId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ServicePackageOrder_GardenerId",
                 table: "ServicePackageOrder",
                 column: "GardenerId");
@@ -897,6 +876,16 @@ namespace CleanFoodVietAPI.Data.Migrations
                 name: "IX_ServicePackageOrderPayment_ServicePackageOrderId",
                 table: "ServicePackageOrderPayment",
                 column: "ServicePackageOrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionContract_GardenerId",
+                table: "SubscriptionContract",
+                column: "GardenerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionContract_ServicePackageId",
+                table: "SubscriptionContract",
+                column: "ServicePackageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SystemLog_AdminId",
@@ -932,6 +921,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                 name: "Notification");
 
             migrationBuilder.DropTable(
+                name: "PackageServiceFeature");
+
+            migrationBuilder.DropTable(
                 name: "PostMedia");
 
             migrationBuilder.DropTable(
@@ -944,13 +936,10 @@ namespace CleanFoodVietAPI.Data.Migrations
                 name: "Review");
 
             migrationBuilder.DropTable(
-                name: "ServicePackageContract");
-
-            migrationBuilder.DropTable(
-                name: "ServicePackageFeature");
-
-            migrationBuilder.DropTable(
                 name: "ServicePackageOrderPayment");
+
+            migrationBuilder.DropTable(
+                name: "SubscriptionContract");
 
             migrationBuilder.DropTable(
                 name: "SystemLog");
@@ -959,13 +948,13 @@ namespace CleanFoodVietAPI.Data.Migrations
                 name: "Cart");
 
             migrationBuilder.DropTable(
+                name: "ServiceFeature");
+
+            migrationBuilder.DropTable(
                 name: "Post");
 
             migrationBuilder.DropTable(
                 name: "OrderItem");
-
-            migrationBuilder.DropTable(
-                name: "ServiceFeature");
 
             migrationBuilder.DropTable(
                 name: "ServicePackageOrder");
@@ -983,7 +972,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                 name: "Account");
 
             migrationBuilder.DropTable(
-                name: "CleanFoodCategory");
+                name: "ProductCategory");
 
             migrationBuilder.DropTable(
                 name: "Role");
