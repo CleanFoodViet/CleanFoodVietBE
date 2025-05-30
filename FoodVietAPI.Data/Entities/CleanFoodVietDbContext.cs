@@ -60,7 +60,7 @@ namespace CleanFoodVietAPI.Data.Entities
                     .HasConversion(ulid => ulid.ToString(),str => Ulid.Parse(str))
                     .IsFixedLength();
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.PhoneNumber).HasMaxLength(11);
+                entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(11);
                 entity.Property(e => e.Password).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Gender).IsRequired().HasMaxLength(10);
                 entity.Property(e => e.Avatar).IsRequired();
