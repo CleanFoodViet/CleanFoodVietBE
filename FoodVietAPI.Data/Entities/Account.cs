@@ -7,7 +7,7 @@ namespace CleanFoodVietAPI.Data.Entities
         [Key]
         public Ulid AccountId { get; set; }
         public string Email { get; set; } = null!;
-        public string? PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string Gender { get; set; } = null!;
         public string Avatar { get; set; } = null!;

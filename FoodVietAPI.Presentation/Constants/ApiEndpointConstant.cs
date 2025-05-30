@@ -12,5 +12,11 @@
             public const string LoginEndpoint = ApiEndpoint + "/auth";
             public const string RegisterEndpoint = ApiEndpoint + "/auth";
         }
+
+        public static class Account
+        {
+            public const string AccountsEndpoint = ApiEndpoint + "/accounts";
+            public const string AccountEndpoint = AccountsEndpoint + "/{id}";
+        }
     }
 }
