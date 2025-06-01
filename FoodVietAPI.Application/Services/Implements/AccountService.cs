@@ -9,6 +9,7 @@ using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +20,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 {
     public class AccountService : BaseService<AccountService>, IAccountService
     {
-        public AccountService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor)
-            : base(unitOfWork, mapper, httpContextAccessor)
+        public AccountService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<AccountService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
 
