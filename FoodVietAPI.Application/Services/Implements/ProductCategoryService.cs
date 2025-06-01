@@ -15,8 +15,14 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
     public class ProductCategoryService : BaseService<ProductCategoryService>, IProductCategoryService
     {
-        public ProductCategoryService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<ProductCategoryService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(unitOfWork, logger, mapper, httpContextAccessor)
+        public ProductCategoryService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<ProductCategoryService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) 
+            : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
+        }
+
+        public async Task GetProductCategoryList()
+        {
+
         }
     }
 }

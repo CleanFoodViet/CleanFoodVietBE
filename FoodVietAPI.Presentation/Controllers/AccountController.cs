@@ -20,7 +20,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Account.AccountsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetAccountDTO>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAccountList([FromQuery]int page, [FromQuery]int size)
+        public async Task<IActionResult> GetAccountList([FromQuery]int page = 1, [FromQuery]int size = 10)
         {
             var res = await _accountService.GetAccountList(page, size);
             return Ok(res);
