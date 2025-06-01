@@ -8,13 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
-    [Route(ApiEndpointConstant.ApiEndpoint)]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseController<AccountController>
     {
         private readonly IAccountService _accountService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(ILogger<AccountController> logger, IAccountService accountService) : base(logger)
         {
             _accountService = accountService;
         }

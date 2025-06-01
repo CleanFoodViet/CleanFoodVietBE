@@ -1,5 +1,4 @@
 ﻿using CleanFoodVietAPI.Application.DTOs;
-using CleanFoodVietAPI.Presentation.Logs.LogConfigs;
 using System.Net;
 
 namespace CleanFoodVietAPI.Presentation.Middlewares
@@ -7,9 +6,11 @@ namespace CleanFoodVietAPI.Presentation.Middlewares
     public class GlobalException
     {
         private readonly RequestDelegate _next;
-        public GlobalException(RequestDelegate next)
+        private readonly ILogger<GlobalException> _logger;
+        public GlobalException(RequestDelegate next, ILogger<GlobalException> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -49,7 +50,7 @@ namespace CleanFoodVietAPI.Presentation.Middlewares
 
             var errorResponse = new ErrorDTO(statusCode, exception.Message, DateTime.UtcNow);
             var result = errorResponse.ToString();
-            LogException.LogExceptions(exception);
+            _logger.LogError($"Error at {DateTime.UtcNow} - {exception}");
             await context.Response.WriteAsync(result);
         }
     }

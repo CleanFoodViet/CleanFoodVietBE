@@ -50,8 +50,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         public async Task<GetAccountDTO> GetAccountInformation(string accountId)
         {
+            Ulid idValue = Ulid.Parse(accountId);
             var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId.ToString() == accountId,
+                .GetAsync(predicate: acc => acc.AccountId == idValue,
                           include: acc => acc.Include(x => x.Role),
                           selector: acc => new GetAccountDTO
                           {
@@ -73,8 +74,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         public async Task UpdateAccountStatus(string accountId, string status)
         {
+            Ulid idValue = Ulid.Parse(accountId);
             var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId.ToString() == accountId);
+                .GetAsync(predicate: acc => acc.AccountId == idValue);
 
             if (account == null) throw new BadHttpRequestException("Account is not found");
 

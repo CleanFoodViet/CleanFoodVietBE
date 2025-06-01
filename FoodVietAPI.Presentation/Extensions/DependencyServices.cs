@@ -42,24 +42,6 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             return services;
         }
 
-        public static IServiceCollection AddConfigLog(this IServiceCollection services, IConfiguration config)
-        {
-            var fileName = config["MySerilog:FileName"];
-
-            //Config SeriLog logging
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.Debug()
-                .WriteTo.Console()
-                .WriteTo.File(path: $"{fileName}-.text",
-                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-                outputTemplate: "{Timestamp: yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
-                rollingInterval: RollingInterval.Day)
-                .CreateLogger();
-
-            return services;
-        }
-
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
