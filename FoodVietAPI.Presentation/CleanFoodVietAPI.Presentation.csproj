@@ -21,8 +21,4 @@
     <ProjectReference Include="..\FoodVietAPI.Application\CleanFoodVietAPI.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Logs\FileLogs\" />
-  </ItemGroup>
-
 </Project>

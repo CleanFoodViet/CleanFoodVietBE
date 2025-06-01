@@ -16,8 +16,6 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddUnitOfWork();
 builder.Services.AddJwtAuthenticationScheme(builder.Configuration);
 builder.Services.AddServices(builder.Configuration);
-
-builder.Services.AddConfigLog(builder.Configuration);
 #endregion
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

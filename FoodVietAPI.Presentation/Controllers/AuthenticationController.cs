@@ -7,13 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
-    [Route(ApiEndpointConstant.ApiEndpoint)]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController : BaseController<AuthenticationController>
     {
         private readonly IAccountService _accountService;
 
-        public AuthenticationController(IAccountService accountService)
+        public AuthenticationController(ILogger<AuthenticationController> logger, IAccountService accountService) : base(logger)
         {
             _accountService = accountService;
         }
