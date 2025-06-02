@@ -26,22 +26,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         }
 
         #region Account Functions
-        public async Task<IPaginate<GetAccountDTO>> GetAccountList(int page, int size)
+        public async Task<IPaginate<AccountDTO>> GetAccountList(int page, int size)
         {
             var accountList = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
                 include: acc => acc.Include(x => x.Role),
-                selector: acc => new GetAccountDTO
-                {
-                    AccountId = acc.AccountId.ToString(),
-                    PhoneNumber = acc.PhoneNumber,
-                    Avatar = acc.Avatar,
-                    Email = acc.Email,
-                    Gender = acc.Gender,
-                    IsVerified = acc.IsVerified,
-                    Status = acc.Status,
-                    UpdatedAt = acc.UpdatedAt,
-                    RoleName = acc.Role.Name
-                },
+                selector: acc => new AccountDTO(
+                    acc.AccountId,
+                    acc.Email,
+                    acc.PhoneNumber,
+                    acc.Gender,
+                    acc.Avatar,
+                    acc.Status,
+                    acc.IsVerified,
+                    acc.UpdatedAt,
+                    acc.Role.Name),
                 page: page,
                 size: size
                 );
@@ -49,35 +47,33 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return accountList;
         }
 
-        public async Task<GetAccountDTO> GetAccountInformation(string accountId)
+        public async Task<AccountDTO> GetAccountInformation(string id)
         {
-            Ulid idValue = Ulid.Parse(accountId);
+            Ulid accountId = Ulid.Parse(id);
             var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == idValue,
+                .GetAsync(predicate: acc => acc.AccountId == accountId,
                           include: acc => acc.Include(x => x.Role),
-                          selector: acc => new GetAccountDTO
-                          {
-                              AccountId = acc.AccountId.ToString(),
-                              PhoneNumber = acc.PhoneNumber,
-                              Avatar = acc.Avatar,
-                              Email = acc.Email,
-                              Gender = acc.Gender,
-                              IsVerified = acc.IsVerified,
-                              Status = acc.Status,
-                              UpdatedAt = acc.UpdatedAt,
-                              RoleName = acc.Role.Name
-                          });
+                          selector: acc => new AccountDTO(
+                                acc.AccountId,
+                                acc.Email,
+                                acc.PhoneNumber,
+                                acc.Gender,
+                                acc.Avatar,
+                                acc.Status,
+                                acc.IsVerified,
+                                acc.UpdatedAt,
+                                acc.Role.Name));
 
             if (account == null) throw new BadHttpRequestException("Account is not found");
 
             return account!;
         }
 
-        public async Task UpdateAccountStatus(string accountId, string status)
+        public async Task UpdateAccountStatus(string id, string status)
         {
-            Ulid idValue = Ulid.Parse(accountId);
+            Ulid accountId = Ulid.Parse(id);
             var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == idValue);
+                .GetAsync(predicate: acc => acc.AccountId == accountId);
 
             if (account == null) throw new BadHttpRequestException("Account is not found");
 

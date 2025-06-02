@@ -48,6 +48,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
 
             #region Service DI
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IProductCategoryService, ProductCategoryService>();
             #endregion
 
             return services;

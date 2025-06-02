@@ -19,7 +19,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpGet(ApiEndpointConstant.Account.AccountsEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<GetAccountDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<AccountDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAccountList([FromQuery]int page = 1, [FromQuery]int size = 10)
         {
             var res = await _accountService.GetAccountList(page, size);
@@ -27,7 +27,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpGet(ApiEndpointConstant.Account.AccountEndpoint)]
-        [ProducesResponseType(typeof(GetAccountDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AccountDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAccountList([FromRoute] string id)
         {
             var res = await _accountService.GetAccountInformation(id);
@@ -35,6 +35,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpPatch(ApiEndpointConstant.Account.AccountEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAccountList([FromRoute] string id, [FromQuery] string status)
         {
             await _accountService.UpdateAccountStatus(id, status);
