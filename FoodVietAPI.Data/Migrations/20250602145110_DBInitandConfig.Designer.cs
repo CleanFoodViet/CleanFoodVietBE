@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     [DbContext(typeof(CleanFoodVietDbContext))]
-    [Migration("20250530093445_AccountFieldConfig")]
-    partial class AccountFieldConfig
+    [Migration("20250602145110_DBInitandConfig")]
+    partial class DBInitandConfig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -603,15 +603,15 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<DateTime>("EstimatedEndDate")
-                        .HasColumnType("datetime");
-
                     b.Property<string>("GardenerId")
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
                     b.Property<DateTime>("HarvestDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime>("PostEndDate")
                         .HasColumnType("datetime");
 
                     b.Property<int>("Priority")
@@ -686,6 +686,11 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
+                    b.Property<string>("GardenerId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
                     b.Property<string>("ProductCategoryId")
                         .IsRequired()
                         .HasColumnType("char(26)")
@@ -706,6 +711,8 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.HasKey("ProductId")
                         .HasName("PK_Product");
+
+                    b.HasIndex("GardenerId");
 
                     b.HasIndex("ProductCategoryId");
 
@@ -751,6 +758,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
@@ -808,6 +818,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime");
 
                     b.HasKey("ReportId")
                         .HasName("PK_Report");
@@ -1370,12 +1383,21 @@ namespace CleanFoodVietAPI.Data.Migrations
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Product", b =>
                 {
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Account", "Gardener")
+                        .WithMany("Products")
+                        .HasForeignKey("GardenerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Product_GardenerAccount");
+
                     b.HasOne("CleanFoodVietAPI.Data.Entities.ProductCategory", "ProductCategory")
                         .WithMany("Products")
                         .HasForeignKey("ProductCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("FK_Product_ProductCategory");
+
+                    b.Navigation("Gardener");
 
                     b.Navigation("ProductCategory");
                 });
@@ -1510,6 +1532,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("Posts");
+
+                    b.Navigation("Products");
 
                     b.Navigation("ReceiverMessages");
 

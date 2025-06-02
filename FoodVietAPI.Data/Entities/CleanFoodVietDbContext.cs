@@ -441,7 +441,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Rating).HasColumnType("decimal(3,2)");
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-                entity.Property(e => e.EstimatedEndDate).HasColumnType("datetime");
+                entity.Property(e => e.PostEndDate).HasColumnType("datetime");
                 entity.Property(e => e.Priority).IsRequired();
 
                 entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_Post_GardenerId");
@@ -496,6 +496,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.Severity).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasIndex(e => e.AccountId).HasDatabaseName("IX_Report_AccountId");
 
@@ -803,6 +804,9 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ProductCategoryId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
+                entity.Property(e => e.GardenerId).HasColumnType("char(26)")
+                   .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                   .IsFixedLength();
 
                 entity.HasIndex(e => e.ProductName).HasDatabaseName("IX_Product_ProductName");
 
@@ -811,6 +815,12 @@ namespace CleanFoodVietAPI.Data.Entities
                      .HasForeignKey(e => e.ProductCategoryId)
                      .OnDelete(DeleteBehavior.Restrict)
                      .HasConstraintName("FK_Product_ProductCategory");
+
+                entity.HasOne(e => e.Gardener)
+                     .WithMany(e => e.Products)
+                     .HasForeignKey(e => e.GardenerId)
+                     .OnDelete(DeleteBehavior.Restrict)
+                     .HasConstraintName("FK_Product_GardenerAccount");
             });
         }
     }

@@ -16,6 +16,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public DateTime AvailabledDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public bool IsCurrent { get; set; }
         public Ulid Productd { get; set; }
 
         public virtual Product Product { get; set; } = null!;

@@ -17,6 +17,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public string Severity { get; set; } = null!;
         public string Status { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public Ulid AccountId { get; set; }
 
         public virtual Account Account { get; set; } = null!;

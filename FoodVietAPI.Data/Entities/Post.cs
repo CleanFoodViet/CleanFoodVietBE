@@ -19,7 +19,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public string Status { get; set; } = null!;
         public decimal Rating { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime EstimatedEndDate { get; set; }
+        public DateTime PostEndDate { get; set; }
         public int Priority { get; set; }
 
 
