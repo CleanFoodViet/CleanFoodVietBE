@@ -12,8 +12,8 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     public interface IAccountService
     {
         #region Account Functions
-        Task<IPaginate<GetAccountDTO>> GetAccountList(int page, int size);
-        Task<GetAccountDTO> GetAccountInformation(string accountId);
+        Task<IPaginate<AccountDTO>> GetAccountList(int page, int size);
+        Task<AccountDTO> GetAccountInformation(string accountId);
         Task UpdateAccountStatus(string accountId, string status);
         #endregion
 
