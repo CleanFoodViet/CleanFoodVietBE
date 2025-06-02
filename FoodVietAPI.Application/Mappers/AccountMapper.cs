@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.AccountDTO;
 using CleanFoodVietAPI.Application.DTOs.AuthDTO;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
@@ -24,6 +25,10 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForMember(des => des.IsVerified, opt => opt.MapFrom(src => false))
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+            CreateMap<UpdateAccountDTO, Account>()
+                .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForAllMembers(opt => opt.Condition((src, des, srcMember) => srcMember != null));
         }
     }
 }
