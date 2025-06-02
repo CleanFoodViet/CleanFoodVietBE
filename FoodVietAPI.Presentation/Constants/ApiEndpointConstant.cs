@@ -17,6 +17,7 @@
         {
             public const string AccountsEndpoint = ApiEndpoint + "/accounts";
             public const string AccountEndpoint = AccountsEndpoint + "/{id}";
+            public const string AccountProfileEndpoint = AccountEndpoint + "/profile";
         }
 
         public static class ProductCategory

@@ -91,6 +91,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when updating account status");
         }
+
+        public async Task UpdateProfile(string id, UpdateAccountDTO data)
+        {
+            Ulid accountId = Ulid.Parse(id);
+            var account = await _unitOfWork.GetRepository<Account>()
+                .GetAsync(predicate: acc => acc.AccountId == accountId);
+
+            if (account == null) throw new BadHttpRequestException("Account is not found");
+
+            _mapper.Map(data, account);
+            _unitOfWork.GetRepository<Account>().UpdateAsync(account);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when updating profile");
+        }
         #endregion
 
         #region Authentication Functions

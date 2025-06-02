@@ -36,10 +36,18 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAccountList([FromRoute] string id, [FromQuery] string status)
+        public async Task<IActionResult> UpdateAccountStatus([FromRoute] string id, [FromQuery] string status)
         {
             await _accountService.UpdateAccountStatus(id, status);
             return Ok("Update status successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Account.AccountProfileEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateProfile([FromRoute]string id, [FromBody]UpdateAccountDTO data)
+        {
+            await _accountService.UpdateProfile(id, data);
+            return Ok("Update profile successfully");
         }
     }
 }
