@@ -6,6 +6,8 @@
         public const string ApiVersion = "/v1";
         public const string ApiEndpoint = RootEndPoint + ApiVersion;
 
+        public const string AdminApiEndpoint = ApiEndpoint + "/admin";
+
         public static class Authentication
         {
             public const string AuthEndpoint = ApiEndpoint + "/auth";
@@ -28,7 +30,7 @@
 
         public static class ServiceFeature
         {
-            public const string ServiceFeaturesEndpoint = ApiEndpoint + "/admin/service-features";
+            public const string ServiceFeaturesEndpoint = AdminApiEndpoint + "/service-features";
             public const string ServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/{id}";
         }
     }
