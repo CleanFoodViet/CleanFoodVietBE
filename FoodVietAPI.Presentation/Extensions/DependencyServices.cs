@@ -32,7 +32,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             {
                 options.AddPolicy("Default", policy =>
                 {
-                    policy.WithOrigins("https://localhost:7174") // Change domain url of FE for server-side cookie purose
+                    policy.WithOrigins("https://localhost:7174") // Change domain url of FE for server-side cookie purpose
                     .AllowCredentials()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
@@ -49,6 +49,8 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             #region Service DI
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            // Registration for IServiceFeatureService added here.
+            services.AddScoped<IServiceFeatureService, ServiceFeatureService>();
             #endregion
 
             return services;

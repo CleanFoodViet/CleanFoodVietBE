@@ -25,5 +25,11 @@
             public const string ProductCategoriesEndpoint = ApiEndpoint + "/product-categories";
             public const string ProductCategoryEndpoint = ProductCategoriesEndpoint + "/{id}";
         }
+
+        public static class ServiceFeature
+        {
+            public const string ServiceFeaturesEndpoint = ApiEndpoint + "/admin/service-features";
+            public const string ServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/{id}";
+        }
     }
 }
