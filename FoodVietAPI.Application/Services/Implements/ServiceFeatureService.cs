@@ -57,7 +57,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto)
         {
             var newFeature = _mapper.Map<ServiceFeature>(createDto);
-            newFeature.Status = ServiceFeatureStatusEnum.ACTIVE;
+            newFeature.Status = ServiceFeatureStatusEnum.ACTIVE.ToString();
             await _unitOfWork.GetRepository<ServiceFeature>().InsertAsync(newFeature);
             var isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess)
@@ -100,13 +100,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 // If a soft-delete is desired, we expect "DISABLE" (case-insensitive).
                 if (updateDto.Status.Equals("DISABLE", StringComparison.OrdinalIgnoreCase))
                 {
-                    existingFeature.Status = ServiceFeatureStatusEnum.INACTIVE;
+                    existingFeature.Status = ServiceFeatureStatusEnum.INACTIVE.ToString();
                 }
                 else
                 {
                     try
                     {
-                        existingFeature.Status = Enum.Parse<ServiceFeatureStatusEnum>(updateDto.Status, true);
+                        existingFeature.Status = Enum.Parse<ServiceFeatureStatusEnum>(updateDto.Status, true).ToString();
                     }
                     catch
                     {

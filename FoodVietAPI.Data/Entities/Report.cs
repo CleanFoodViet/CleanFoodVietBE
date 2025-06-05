@@ -12,6 +12,8 @@ namespace CleanFoodVietAPI.Data.Entities
         [Key]
         public Ulid ReportId { get; set; }
         public string ReportType { get; set; } = null!;
+        public Ulid TargetId { get; set; }
+        public string TargetType { get; set; } = null!;
         public string Subject { get; set; } = null!;
         public string? Description { get; set; }
         public string Severity { get; set; } = null!;

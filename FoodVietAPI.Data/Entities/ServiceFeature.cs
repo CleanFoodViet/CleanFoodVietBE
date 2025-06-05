@@ -13,9 +13,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public string ServiceFeatureName { get; set; } = null!;
         public string? Description { get; set; }
         public string DefaultValue { get; set; } = null!;
-
-        // New status property
-        public ServiceFeatureStatusEnum Status { get; set; } = ServiceFeatureStatusEnum.ACTIVE;
+        public string Status { get; set; } = null!;
 
         public virtual ICollection<PackageServiceFeature> ServicePackageFeatures { get; set; } = new HashSet<PackageServiceFeature>();
     }

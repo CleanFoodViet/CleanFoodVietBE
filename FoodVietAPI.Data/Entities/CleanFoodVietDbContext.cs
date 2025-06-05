@@ -490,7 +490,11 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.AccountId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
+                entity.Property(e => e.TargetId).HasColumnType("char(26)")
+                   .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                   .IsFixedLength();
                 entity.Property(e => e.ReportType).IsRequired().HasMaxLength(30);
+                entity.Property(e => e.TargetType).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Subject).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Description).HasColumnType("text");
                 entity.Property(e => e.Severity).IsRequired().HasMaxLength(20);
@@ -570,12 +574,9 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.DefaultValue)
                       .IsRequired()
                       .HasMaxLength(100);
-
-                // Add the Status property with a conversion so that the enum is stored as its string representation.
                 entity.Property(e => e.Status)
                       .IsRequired()
-                      .HasConversion<string>()
-                      .HasMaxLength(50); // Optionally set a maximum length.
+                      .HasMaxLength(20);
             });
 
             modelBuilder.Entity<ServicePackage>(entity =>
