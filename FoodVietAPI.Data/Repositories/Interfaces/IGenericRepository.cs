@@ -1,4 +1,5 @@
 ﻿using CleanFoodVietAPI.Data.Paginate;
+using CleanFoodVietAPI.Data.Specifications;
 using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
@@ -59,5 +60,12 @@ namespace CleanFoodVietAPI.Data.Repositories.Interfaces
         void DeleteAsync(T entity);
         void DeleteRangeAsync(IEnumerable<T> entities);
         #endregion
+
+        // NEW: Overload that accepts a specification
+        Task<IPaginate<T>> GetPagingListAsync(
+            ISpecification<T> 
+            spec, 
+            int page = 1, 
+            int size = 10);
     }
 }

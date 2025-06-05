@@ -23,14 +23,52 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _serviceFeatureService = serviceFeatureService;
         }
 
+        // GET: api/v1/admin/service-features
+        // Returns a paginated list with metadata including filtering and sorting parameters.
         [HttpGet]
-        [ProducesResponseType(typeof(IPaginate<ServiceFeatureDTO>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetServiceFeatureList([FromQuery] int page = 1, [FromQuery] int size = 10)
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetServiceFeatureList(
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 10,
+            [FromQuery] string? filterField = null,
+            [FromQuery] string? filterValue = null,
+            [FromQuery] string? sortField = null,
+            [FromQuery] string? sortOrder = "asc")
         {
-            var features = await _serviceFeatureService.GetServiceFeatureList(page, size);
-            return Ok(features);
+            var features = await _serviceFeatureService
+                .GetServiceFeatureList(page, size, filterField, filterValue, sortField, sortOrder);
+
+            // Wrap response with additional metadata.
+            var response = new
+            {
+                page = features.Page,
+                size = features.Size,
+                total = features.Total,
+                totalPages = features.TotalPages,
+                filterField = filterField ?? string.Empty,
+                filterValue = filterValue ?? string.Empty,
+                sortField = sortField ?? string.Empty,
+                sortOrder = sortOrder,
+                items = features.Items
+            };
+
+            return Ok(response);
         }
 
+        // PATCH: api/v1/admin/service-features/{id}
+        // Update service feature information (including soft-delete by setting status to INACTIVE)
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateServiceFeature(
+            [FromRoute] Ulid id,
+            [FromBody] UpdateServiceFeatureDTO updateDto)
+        {
+            var updatedFeature = await _serviceFeatureService.UpdateServiceFeature(id, updateDto);
+            return Ok(updatedFeature);
+        }
+
+        // POST: api/v1/admin/service-features
+        // Create a new service feature
         [HttpPost]
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status201Created)]
         public async Task<IActionResult> CreateServiceFeature([FromBody] CreateServiceFeatureDTO createDto)

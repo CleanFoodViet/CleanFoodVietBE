@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTO;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Specifications; // For consistency with other flows.
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums; // Our enum namespace.
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
@@ -25,40 +29,104 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<IPaginate<ServiceFeatureDTO>> GetServiceFeatureList(int page, int size)
+        // Existing GetServiceFeatureList and CreateServiceFeature are here...
+        public async Task<IPaginate<ServiceFeatureDTO>> GetServiceFeatureList(
+            int page,
+            int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? sortField = null,
+            string? sortOrder = "asc")
         {
-            var paginatedFeatures = await _unitOfWork.GetRepository<ServiceFeature>().GetPagingListAsync(
-                include: null,  // No eager loading needed here
-                selector: sf => new ServiceFeatureDTO(
-                    sf.ServiceFeatureId,
-                    sf.ServiceFeatureName,
-                    sf.Description,
-                    sf.DefaultValue
-                ),
-                page: page,
-                size: size
-            );
-            return paginatedFeatures;
+            // Build the specification from incoming parameters.
+            var specification = new ServiceFeatureSpecification(filterField, filterValue, sortField, sortOrder, page, size);
+
+            // Retrieve the paginated list using the specification.
+            var featuresPage = await _unitOfWork.GetRepository<ServiceFeature>()
+                                                .GetPagingListAsync(specification, page, size);
+
+            // Map each ServiceFeature entity to its DTO.
+            var dtoList = featuresPage.Items.Select(feature => _mapper.Map<ServiceFeatureDTO>(feature)).ToList();
+
+            // Wrap the result in a Paginate<T> instance.
+            var paginatedResult = new Paginate<ServiceFeatureDTO>(dtoList, featuresPage.Page, featuresPage.Size, featuresPage.Total);
+
+            return paginatedResult;
         }
 
         public async Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto)
         {
-            // Map incoming DTO to entity
             var newFeature = _mapper.Map<ServiceFeature>(createDto);
-
-            // Insert into the repository
+            // Always default to ACTIVE; creation does not allow overriding status.
+            newFeature.Status = ServiceFeatureStatusEnum.ACTIVE;
             await _unitOfWork.GetRepository<ServiceFeature>().InsertAsync(newFeature);
-
-            // Commit changes
             var isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess)
             {
                 throw new Exception("Error occurred while creating the Service Feature.");
             }
-
-            // Map back to DTO and return the created record
             var resultDto = _mapper.Map<ServiceFeatureDTO>(newFeature);
             return resultDto;
         }
+
+        // New update method using PATCH
+        public async Task<ServiceFeatureDTO> UpdateServiceFeature(Ulid id, UpdateServiceFeatureDTO updateDto)
+        {
+            // Retrieve the existing ServiceFeature entity by id using the generic overload.
+            var repository = _unitOfWork.GetRepository<ServiceFeature>();
+            var existingFeature = await repository.GetAsync<ServiceFeature>(
+                selector: x => x,
+                predicate: x => x.ServiceFeatureId == id);
+
+            if (existingFeature == null)
+            {
+                throw new Exception("Service Feature not found.");
+            }
+
+            // Update fields if provided
+            if (!string.IsNullOrEmpty(updateDto.ServiceFeatureName))
+            {
+                existingFeature.ServiceFeatureName = updateDto.ServiceFeatureName;
+            }
+            if (!string.IsNullOrEmpty(updateDto.Description))
+            {
+                existingFeature.Description = updateDto.Description;
+            }
+            if (!string.IsNullOrEmpty(updateDto.DefaultValue))
+            {
+                existingFeature.DefaultValue = updateDto.DefaultValue;
+            }
+            if (!string.IsNullOrEmpty(updateDto.Status))
+            {
+                // If a soft-delete is desired, we expect "DISABLE" (case-insensitive).
+                if (updateDto.Status.Equals("DISABLE", StringComparison.OrdinalIgnoreCase))
+                {
+                    existingFeature.Status = ServiceFeatureStatusEnum.INACTIVE;
+                }
+                else
+                {
+                    try
+                    {
+                        existingFeature.Status = Enum.Parse<ServiceFeatureStatusEnum>(updateDto.Status, true);
+                    }
+                    catch
+                    {
+                        throw new Exception("Invalid status value provided.");
+                    }
+                }
+            }
+
+            // Save the updates.
+            repository.UpdateAsync(existingFeature);
+            var isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess)
+            {
+                throw new Exception("Error occurred while updating the Service Feature.");
+            }
+
+            var updatedDto = _mapper.Map<ServiceFeatureDTO>(existingFeature);
+            return updatedDto;
+        }
+
     }
 }

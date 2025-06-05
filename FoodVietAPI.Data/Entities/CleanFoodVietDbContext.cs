@@ -558,12 +558,24 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.ToTable("ServiceFeature");
                 entity.HasKey(e => e.ServiceFeatureId).HasName("PK_ServiceFeature");
 
-                entity.Property(e => e.ServiceFeatureId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.ServiceFeatureName).IsRequired().HasMaxLength(255);
-                entity.Property(e => e.Description).HasColumnType("text");
-                entity.Property(e => e.DefaultValue).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.ServiceFeatureId)
+                      .HasColumnType("char(26)")
+                      .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                      .IsFixedLength();
+                entity.Property(e => e.ServiceFeatureName)
+                      .IsRequired()
+                      .HasMaxLength(255);
+                entity.Property(e => e.Description)
+                      .HasColumnType("text");
+                entity.Property(e => e.DefaultValue)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+                // Add the Status property with a conversion so that the enum is stored as its string representation.
+                entity.Property(e => e.Status)
+                      .IsRequired()
+                      .HasConversion<string>()
+                      .HasMaxLength(50); // Optionally set a maximum length.
             });
 
             modelBuilder.Entity<ServicePackage>(entity =>
