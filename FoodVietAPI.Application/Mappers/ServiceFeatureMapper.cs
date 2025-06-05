@@ -11,9 +11,12 @@ namespace CleanFoodVietAPI.Application.Mappers
             // For creating a new ServiceFeature
             CreateMap<CreateServiceFeatureDTO, ServiceFeature>()
                 .ForMember(dest => dest.ServiceFeatureId,
-                           opt => opt.MapFrom(src => Ulid.NewUlid()));
+                           opt => opt.MapFrom(src => Ulid.NewUlid()))
+                // If our create DTO doesn't include a status, either ignore it or set the default.
+                .ForMember(dest => dest.Status, opt => opt.Ignore());
+            // (The entity already defaults to ACTIVE.)
 
-            // Existing mapping from entity to DTO (if needed)
+            // Mapping from entity to DTO (assuming your ServiceFeatureDTO includes a property for Status)
             CreateMap<ServiceFeature, ServiceFeatureDTO>();
         }
     }
