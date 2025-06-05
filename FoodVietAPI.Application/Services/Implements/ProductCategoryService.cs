@@ -50,15 +50,18 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return category;
         }
 
-        public async Task CreateProductCategory(CreateProductCategoryDTO category)
+        public async Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category)
         {
             ProductCategory newCategory = _mapper.Map<ProductCategory>(category);
             await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(newCategory);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when insert new product category");
+            
+            var productCategoryDTO = _mapper.Map<GetProductCategoryDTO>(newCategory);
+            return productCategoryDTO;
         }
 
-        public async Task UpdateProductCategory(string id, UpdateProductCategoryDTO data)
+        public async Task<GetProductCategoryDTO> UpdateProductCategory(string id, UpdateProductCategoryDTO data)
         {
             Ulid categoryId = Ulid.Parse(id);
             var category = await _unitOfWork.GetRepository<ProductCategory>()
@@ -71,6 +74,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             _unitOfWork.GetRepository<ProductCategory>().UpdateAsync(category);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when updating product category");
+
+            var productCategoryDTO = _mapper.Map<GetProductCategoryDTO>(category);
+            return productCategoryDTO;
         }
 
         public async Task DeleteProductCategory(string id)

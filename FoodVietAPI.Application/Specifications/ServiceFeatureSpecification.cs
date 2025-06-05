@@ -11,9 +11,7 @@ namespace CleanFoodVietAPI.Application.Specifications
                 string? filterField,
                 string? filterValue,
                 string? sortField,
-                string? sortOrder,
-                int page,
-                int size)
+                string? sortOrder)
             : base(null)
         {
             // Filtering: if filter parameters are provided.
@@ -82,11 +80,6 @@ namespace CleanFoodVietAPI.Application.Specifications
                     ApplyOrderBy(lambda);
                 }
             }
-
-            // Paging:
-            // Assuming page is 1-indexed.
-            int skip = (page - 1) * size;
-            ApplyPaging(skip, size);
         }
     }
 }

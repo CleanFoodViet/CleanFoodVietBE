@@ -7,8 +7,8 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     {
         Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryList(int page, int size);
         Task<GetProductCategoryDTO> GetProductCategoryInformation(string id);
-        Task CreateProductCategory(CreateProductCategoryDTO category);
-        Task UpdateProductCategory(string id, UpdateProductCategoryDTO data);
+        Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category);
+        Task<GetProductCategoryDTO> UpdateProductCategory(string id, UpdateProductCategoryDTO data);
         Task DeleteProductCategory(string id);
     }
 }

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
     [ApiController]
-    [Route(ApiEndpointConstant.ServiceFeature.ServiceFeaturesEndpoint)]
     public class ServiceFeatureController : BaseController<ServiceFeatureController>
     {
         private readonly IServiceFeatureService _serviceFeatureService;
@@ -25,7 +24,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         // GET: api/v1/admin/service-features
         // Returns a paginated list with metadata including filtering and sorting parameters.
-        [HttpGet]
+        [HttpGet(ApiEndpointConstant.ServiceFeature.ServiceFeaturesEndpoint)]
         [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetServiceFeatureList(
             [FromQuery] int page = 1,
@@ -57,7 +56,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         // PATCH: api/v1/admin/service-features/{id}
         // Update service feature information (including soft-delete by setting status to INACTIVE)
-        [HttpPatch("{id}")]
+        [HttpPatch(ApiEndpointConstant.ServiceFeature.ServiceFeatureEndpoint)]
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateServiceFeature(
             [FromRoute] Ulid id,
@@ -69,7 +68,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         // POST: api/v1/admin/service-features
         // Create a new service feature
-        [HttpPost]
+        [HttpPost(ApiEndpointConstant.ServiceFeature.ServiceFeaturesEndpoint)]
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status201Created)]
         public async Task<IActionResult> CreateServiceFeature([FromBody] CreateServiceFeatureDTO createDto)
         {

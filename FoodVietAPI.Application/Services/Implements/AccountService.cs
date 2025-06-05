@@ -40,9 +40,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.IsVerified,
                     acc.UpdatedAt,
                     acc.Role.Name),
-                page: page,
-                size: size
-                );
+                page: page, size: size);
 
             return accountList;
         }
@@ -76,7 +74,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(predicate: acc => acc.AccountId == accountId);
 
             if (account == null) throw new BadHttpRequestException("Account is not found");
-
 
             if (Enum.TryParse<AccountStatusEnum>(status.ToUpper(), out var result))
             {

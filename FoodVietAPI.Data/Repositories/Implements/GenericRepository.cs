@@ -28,10 +28,11 @@ namespace CleanFoodVietAPI.Data.Repositories.Implements
         }
 
         #region Get Methods
-
+        /// <summary>
+        /// Retrieves a list of entities based on the given specification.
+        /// </summary>
         public virtual async Task<T> GetAsync
             (Expression<Func<T, bool>>? predicate = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
              Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
         {
             IQueryable<T> query = _dbSet;
@@ -39,15 +40,15 @@ namespace CleanFoodVietAPI.Data.Repositories.Implements
                 query = include(query);
             if (predicate != null)
                 query = query.Where(predicate);
-            if (orderBy != null)
-                return await orderBy(query).AsNoTracking().FirstOrDefaultAsync();
             return await query.AsNoTracking().FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// Retrieves a list of entities based on the given specification.
+        /// </summary>
         public virtual async Task<TResult> GetAsync<TResult>
             (Expression<Func<T, TResult>> selector,
              Expression<Func<T, bool>>? predicate = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
              Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
         {
             IQueryable<T> query = _dbSet;
@@ -55,81 +56,82 @@ namespace CleanFoodVietAPI.Data.Repositories.Implements
                 query = include(query);
             if (predicate != null)
                 query = query.Where(predicate);
-            if (orderBy != null)
-                return await orderBy(query).AsNoTracking().Select(selector).FirstOrDefaultAsync();
             return await query.AsNoTracking().Select(selector).FirstOrDefaultAsync();
         }
 
-        public virtual async Task<ICollection<T>> GetListAsync
-            (Expression<Func<T, bool>>? predicate = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
+        /// <summary>
+        /// Retrieves a list of entities based on the given specification.
+        /// </summary>
+        public async Task<ICollection<T>> GetListAsync(ISpecification<T>? spec = null,
+            Expression<Func<T, bool>>? predicate = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
         {
-            IQueryable<T> query = _dbSet;
+            IQueryable<T> query = spec == null ?
+                _dbSet.AsQueryable() : query = ApplySpecification(spec);
             if (include != null)
                 query = include(query);
             if (predicate != null)
                 query = query.Where(predicate);
-            if (orderBy != null)
-                return await orderBy(query).AsNoTracking().ToListAsync();
             return await query.AsNoTracking().ToListAsync();
         }
 
-        public virtual async Task<ICollection<TResult>> GetListAsync<TResult>
-            (Expression<Func<T, TResult>> selector,
-             Expression<Func<T, bool>>? predicate = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
+        /// <summary>
+        /// Retrieves a list of dto based on the given specification.
+        /// </summary>
+        public async Task<ICollection<TResult>> GetListAsync<TResult>(
+            Expression<Func<T, TResult>> selector,
+            Expression<Func<T, bool>>? predicate = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            ISpecification<T>? spec = null)
         {
-            IQueryable<T> query = _dbSet;
+            IQueryable<T> query = spec == null ?
+                _dbSet.AsQueryable() : query = ApplySpecification(spec);
             if (include != null)
                 query = include(query);
             if (predicate != null)
                 query = query.Where(predicate);
-            if (orderBy != null)
-                return await orderBy(query).AsNoTracking().Select(selector).ToListAsync();
-            return await query.Select(selector).ToListAsync();
+            return await query.AsNoTracking().Select(selector).ToListAsync();
         }
 
-        public Task<IPaginate<T>> GetPagingListAsync
-            (Expression<Func<T, bool>>? predicate = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-             int page = 1,
-             int size = 10)
+        /// <summary>
+        /// Retrieves a paged list of entities based on the given specification.
+        /// </summary>
+        public Task<IPaginate<T>> GetPagingListAsync(
+            ISpecification<T>? spec = null,
+            Expression<Func<T, bool>>? predicate = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            int page = 1, int size = 10)
         {
-            IQueryable<T> query = _dbSet;
+            IQueryable<T> query = spec == null ?
+                _dbSet.AsQueryable() : query = ApplySpecification(spec);
             if (include != null)
                 query = include(query);
             if (predicate != null)
                 query = query.Where(predicate);
-            if (orderBy != null)
-                return orderBy(query).ToPaginateAsync(page, size, 1);
             return query.AsNoTracking().ToPaginateAsync(page, size, 1);
         }
 
-        public Task<IPaginate<TResult>> GetPagingListAsync<TResult>
-            (Expression<Func<T, TResult>> selector,
-             Expression<Func<T, bool>>? predicate = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-             int page = 1,
-             int size = 10)
+        /// <summary>
+        /// Retrieves a paged list of dto based on the given specification.
+        /// </summary>
+        public Task<IPaginate<TResult>> GetPagingListAsync<TResult>(
+            Expression<Func<T, TResult>> selector,
+            Expression<Func<T, bool>>? predicate = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            ISpecification<T>? spec = null,
+            int page = 1, int size = 10)
         {
-            IQueryable<T> query = _dbSet;
+            IQueryable<T> query = spec == null ?
+                 _dbSet.AsQueryable() : query = ApplySpecification(spec);
             if (include != null)
                 query = include(query);
             if (predicate != null)
                 query = query.Where(predicate);
-            if (orderBy != null)
-                return orderBy(query).Select(selector).ToPaginateAsync(page, size, 1);
             return query.AsNoTracking().Select(selector).ToPaginateAsync(page, size, 1);
         }
-
         #endregion
 
         #region Specification Methods
-
         /// <summary>
         /// Applies the specification to the IQueryable.
         /// </summary>
@@ -145,12 +147,6 @@ namespace CleanFoodVietAPI.Data.Repositories.Implements
                 query = query.Where(spec.Criteria);
             }
 
-            // Apply includes for navigation properties.
-            if (spec.Includes != null && spec.Includes.Any())
-            {
-                query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
-            }
-
             // Apply sorting
             if (spec.OrderBy != null)
             {
@@ -161,40 +157,8 @@ namespace CleanFoodVietAPI.Data.Repositories.Implements
                 query = query.OrderByDescending(spec.OrderByDescending);
             }
 
-            // Apply paging if enabled.
-            if (spec.IsPagingEnabled)
-            {
-                if (spec.Skip.HasValue)
-                {
-                    query = query.Skip(spec.Skip.Value);
-                }
-                if (spec.Take.HasValue)
-                {
-                    query = query.Take(spec.Take.Value);
-                }
-            }
-
             return query;
         }
-
-        /// <summary>
-        /// Retrieves a list of entities based on the given specification.
-        /// </summary>
-        public async Task<ICollection<T>> GetListAsync(ISpecification<T> spec)
-        {
-            IQueryable<T> query = ApplySpecification(spec);
-            return await query.AsNoTracking().ToListAsync();
-        }
-
-        /// <summary>
-        /// Retrieves a paged list of entities based on the given specification.
-        /// </summary>
-        public Task<IPaginate<T>> GetPagingListAsync(ISpecification<T> spec, int page = 1, int size = 10)
-        {
-            IQueryable<T> query = ApplySpecification(spec);
-            return query.AsNoTracking().ToPaginateAsync(page, size, 1);
-        }
-
         #endregion
 
         #region Insert Methods

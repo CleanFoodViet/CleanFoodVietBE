@@ -18,6 +18,8 @@ namespace CleanFoodVietAPI.Application.Mappers
 
             CreateMap<UpdateProductCategoryDTO, ProductCategory>()
                 .ForAllMembers(opt => opt.Condition((src, des, srcMember) => srcMember != null));
+
+            CreateMap<ProductCategory, GetProductCategoryDTO>();
         }
     }
 }

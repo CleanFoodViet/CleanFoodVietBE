@@ -39,25 +39,24 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             string? sortOrder = "asc")
         {
             // Build the specification from incoming parameters.
-            var specification = new ServiceFeatureSpecification(filterField, filterValue, sortField, sortOrder, page, size);
+            var specification = new ServiceFeatureSpecification(filterField, filterValue, sortField, sortOrder);
 
             // Retrieve the paginated list using the specification.
             var featuresPage = await _unitOfWork.GetRepository<ServiceFeature>()
-                                                .GetPagingListAsync(specification, page, size);
+                                                .GetPagingListAsync(spec: specification,
+                                                selector: sf => new ServiceFeatureDTO(
+                                                    sf.ServiceFeatureId,
+                                                    sf.ServiceFeatureName,
+                                                    sf.Description,
+                                                    sf.DefaultValue),
+                                                page: page, size: size);
 
-            // Map each ServiceFeature entity to its DTO.
-            var dtoList = featuresPage.Items.Select(feature => _mapper.Map<ServiceFeatureDTO>(feature)).ToList();
-
-            // Wrap the result in a Paginate<T> instance.
-            var paginatedResult = new Paginate<ServiceFeatureDTO>(dtoList, featuresPage.Page, featuresPage.Size, featuresPage.Total);
-
-            return paginatedResult;
+            return featuresPage;
         }
 
         public async Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto)
         {
             var newFeature = _mapper.Map<ServiceFeature>(createDto);
-            // Always default to ACTIVE; creation does not allow overriding status.
             newFeature.Status = ServiceFeatureStatusEnum.ACTIVE;
             await _unitOfWork.GetRepository<ServiceFeature>().InsertAsync(newFeature);
             var isSuccess = await _unitOfWork.CommitAsync() > 0;
@@ -127,6 +126,5 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var updatedDto = _mapper.Map<ServiceFeatureDTO>(existingFeature);
             return updatedDto;
         }
-
     }
 }

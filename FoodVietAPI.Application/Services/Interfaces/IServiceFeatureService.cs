@@ -6,7 +6,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 {
     public interface IServiceFeatureService
     {
-        // Added optional parameters for filtering and sorting.
         Task<IPaginate<ServiceFeatureDTO>> GetServiceFeatureList(
             int page,
             int size,
@@ -17,7 +16,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 
         Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto);
 
-        // New update method (using PATCH)
         Task<ServiceFeatureDTO> UpdateServiceFeature(Ulid id, UpdateServiceFeatureDTO updateDto);
     }
 }
