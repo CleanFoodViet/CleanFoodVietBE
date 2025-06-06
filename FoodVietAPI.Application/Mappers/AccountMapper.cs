@@ -4,11 +4,6 @@ using CleanFoodVietAPI.Application.DTOs.AuthDTO;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Mappers
 {

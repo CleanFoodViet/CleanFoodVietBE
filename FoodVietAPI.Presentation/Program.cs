@@ -1,4 +1,3 @@
-using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Presentation.Extensions;
 using CleanFoodVietAPI.Presentation.Middlewares;
 using Scalar.AspNetCore;

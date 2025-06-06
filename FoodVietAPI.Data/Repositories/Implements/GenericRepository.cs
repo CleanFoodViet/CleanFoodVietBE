@@ -3,11 +3,7 @@ using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using CleanFoodVietAPI.Data.Specifications; // Make sure this namespace is correct
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Data.Repositories.Implements
 {

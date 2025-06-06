@@ -1,11 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.AccountDTO;
 using CleanFoodVietAPI.Application.DTOs.AuthDTO;
 using CleanFoodVietAPI.Data.Paginate;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces
 {

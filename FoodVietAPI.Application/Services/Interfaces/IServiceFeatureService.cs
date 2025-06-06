@@ -1,6 +1,5 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTO;
 using CleanFoodVietAPI.Data.Paginate;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces
 {

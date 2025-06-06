@@ -1,9 +1,7 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.AccountDTO;
 using CleanFoodVietAPI.Application.Services.Interfaces;
-using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanFoodVietAPI.Presentation.Controllers

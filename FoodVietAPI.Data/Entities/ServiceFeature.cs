@@ -1,8 +1,4 @@
-﻿using CleanFoodVietAPI.Data.Enums;
-using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Data.Entities
 {

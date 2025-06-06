@@ -1,11 +1,7 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTO;
 using CleanFoodVietAPI.Application.Services.Interfaces;
-using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {

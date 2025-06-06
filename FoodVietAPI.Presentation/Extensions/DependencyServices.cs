@@ -6,7 +6,6 @@ using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Serilog;
 using System.Text;
 
 namespace CleanFoodVietAPI.Presentation.Extensions

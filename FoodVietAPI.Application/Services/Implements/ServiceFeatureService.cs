@@ -1,24 +1,18 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTO;
 using CleanFoodVietAPI.Application.Services.Interfaces;
-using CleanFoodVietAPI.Application.Specifications; // For consistency with other flows.
+using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
-using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums; // Our enum namespace.
+using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
     public class ServiceFeatureService : BaseService<ServiceFeatureService>, IServiceFeatureService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
         public ServiceFeatureService(
             IUnitOfWork<CleanFoodVietDbContext> unitOfWork,
             ILogger<ServiceFeatureService> logger,

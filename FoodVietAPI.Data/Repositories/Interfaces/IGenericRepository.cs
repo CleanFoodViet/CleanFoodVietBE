@@ -1,14 +1,7 @@
 ﻿using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Specifications;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using MySqlX.XDevAPI.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Data.Repositories.Interfaces
 {

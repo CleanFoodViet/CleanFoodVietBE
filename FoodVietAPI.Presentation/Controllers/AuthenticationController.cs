@@ -1,8 +1,6 @@
-﻿using CleanFoodVietAPI.Application.DTOs;
-using CleanFoodVietAPI.Application.DTOs.AuthDTO;
+﻿using CleanFoodVietAPI.Application.DTOs.AuthDTO;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
