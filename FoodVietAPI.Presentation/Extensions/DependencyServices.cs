@@ -47,9 +47,21 @@ namespace CleanFoodVietAPI.Presentation.Extensions
 
             #region Service DI
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IChatMessageService, ChatMessageService>();
+            services.AddScoped<IFavoriteService, FavoriteService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IPostService, PostService>();
+            services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
-            // Registration for IServiceFeatureService added here.
+            services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IServiceFeatureService, ServiceFeatureService>();
+            services.AddScoped<IServicePackageService, ServicePackageService>();
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
+            services.AddScoped<ISystemLogService, SystemLogService>();
             #endregion
 
             return services;
