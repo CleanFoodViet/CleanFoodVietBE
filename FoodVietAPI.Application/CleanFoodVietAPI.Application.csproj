@@ -15,8 +15,4 @@
     <ProjectReference Include="..\FoodVietAPI.Data\CleanFoodVietAPI.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\FavoriteDTOs\" />
-  </ItemGroup>
-
 </Project>
