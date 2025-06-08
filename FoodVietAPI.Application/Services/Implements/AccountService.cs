@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CleanFoodVietAPI.Application.DTOs.AccountDTO;
-using CleanFoodVietAPI.Application.DTOs.AuthDTO;
+using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
+using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;

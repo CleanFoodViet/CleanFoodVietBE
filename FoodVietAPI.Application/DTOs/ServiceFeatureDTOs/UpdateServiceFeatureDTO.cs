@@ -1,4 +1,4 @@
-﻿namespace CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTO
+﻿namespace CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs
 {
     public record UpdateServiceFeatureDTO(
          string? ServiceFeatureName,

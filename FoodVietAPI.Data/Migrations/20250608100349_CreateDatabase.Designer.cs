@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     [DbContext(typeof(CleanFoodVietDbContext))]
-    [Migration("20250605150528_AddReportTableField")]
-    partial class AddReportTableField
+    [Migration("20250608100349_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,12 +100,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.Property<string>("AddessLine1")
+                    b.Property<string>("AddressLine1")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("AddessLine2")
+                    b.Property<string>("AddressLine2")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 

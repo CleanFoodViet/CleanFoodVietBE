@@ -1,4 +1,4 @@
-﻿using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTO;
+﻿using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;

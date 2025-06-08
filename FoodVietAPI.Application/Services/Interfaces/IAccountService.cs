@@ -1,5 +1,5 @@
-﻿using CleanFoodVietAPI.Application.DTOs.AccountDTO;
-using CleanFoodVietAPI.Application.DTOs.AuthDTO;
+﻿using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
+using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
 using CleanFoodVietAPI.Data.Paginate;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces

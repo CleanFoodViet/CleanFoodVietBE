@@ -1,4 +1,4 @@
-﻿namespace CleanFoodVietAPI.Application.DTOs.AccountDTO
+﻿namespace CleanFoodVietAPI.Application.DTOs.AccountDTOs
 {
     public record AccountDTO
     (

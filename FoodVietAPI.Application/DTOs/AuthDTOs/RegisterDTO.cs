@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CleanFoodVietAPI.Application.DTOs.AuthDTO
+namespace CleanFoodVietAPI.Application.DTOs.AuthDTOs
 {
     public record RegisterDTO
     {

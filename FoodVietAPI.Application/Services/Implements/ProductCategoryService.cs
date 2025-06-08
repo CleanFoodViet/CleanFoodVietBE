@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CleanFoodVietAPI.Application.DTOs.ProductCategoryDTO;
+using CleanFoodVietAPI.Application.DTOs.ProductCategoryDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;

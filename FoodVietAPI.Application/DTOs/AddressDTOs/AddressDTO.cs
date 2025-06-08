@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace CleanFoodVietAPI.Data.Entities
+﻿namespace CleanFoodVietAPI.Application.DTOs.AddressDTOs
 {
-    public class Address
+    public record AddressDTO
     {
-        [Key]
         public Ulid AddressId { get; set; }
         public string AddressLine1 { get; set; } = null!;
         public string? AddressLine2 { get; set; }
@@ -12,8 +9,5 @@ namespace CleanFoodVietAPI.Data.Entities
         public string Province { get; set; } = null!;
         public string PostalCode { get; set; } = null!;
         public string Country { get; set; } = null!;
-        public Ulid AccountId { get; set; }
-
-        public virtual Account Account { get; set; } = null!;
     }
 }

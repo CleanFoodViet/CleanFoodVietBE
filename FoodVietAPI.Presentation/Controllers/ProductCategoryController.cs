@@ -1,4 +1,4 @@
-﻿using CleanFoodVietAPI.Application.DTOs.ProductCategoryDTO;
+﻿using CleanFoodVietAPI.Application.DTOs.ProductCategoryDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;

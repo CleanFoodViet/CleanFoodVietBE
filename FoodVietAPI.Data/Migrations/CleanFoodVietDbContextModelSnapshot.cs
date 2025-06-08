@@ -97,12 +97,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.Property<string>("AddessLine1")
+                    b.Property<string>("AddressLine1")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("AddessLine2")
+                    b.Property<string>("AddressLine2")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 

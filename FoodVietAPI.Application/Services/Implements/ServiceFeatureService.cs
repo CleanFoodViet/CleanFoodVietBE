@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTO;
+using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;

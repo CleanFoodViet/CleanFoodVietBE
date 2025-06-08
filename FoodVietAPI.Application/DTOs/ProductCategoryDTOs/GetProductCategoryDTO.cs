@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CleanFoodVietAPI.Application.DTOs.ProductCategoryDTO
+namespace CleanFoodVietAPI.Application.DTOs.ProductCategoryDTOs
 {
     public record GetProductCategoryDTO
     (

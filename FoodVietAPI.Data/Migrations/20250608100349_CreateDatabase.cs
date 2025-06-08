@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class DBInitandConfig : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,7 +46,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                     ServiceFeatureId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
                     ServiceFeatureName = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    DefaultValue = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    DefaultValue = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    Status = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,8 +134,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                 columns: table => new
                 {
                     AddressId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    AddessLine1 = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
-                    AddessLine2 = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
+                    AddressLine1 = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
+                    AddressLine2 = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
                     City = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     Province = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     PostalCode = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
@@ -383,6 +384,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                 {
                     ReportId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
                     ReportType = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
+                    TargetId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    TargetType = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
                     Subject = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Severity = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
