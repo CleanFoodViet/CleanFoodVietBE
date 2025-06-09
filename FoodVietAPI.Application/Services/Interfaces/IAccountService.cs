@@ -8,8 +8,8 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     {
         #region Account Functions
         Task<IPaginate<AccountDTO>> GetAccountList(int page, int size);
-        Task<AccountDTO> GetAccountInformation(string accountId);
         Task UpdateAccountStatus(string accountId, string status);
+        Task<AccountDTO> GetProfile(string accountId, string? role);
         Task UpdateProfile(string id, UpdateAccountDTO data);
         #endregion
 
