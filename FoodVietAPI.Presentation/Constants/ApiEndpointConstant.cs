@@ -32,6 +32,8 @@
         {
             public const string ServiceFeaturesEndpoint = AdminApiEndpoint + "/service-features";
             public const string ServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/{id}";
+            public const string DisableServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/disable/{id}";
         }
+
     }
 }

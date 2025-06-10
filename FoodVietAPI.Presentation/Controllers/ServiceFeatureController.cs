@@ -21,19 +21,19 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // GET: api/v1/admin/service-features
         // Returns a paginated list with metadata including filtering and sorting parameters.
         [HttpGet(ApiEndpointConstant.ServiceFeature.ServiceFeaturesEndpoint)]
-        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetServiceFeatureList(
             [FromQuery] int page = 1,
             [FromQuery] int size = 10,
             [FromQuery] string? filterField = null,
             [FromQuery] string? filterValue = null,
             [FromQuery] string? sortField = null,
-            [FromQuery] string? sortOrder = "asc")
+            [FromQuery] string? sortOrder = "asc",
+            [FromQuery] string? search = null)  // New
         {
             var features = await _serviceFeatureService
-                .GetServiceFeatureList(page, size, filterField, filterValue, sortField, sortOrder);
+                .GetServiceFeatureList(page, size, filterField, filterValue, sortField, sortOrder, search);
 
-            // Wrap response with additional metadata.
             var response = new
             {
                 page = features.Page,
@@ -44,6 +44,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                 filterValue = filterValue ?? string.Empty,
                 sortField = sortField ?? string.Empty,
                 sortOrder = sortOrder,
+                search = search ?? string.Empty,
                 items = features.Items
             };
 
@@ -70,6 +71,15 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         {
             var createdFeature = await _serviceFeatureService.CreateServiceFeature(createDto);
             return StatusCode(StatusCodes.Status201Created, createdFeature);
+        }
+
+        // Soft Delete endpoint: changes status to INACTIVE after checking for active usage.
+        [HttpPatch(ApiEndpointConstant.ServiceFeature.DisableServiceFeatureEndpoint)]
+        [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SoftDeleteServiceFeature([FromRoute] Ulid id)
+        {
+            var result = await _serviceFeatureService.SoftDeleteServiceFeature(id);
+            return Ok(result);
         }
     }
 }
