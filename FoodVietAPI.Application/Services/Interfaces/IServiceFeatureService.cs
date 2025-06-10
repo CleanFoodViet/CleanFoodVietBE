@@ -11,10 +11,13 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? filterField = null,
             string? filterValue = null,
             string? sortField = null,
-            string? sortOrder = "asc");
+            string? sortOrder = "asc",
+            string? search = null);
 
         Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto);
 
         Task<ServiceFeatureDTO> UpdateServiceFeature(Ulid id, UpdateServiceFeatureDTO updateDto);
+
+        Task<ServiceFeatureDTO> SoftDeleteServiceFeature(Ulid id);
     }
 }

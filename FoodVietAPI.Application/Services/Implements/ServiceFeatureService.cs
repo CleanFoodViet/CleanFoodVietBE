@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
-using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
 using CleanFoodVietAPI.Data.Paginate;
@@ -30,20 +29,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             string? filterField = null,
             string? filterValue = null,
             string? sortField = null,
-            string? sortOrder = "asc")
+            string? sortOrder = "asc",
+            string? search = null)   // New search parameter
         {
-            // Build the specification from incoming parameters.
-            var specification = new ServiceFeatureSpecification(filterField, filterValue, sortField, sortOrder);
+            var specification = new ServiceFeatureSpecification(filterField, filterValue, sortField, sortOrder, search);
 
-            // Retrieve the paginated list using the specification.
             var featuresPage = await _unitOfWork.GetRepository<ServiceFeature>()
-                                                .GetPagingListAsync(spec: specification,
-                                                selector: sf => new ServiceFeatureDTO(
-                                                    sf.ServiceFeatureId,
-                                                    sf.ServiceFeatureName,
-                                                    sf.Description,
-                                                    sf.DefaultValue),
-                                                page: page, size: size);
+                .GetPagingListAsync(
+                    spec: specification,
+                    selector: sf => new ServiceFeatureDTO(
+                        sf.ServiceFeatureId,
+                        sf.ServiceFeatureName,
+                        sf.Description,
+                        sf.DefaultValue),
+                    page: page, size: size);
 
             return featuresPage;
         }
@@ -120,5 +119,57 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var updatedDto = _mapper.Map<ServiceFeatureDTO>(existingFeature);
             return updatedDto;
         }
+
+        // Soft-delete method to disable a service feature
+        public async Task<ServiceFeatureDTO> SoftDeleteServiceFeature(Ulid id)
+        {
+            // Retrieve the service feature by ID.
+            var repository = _unitOfWork.GetRepository<ServiceFeature>();
+            var existingFeature = await repository.GetAsync<ServiceFeature>(
+                selector: x => x,
+                predicate: x => x.ServiceFeatureId == id);
+
+            if (existingFeature == null)
+            {
+                throw new Exception("Service feature not found.");
+            }
+
+            // Check whether this service feature is used by any active subscriptions.
+            // 1. Get all PackageServiceFeature records that reference this feature.
+            var psfRepository = _unitOfWork.GetRepository<PackageServiceFeature>();
+            var packageFeatures = await psfRepository.GetListAsync(predicate: x => x.ServiceFeatureId == id);
+
+            if (packageFeatures.Any())
+            {
+                // Extract the distinct ServicePackageId's associated with this feature.
+                var packageIds = packageFeatures.Select(x => x.ServicePackageId).Distinct().ToList();
+
+                // 2. Query SubscriptionContract for any active subscription using these service packages.
+                var subscriptionRepository = _unitOfWork.GetRepository<SubscriptionContract>();
+                var activeSubscriptions = await subscriptionRepository.GetListAsync(
+                    predicate: sc => packageIds.Contains(sc.ServicePackageId)
+                                      && sc.Status.Equals("ACTIVE", StringComparison.OrdinalIgnoreCase));
+
+                if (activeSubscriptions.Any())
+                {
+                    throw new Exception("Cannot disable service feature because it is currently used by active subscriptions.");
+                }
+            }
+
+            // No active usage found, soft-delete the service feature by updating its status.
+            existingFeature.Status = ServiceFeatureStatusEnum.INACTIVE.ToString();
+            repository.UpdateAsync(existingFeature);
+
+            var isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess)
+            {
+                throw new Exception("Error occurred while disabling the service feature.");
+            }
+
+            // Return the updated DTO. (If your mapping uses 'Name' instead of 'ServiceFeatureName' remember to adjust your DTO.)
+            var updatedDto = _mapper.Map<ServiceFeatureDTO>(existingFeature);
+            return updatedDto;
+        }
     }
 }
+
