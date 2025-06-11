@@ -24,6 +24,12 @@
             public const string AccountProfileEndpoint = AccountEndpoint + "/profile";
         }
 
+        public static class Product
+        {
+            public const string GardenerProductsEndpoint = GardenerApiEndpoint + "/{gardenerId}/products";
+            public const string GardenerProductEndpoint = GardenerApiEndpoint + "/products/{id}";
+        }
+
         public static class ProductCategory
         {
             public const string ProductCategoriesEndpoint = ApiEndpoint + "/product-categories";

@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs
+{
+    public record ProductPriceDTO
+    {
+        public Ulid ProductPriceId { get; set; }
+        public decimal Price { get; set; }
+        public string Currency { get; set; } = null!;
+        public DateTime AvailabledDate { get; set; }
+    }
+}
