@@ -36,7 +36,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [ProducesResponseType(typeof(AccountDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAccountProfile([FromRoute] string id, [FromQuery] string? role = null)
         {
-            var res = await _accountService.GetProfile(id);
+            var res = await _accountService.GetAccountInformation(id);
             return Ok(res);
         }
 

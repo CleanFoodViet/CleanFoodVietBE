@@ -41,9 +41,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             return accountList;
         }
-
-<<<<<<< Updated upstream
-=======
         public async Task<AccountDTO> GetAccountInformation(string id)
         {
             Ulid accountId = Ulid.Parse(id);
@@ -59,7 +56,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                 acc.Status,
                                 acc.IsVerified,
                                 acc.UpdatedAt,
-                                acc.Role.Name, 
+                                acc.Role.Name,
                                 _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
                                 _mapper.Map<List<AddressDTO>>(acc.Addresses.ToList())));
 
@@ -68,7 +65,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return account!;
         }
 
->>>>>>> Stashed changes
         public async Task UpdateAccountStatus(string id, string status)
         {
             Ulid accountId = Ulid.Parse(id);
@@ -89,28 +85,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             _unitOfWork.GetRepository<Account>().UpdateAsync(account);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when updating account status");
-        }
-
-        public async Task<AccountDTO> GetProfile(string id, string? role)
-        {
-            Ulid accountId = Ulid.Parse(id);
-            var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == accountId,
-                          include: acc => acc.Include(x => x.Role),
-                          selector: acc => new AccountDTO(
-                                acc.AccountId,
-                                acc.Email,
-                                acc.PhoneNumber,
-                                acc.Gender,
-                                acc.Avatar,
-                                acc.Status,
-                                acc.IsVerified,
-                                acc.UpdatedAt,
-                                acc.Role.Name));
-
-            if (account == null) throw new BadHttpRequestException("Account is not found");
-
-            return account!;
         }
 
         public async Task UpdateProfile(string id, UpdateAccountDTO data)
