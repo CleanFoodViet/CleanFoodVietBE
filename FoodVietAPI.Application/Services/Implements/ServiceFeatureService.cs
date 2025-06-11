@@ -3,6 +3,7 @@ using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
+using CleanFoodVietAPI.Data.Enums.ServicePackageEnums;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -120,10 +121,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return updatedDto;
         }
 
-        // Soft-delete method to disable a service feature
+        /// <summary>
+        /// Soft-deletes (disables) a service feature after checking that no active subscription
+        /// (i.e. ServicePackage subscription record) is currently using it.
+        /// </summary>
         public async Task<ServiceFeatureDTO> SoftDeleteServiceFeature(Ulid id)
         {
-            // Retrieve the service feature by ID.
+            // Retrieve the service feature by its ID.
             var repository = _unitOfWork.GetRepository<ServiceFeature>();
             var existingFeature = await repository.GetAsync<ServiceFeature>(
                 selector: x => x,
@@ -134,21 +138,21 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new Exception("Service feature not found.");
             }
 
-            // Check whether this service feature is used by any active subscriptions.
-            // 1. Get all PackageServiceFeature records that reference this feature.
+            // Check whether this service feature is used by any active "subscriptions" 
+            // (which are actually ServicePackage records linked via SubscriptionContract).
             var psfRepository = _unitOfWork.GetRepository<PackageServiceFeature>();
             var packageFeatures = await psfRepository.GetListAsync(predicate: x => x.ServiceFeatureId == id);
 
             if (packageFeatures.Any())
             {
-                // Extract the distinct ServicePackageId's associated with this feature.
+                // Extract the distinct ServicePackageIds associated with this feature.
                 var packageIds = packageFeatures.Select(x => x.ServicePackageId).Distinct().ToList();
 
-                // 2. Query SubscriptionContract for any active subscription using these service packages.
+                // Query SubscriptionContract for any active subscription using these ServicePackages.
                 var subscriptionRepository = _unitOfWork.GetRepository<SubscriptionContract>();
                 var activeSubscriptions = await subscriptionRepository.GetListAsync(
                     predicate: sc => packageIds.Contains(sc.ServicePackageId)
-                                      && sc.Status.Equals("ACTIVE", StringComparison.OrdinalIgnoreCase));
+                                      && sc.Status.Equals(ServicePackageStatusEnums.ACTIVE.ToString(), System.StringComparison.OrdinalIgnoreCase));
 
                 if (activeSubscriptions.Any())
                 {
@@ -156,7 +160,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 }
             }
 
-            // No active usage found, soft-delete the service feature by updating its status.
+            // No active usage was found – perform soft-delete by updating the status.
             existingFeature.Status = ServiceFeatureStatusEnum.INACTIVE.ToString();
             repository.UpdateAsync(existingFeature);
 
@@ -166,7 +170,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new Exception("Error occurred while disabling the service feature.");
             }
 
-            // Return the updated DTO. (If your mapping uses 'Name' instead of 'ServiceFeatureName' remember to adjust your DTO.)
             var updatedDto = _mapper.Map<ServiceFeatureDTO>(existingFeature);
             return updatedDto;
         }
