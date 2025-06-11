@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
+using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
+using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
@@ -34,12 +36,39 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Status,
                     acc.IsVerified,
                     acc.UpdatedAt,
-                    acc.Role.Name),
+                    acc.Role.Name, null, null),
                 page: page, size: size);
 
             return accountList;
         }
 
+<<<<<<< Updated upstream
+=======
+        public async Task<AccountDTO> GetAccountInformation(string id)
+        {
+            Ulid accountId = Ulid.Parse(id);
+            var account = await _unitOfWork.GetRepository<Account>()
+                .GetAsync(predicate: acc => acc.AccountId == accountId,
+                          include: acc => acc.Include(x => x.Role),
+                          selector: acc => new AccountDTO(
+                                acc.AccountId,
+                                acc.Email,
+                                acc.PhoneNumber,
+                                acc.Gender,
+                                acc.Avatar,
+                                acc.Status,
+                                acc.IsVerified,
+                                acc.UpdatedAt,
+                                acc.Role.Name, 
+                                _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
+                                _mapper.Map<List<AddressDTO>>(acc.Addresses.ToList())));
+
+            if (account == null) throw new BadHttpRequestException("Account is not found");
+
+            return account!;
+        }
+
+>>>>>>> Stashed changes
         public async Task UpdateAccountStatus(string id, string status)
         {
             Ulid accountId = Ulid.Parse(id);
