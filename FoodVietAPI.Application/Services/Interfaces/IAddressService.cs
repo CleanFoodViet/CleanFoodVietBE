@@ -4,6 +4,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 {
     public interface IAddressService
     {
-        Task<List<AddressDTO>> GetAccountAddresses(string accountId);
+        Task<List<AddressDTO>> GetAccountAddressList(string accountId);
     }
 }

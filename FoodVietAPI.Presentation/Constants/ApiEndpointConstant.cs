@@ -7,6 +7,8 @@
         public const string ApiEndpoint = RootEndPoint + ApiVersion;
 
         public const string AdminApiEndpoint = ApiEndpoint + "/admin";
+        public const string GardenerApiEndpoint = ApiEndpoint + "/gardener";
+        public const string RetailerApiEndpoint = ApiEndpoint + "/retailer";
 
         public static class Authentication
         {

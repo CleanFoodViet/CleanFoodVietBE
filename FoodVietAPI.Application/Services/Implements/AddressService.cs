@@ -15,7 +15,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<List<AddressDTO>> GetAccountAddresses(string accountId)
+        public async Task<List<AddressDTO>> GetAccountAddressList(string accountId)
         {
             Ulid accId = Ulid.Parse(accountId);
             var accountAddresses = await _unitOfWork.GetRepository<Address>()
