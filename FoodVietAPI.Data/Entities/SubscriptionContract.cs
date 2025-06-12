@@ -13,7 +13,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public string Status { get; set; } = null!;
         public string SubscriptionType { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
-        public bool IsAcceptTerm { get; set; }
 
         public virtual Account Account { get; set; } = null!;
         public virtual ServicePackage ServicePackage { get; set; } = null!;
