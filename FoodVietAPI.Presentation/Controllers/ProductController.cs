@@ -25,7 +25,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok(res);
         }
 
-        [HttpGet(ApiEndpointConstant.Product.GardenerProductEndpoint)]
+        [HttpGet(ApiEndpointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProductsList([FromRoute] string id)
         {
