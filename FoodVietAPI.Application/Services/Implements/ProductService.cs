@@ -26,9 +26,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: g => g.AccountId == gardenerID);
             if (gardener == null) throw new BadHttpRequestException("Gardener is not found!");
 
+            DateTime today = DateTime.UtcNow;
             var products = await _unitOfWork.GetRepository<Product>()
                 .GetPagingListAsync(predicate: p => p.GardenerId == gardenerID,
-                          include: p => p.Include(x => x.ProductPrices).Include(x => x.ProductCategory),
+                          include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                         .Include(x => x.ProductCategory),
                           selector: p => new ProductDTO(
                               p.ProductId,
                               p.ProductName,
@@ -36,7 +38,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.UpdatedAt,
                               p.Status,
                               p.ProductCategory.Name,
-                              _mapper.Map<ProductPriceDTO>(p.ProductPrices)),
+                              p.ProductPrices.First().ProductPriceId,
+                              p.ProductPrices.First().Price,
+                              p.ProductPrices.First().Currency,
+                              p.ProductPrices.First().AvailabledDate),
                           page: page, size: size);
 
             return products;
@@ -45,9 +50,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task<ProductDTO> GetProductInformation(string productId)
         {
             Ulid id = Ulid.Parse(productId);
+            DateTime today = DateTime.UtcNow;
+
             var products = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(predicate: p => p.GardenerId == id,
-                          include: p => p.Include(x => x.ProductPrices).Include(x => x.ProductCategory),
+                          include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                         .Include(x => x.ProductCategory),
                           selector: p => new ProductDTO(
                               p.ProductId,
                               p.ProductName,
@@ -55,7 +63,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.UpdatedAt,
                               p.Status,
                               p.ProductCategory.Name,
-                          _mapper.Map<ProductPriceDTO>(p.ProductPrices)));
+                              p.ProductPrices.First().ProductPriceId,
+                              p.ProductPrices.First().Price,
+                              p.ProductPrices.First().Currency,
+                              p.ProductPrices.First().AvailabledDate));
 
             return products;
         }
