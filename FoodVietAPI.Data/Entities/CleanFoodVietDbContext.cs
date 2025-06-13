@@ -639,7 +639,6 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ServiceFeatureId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
-                entity.Property(e => e.FeatureValue).IsRequired().HasMaxLength(100);
 
                 entity.HasIndex(e => e.ServicePackageId).HasDatabaseName("IX_PackageServiceFeature_ServicePackageId");
                 entity.HasIndex(e => e.ServiceFeatureId).HasDatabaseName("IX_PackageServiceFeature_ServiceFeatureId");
