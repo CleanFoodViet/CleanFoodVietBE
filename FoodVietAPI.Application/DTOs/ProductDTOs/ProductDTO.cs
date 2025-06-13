@@ -16,6 +16,9 @@ namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
         DateTime UpdatedAt,
         string Status,
         string ProductCategory,
-        ProductPriceDTO price
+        Ulid ProductPriceId,
+        decimal Price,  
+        string Currency,
+        DateTime AvailabledDate
     );
 }
