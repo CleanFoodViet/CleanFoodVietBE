@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
 {
-    public record GetProductDTO
+    public record ProductDTO
     (
         //Product Data Field
         Ulid ProductId,

@@ -20,7 +20,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<GetProductListDTO>> GetGardenerProductList(string gardenerId, int page, int size)
+        public async Task<IPaginate<ProductListDTO>> GetGardenerProductList(string gardenerId, int page, int size)
         {
             Ulid gardenerID = Ulid.Parse(gardenerId);
             var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: g => g.AccountId == gardenerID);
@@ -31,7 +31,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetPagingListAsync(predicate: p => p.GardenerId == gardenerID,
                           include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                          .Include(x => x.ProductCategory),
-                          selector: p => new GetProductListDTO(
+                          selector: p => new ProductListDTO(
                               p.ProductId,
                               p.ProductName,
                               p.UpdatedAt,
@@ -44,7 +44,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return products;
         }
 
-        public async Task<GetProductDTO> GetProductInformation(string productId)
+        public async Task<ProductDTO> GetProductInformation(string productId)
         {
             Ulid id = Ulid.Parse(productId);
             DateTime today = DateTime.UtcNow;
@@ -53,7 +53,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(predicate: p => p.GardenerId == id,
                           include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                          .Include(x => x.ProductCategory),
-                          selector: p => new GetProductDTO(
+                          selector: p => new ProductDTO(
                               p.ProductId,
                               p.ProductName,
                               p.CreatedAt,

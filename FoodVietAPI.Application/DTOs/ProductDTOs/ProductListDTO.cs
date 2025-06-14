@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
 {
-    public record GetProductListDTO
+    public record ProductListDTO
     (
         Ulid ProductId,
         string ProductName,

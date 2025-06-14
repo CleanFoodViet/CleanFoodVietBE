@@ -16,11 +16,19 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _accountService = accountService;
         }
 
-        [HttpGet(ApiEndpointConstant.Account.AccountsEndpoint)]
+        [HttpGet(ApiEndpointConstant.Account.RetailerAccountsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<AccountDTO>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAccountList([FromQuery]int page = 1, [FromQuery]int size = 10)
+        public async Task<IActionResult> GetRetailerAccountList([FromQuery]int page = 1, [FromQuery]int size = 10)
         {
-            var res = await _accountService.GetAccountList(page, size);
+            var res = await _accountService.GetRetailerAccountList(page, size);
+            return Ok(res);
+        }
+
+        [HttpGet(ApiEndpointConstant.Account.GardenerAccountsEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<AccountDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetGardenerAccountList([FromQuery] int page = 1, [FromQuery] int size = 10)
+        {
+            var res = await _accountService.GetGardenerAccountList(page, size);
             return Ok(res);
         }
 
