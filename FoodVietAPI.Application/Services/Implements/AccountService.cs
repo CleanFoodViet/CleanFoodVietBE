@@ -23,10 +23,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         }
 
         #region Account Functions
-        public async Task<IPaginate<AccountDTO>> GetAccountList(int page, int size)
+        public async Task<IPaginate<AccountDTO>> GetRetailerAccountList(int page, int size)
         {
             var accountList = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
                 include: acc => acc.Include(x => x.Role),
+                predicate: acc => acc.Role.Name == AccountRoleEnum.RETAILER.ToString(),
                 selector: acc => new AccountDTO(
                     acc.AccountId,
                     acc.Email,
@@ -41,6 +42,27 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             return accountList;
         }
+
+        public async Task<IPaginate<AccountDTO>> GetGardenerAccountList(int page, int size)
+        {
+            var accountList = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
+                include: acc => acc.Include(x => x.Role),
+                predicate: acc => acc.Role.Name == AccountRoleEnum.GARDENER.ToString(),
+                selector: acc => new AccountDTO(
+                    acc.AccountId,
+                    acc.Email,
+                    acc.PhoneNumber,
+                    acc.Gender,
+                    acc.Avatar,
+                    acc.Status,
+                    acc.IsVerified,
+                    acc.UpdatedAt,
+                    acc.Role.Name, null, null),
+                page: page, size: size);
+
+            return accountList;
+        }
+
         public async Task<AccountDTO> GetAccountInformation(string id)
         {
             Ulid accountId = Ulid.Parse(id);

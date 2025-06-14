@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.DTOs.AccountDTOs
 {
-    public record AccountDetailDTO
+    public record AccountListDTO
     (
         Ulid AccountId,
          string Email,
@@ -14,8 +14,6 @@ namespace CleanFoodVietAPI.Application.DTOs.AccountDTOs
          string Gender,
          string Avatar,
          string Status,
-         bool IsVerified,
-         DateTime UpdatedAt,
-         string RoleName
+         bool IsVerified
     );
 }
