@@ -20,7 +20,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<ProductDTO>> GetGardenerProductList(string gardenerId, int page, int size)
+        public async Task<IPaginate<GetProductListDTO>> GetGardenerProductList(string gardenerId, int page, int size)
         {
             Ulid gardenerID = Ulid.Parse(gardenerId);
             var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: g => g.AccountId == gardenerID);
@@ -31,23 +31,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetPagingListAsync(predicate: p => p.GardenerId == gardenerID,
                           include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                          .Include(x => x.ProductCategory),
-                          selector: p => new ProductDTO(
+                          selector: p => new GetProductListDTO(
                               p.ProductId,
                               p.ProductName,
-                              p.CreatedAt,
                               p.UpdatedAt,
                               p.Status,
                               p.ProductCategory.Name,
-                              p.ProductPrices.First().ProductPriceId,
                               p.ProductPrices.First().Price,
-                              p.ProductPrices.First().Currency,
-                              p.ProductPrices.First().AvailabledDate),
+                              p.ProductPrices.First().Currency),
                           page: page, size: size);
 
             return products;
         }
 
-        public async Task<ProductDTO> GetProductInformation(string productId)
+        public async Task<GetProductDTO> GetProductInformation(string productId)
         {
             Ulid id = Ulid.Parse(productId);
             DateTime today = DateTime.UtcNow;
@@ -56,7 +53,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(predicate: p => p.GardenerId == id,
                           include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                          .Include(x => x.ProductCategory),
-                          selector: p => new ProductDTO(
+                          selector: p => new GetProductDTO(
                               p.ProductId,
                               p.ProductName,
                               p.CreatedAt,

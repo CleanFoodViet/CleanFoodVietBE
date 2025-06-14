@@ -17,7 +17,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpGet(ApiEndpointConstant.Product.GardenerProductsEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<ProductDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<GetProductListDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProductsList([FromRoute] string gardenerId, int page = 1, int size = 10)
         {
             var res = await _productService.GetGardenerProductList(gardenerId, page, size);
@@ -26,7 +26,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpGet(ApiEndpointConstant.Product.ProductEndpoint)]
-        [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetProductDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProductsList([FromRoute] string id)
         {
             var res = await _productService.GetProductInformation(id);
