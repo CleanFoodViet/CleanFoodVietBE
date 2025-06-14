@@ -39,6 +39,12 @@
             public const string ProductCategoryEndpoint = ProductCategoriesEndpoint + "/{id}";
         }
 
+        public static class Report
+        {
+            public const string ReportsEndpoint = ApiEndpoint + "/reports";
+            public const string ReportEndpoint = ReportsEndpoint + "/{id}";
+        }
+
         public static class ServiceFeature
         {
             public const string ServiceFeaturesEndpoint = AdminApiEndpoint + "/service-features";
