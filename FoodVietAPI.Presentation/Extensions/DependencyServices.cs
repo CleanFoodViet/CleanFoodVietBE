@@ -61,7 +61,6 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<IServiceFeatureService, ServiceFeatureService>();
             services.AddScoped<IServicePackageService, ServicePackageService>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
-            services.AddScoped<ISystemLogService, SystemLogService>();
             #endregion
 
             return services;

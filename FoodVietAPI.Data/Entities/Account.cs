@@ -31,7 +31,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
         public virtual ICollection<Report> Reports { get; set; } = new HashSet<Report>();
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
-        public virtual ICollection<SystemLog> SystemLogs { get; set; } = new HashSet<SystemLog>();
         public virtual ICollection<Order> RetailerOrders { get; set; } = new HashSet<Order>();
         public virtual ICollection<Order> GardenerOrders { get; set; } = new HashSet<Order>();
         public virtual ICollection<SubscriptionContract> ServicePackageContracts { get; set; } = new HashSet<SubscriptionContract>();

@@ -35,7 +35,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual DbSet<PackageServiceFeature> PackageServiceFeatures { get; set; } = null!;
         public virtual DbSet<ServicePackageOrder> ServicePackageOrders { get; set; } = null!;
         public virtual DbSet<ServicePackageOrderPayment> ServicePackageOrderPayments { get; set; } = null!;
-        public virtual DbSet<SystemLog> SystemLogs { get; set; } = null!;
         public virtual DbSet<GardenerIncome> GardenerIncomes { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductPrice> ProductPrices { get; set; } = null!;
@@ -379,6 +378,64 @@ namespace CleanFoodVietAPI.Data.Entities
                       .HasConstraintName("FK_Order_Gardeners");
             });
 
+            modelBuilder.Entity<OrderDelivery>(entity =>
+            {
+                entity.ToTable("OrderDelivery");
+                entity.HasKey(e => e.OrderDeliveryId).HasName("PK_OrderDelivery");
+
+                entity.Property(e => e.OrderDeliveryId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.OrderId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
+                entity.Property(e => e.DeliveryStatus).IsRequired().HasMaxLength(30);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderDelivery_OrderId");
+
+                entity.HasOne(e => e.Order)
+                      .WithMany(e => e.OrderDeliveries)
+                      .HasForeignKey(e => e.OrderId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("FK_OrderDelivery_Order");
+            });
+
+            modelBuilder.Entity<OrderDeliveryItem>(entity =>
+            {
+                entity.ToTable("OrderDeliveryItem");
+                entity.HasKey(e => e.OrderDeliveryItemId).HasName("PK_OrderDeliveryItem");
+
+                entity.Property(e => e.OrderDeliveryItemId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.OrderDeliveryId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.OrderItemId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.Quantity).IsRequired();
+                entity.Property(e => e.DeliveredAt).HasColumnType("datetime");
+
+                entity.HasIndex(e => e.OrderDeliveryId).HasDatabaseName("IX_OrderDeliveryItem_OrderDeliveryId");
+                entity.HasIndex(e => e.OrderItemId).HasDatabaseName("IX_OrderDeliveryItem_OrderItemId");
+
+                entity.HasOne(e => e.OrderDelivery)
+                      .WithMany(e => e.OrderDeliveryItems)
+                      .HasForeignKey(e => e.OrderDeliveryId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("FK_OrderDeliveryItem_OrderDelivery");
+
+                entity.HasOne(e => e.OrderItem)
+                      .WithMany(e => e.OrderDeliveryItems)
+                      .HasForeignKey(e => e.OrderItemId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("FK_OrderDeliveryItem_OrderItem");
+            });
+
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.ToTable("OrderItem");
@@ -396,7 +453,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.Price).HasColumnType("decimal(14,2)");
                 entity.Property(e => e.Quantity).IsRequired();
                 entity.Property(e => e.ProductUnit).IsRequired().HasMaxLength(10);
-                entity.Property(e => e.ShippingStatus).IsRequired().HasMaxLength(25);
+                entity.Property(e => e.DeliveryStatus).IsRequired().HasMaxLength(25);
 
                 entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderItem_OrderId");
                 entity.HasIndex(e => e.ProductId).HasDatabaseName("IX_OrderItem_ProductId");
@@ -714,34 +771,6 @@ namespace CleanFoodVietAPI.Data.Entities
                       .HasForeignKey(e => e.ServicePackageOrderId)
                       .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_ServicePackageOrderPayment_ServicePackageOrder");
-            });
-
-            modelBuilder.Entity<SystemLog>(entity =>
-            {
-                entity.ToTable("SystemLog");
-                entity.HasKey(e => e.LogId).HasName("PK_SystemLog");
-
-                entity.Property(e => e.LogId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.AdminId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.Action).IsRequired().HasMaxLength(255);
-                entity.Property(e => e.TargetId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.TargetType).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Desctiption).HasColumnType("text");
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.HasIndex(e => e.AdminId).HasDatabaseName("IX_SystemLog_AdminId");
-
-                entity.HasOne(e => e.Admin)
-                      .WithMany(e => e.SystemLogs)
-                      .HasForeignKey(e => e.AdminId)
-                      .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("FK_SystemLog_Account"); ;
             });
 
             modelBuilder.Entity<GardenerIncome>(entity =>
