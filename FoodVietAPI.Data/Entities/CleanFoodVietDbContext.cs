@@ -393,6 +393,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.DeliveryStatus).IsRequired().HasMaxLength(30);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.Note).HasMaxLength(255);
 
                 entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderDelivery_OrderId");
 
