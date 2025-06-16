@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Data.Entities
 {
@@ -21,5 +16,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual Account Retailer { get; set; } = null!;
         public virtual Account Gardener { get; set; } = null!;
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
+        public virtual ICollection<OrderDelivery> OrderDeliveries { get; set; } = new HashSet<OrderDelivery>();
     }
 }

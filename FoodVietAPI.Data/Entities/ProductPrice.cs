@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Data.Entities
 {
@@ -16,6 +11,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public DateTime AvailabledDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public bool IsCurrent { get; set; }
         public Ulid Productd { get; set; }
 
         public virtual Product Product { get; set; } = null!;

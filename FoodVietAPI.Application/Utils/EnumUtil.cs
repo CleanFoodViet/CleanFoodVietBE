@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CleanFoodVietAPI.Application.Utils
+﻿namespace CleanFoodVietAPI.Application.Utils
 {
     public static class EnumUtil
     {
@@ -15,7 +9,7 @@ namespace CleanFoodVietAPI.Application.Utils
         }
 
         //Get enum name
-        public static string GetEnumName<T>(byte value)
+        public static string GetEnumName<T>(int value)
         {
             return Enum.GetName(typeof(T), value)!;
         }

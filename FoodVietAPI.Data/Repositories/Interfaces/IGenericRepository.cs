@@ -1,48 +1,37 @@
 ﻿using CleanFoodVietAPI.Data.Paginate;
+using CleanFoodVietAPI.Data.Specifications;
 using Microsoft.EntityFrameworkCore.Query;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Data.Repositories.Interfaces
 {
     public interface IGenericRepository<T> : IDisposable where T : class
     {
         #region Get Methods
-        Task<T> GetAsync(
+        Task<T> GetAsync(Expression<Func<T, bool>>? predicate = null,
+             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        Task<TResult> GetAsync<TResult>(Expression<Func<T, TResult>> selector,
+             Expression<Func<T, bool>>? predicate = null,
+             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        Task<ICollection<T>> GetListAsync(ISpecification<T>? spec = null,
             Expression<Func<T, bool>>? predicate = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
-        Task<TResult> GetAsync<TResult>(
-            Expression<Func<T, TResult>> selector,
-            Expression<Func<T, bool>>? predicate = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
-        Task<ICollection<T>> GetListAsync(
-            Expression<Func<T, bool>>? predicate = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
         Task<ICollection<TResult>> GetListAsync<TResult>(
             Expression<Func<T, TResult>> selector,
             Expression<Func<T, bool>>? predicate = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
-        Task<IPaginate<T>> GetPagingListAsync(
-            Expression<Func<T, bool>>? predicate = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-            int page = 1,
-            int size = 10);
+            ISpecification<T>? spec = null);
+        Task<IPaginate<T>> GetPagingListAsync(
+            ISpecification<T>? spec = null,
+            Expression<Func<T, bool>>? predicate = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            int page = 1, int size = 10);
         Task<IPaginate<TResult>> GetPagingListAsync<TResult>(
             Expression<Func<T, TResult>> selector,
             Expression<Func<T, bool>>? predicate = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-            int page = 1,
-            int size = 10);
+            ISpecification<T>? spec = null,
+            int page = 1, int size = 10);
         #endregion
 
         #region Insert Methods
@@ -58,6 +47,6 @@ namespace CleanFoodVietAPI.Data.Repositories.Interfaces
         #region Delete Methods
         void DeleteAsync(T entity);
         void DeleteRangeAsync(IEnumerable<T> entities);
-        #endregion
+        #endregion        
     }
 }

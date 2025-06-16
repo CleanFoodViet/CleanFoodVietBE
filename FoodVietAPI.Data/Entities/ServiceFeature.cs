@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Data.Entities
 {
@@ -14,6 +9,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public string ServiceFeatureName { get; set; } = null!;
         public string? Description { get; set; }
         public string DefaultValue { get; set; } = null!;
+        public string Status { get; set; } = null!;
 
         public virtual ICollection<PackageServiceFeature> ServicePackageFeatures { get; set; } = new HashSet<PackageServiceFeature>();
     }

@@ -1,4 +1,3 @@
-using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Presentation.Extensions;
 using CleanFoodVietAPI.Presentation.Middlewares;
 using Scalar.AspNetCore;
@@ -16,8 +15,6 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddUnitOfWork();
 builder.Services.AddJwtAuthenticationScheme(builder.Configuration);
 builder.Services.AddServices(builder.Configuration);
-
-builder.Services.AddConfigLog(builder.Configuration);
 #endregion
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

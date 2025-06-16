@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Data.Entities
 {
@@ -19,14 +14,13 @@ namespace CleanFoodVietAPI.Data.Entities
         public string Status { get; set; } = null!;
         public decimal Rating { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime EstimatedEndDate { get; set; }
+        public DateTime PostEndDate { get; set; }
         public int Priority { get; set; }
 
 
         public virtual Account Account { get; set; } = null!;
         public virtual Product Product { get; set; } = null!;
         public virtual ICollection<Favorite> Favorites { get; set; } = new HashSet<Favorite>();
-        public virtual ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();
         public virtual ICollection<PostMedia> PostMedias { get; set; } = new HashSet<PostMedia>();
     }
 }

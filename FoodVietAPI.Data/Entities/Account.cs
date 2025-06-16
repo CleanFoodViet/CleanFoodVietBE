@@ -7,7 +7,7 @@ namespace CleanFoodVietAPI.Data.Entities
         [Key]
         public Ulid AccountId { get; set; }
         public string Email { get; set; } = null!;
-        public string? PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string Gender { get; set; } = null!;
         public string Avatar { get; set; } = null!;
@@ -31,11 +31,11 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
         public virtual ICollection<Report> Reports { get; set; } = new HashSet<Report>();
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
-        public virtual ICollection<SystemLog> SystemLogs { get; set; } = new HashSet<SystemLog>();
         public virtual ICollection<Order> RetailerOrders { get; set; } = new HashSet<Order>();
         public virtual ICollection<Order> GardenerOrders { get; set; } = new HashSet<Order>();
         public virtual ICollection<SubscriptionContract> ServicePackageContracts { get; set; } = new HashSet<SubscriptionContract>();
         public virtual ICollection<ServicePackageOrder> ServicePackageOrders { get; set; } = new HashSet<ServicePackageOrder>();
         public virtual ICollection<GardenerIncome> GardenerIncomes { get; set; } = new HashSet<GardenerIncome>();
+        public virtual ICollection<Product> Products { get; set; } = new HashSet<Product>();
     }
 }

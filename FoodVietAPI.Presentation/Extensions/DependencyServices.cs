@@ -6,7 +6,6 @@ using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Serilog;
 using System.Text;
 
 namespace CleanFoodVietAPI.Presentation.Extensions
@@ -32,30 +31,12 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             {
                 options.AddPolicy("Default", policy =>
                 {
-                    policy.WithOrigins("https://localhost:7174") // Change domain url of FE for server-side cookie purose
+                    policy.WithOrigins("https://localhost:7174") // Change domain url of FE for server-side cookie purpose
                     .AllowCredentials()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
             });
-
-            return services;
-        }
-
-        public static IServiceCollection AddConfigLog(this IServiceCollection services, IConfiguration config)
-        {
-            var fileName = config["MySerilog:FileName"];
-
-            //Config SeriLog logging
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.Debug()
-                .WriteTo.Console()
-                .WriteTo.File(path: $"{fileName}-.text",
-                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-                outputTemplate: "{Timestamp: yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}",
-                rollingInterval: RollingInterval.Day)
-                .CreateLogger();
 
             return services;
         }
@@ -66,6 +47,20 @@ namespace CleanFoodVietAPI.Presentation.Extensions
 
             #region Service DI
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IChatMessageService, ChatMessageService>();
+            services.AddScoped<IFavoriteService, FavoriteService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IPostService, PostService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IServiceFeatureService, ServiceFeatureService>();
+            services.AddScoped<IServicePackageService, ServicePackageService>();
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
             #endregion
 
             return services;

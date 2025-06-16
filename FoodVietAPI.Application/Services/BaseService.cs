@@ -2,12 +2,8 @@
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services
 {
@@ -16,11 +12,13 @@ namespace CleanFoodVietAPI.Application.Services
         protected IUnitOfWork<CleanFoodVietDbContext> _unitOfWork;
         protected IMapper _mapper;
         protected IHttpContextAccessor _httpContextAccessor;
-        public BaseService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        protected ILogger<T> _logger;
+        public BaseService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<T> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         protected string GetUsernameFromJwt()

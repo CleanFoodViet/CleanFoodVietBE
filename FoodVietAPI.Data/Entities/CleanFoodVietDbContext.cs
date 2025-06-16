@@ -1,11 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using MySql.EntityFrameworkCore.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Data.Entities
 {
@@ -38,11 +31,10 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<ServiceFeature> ServiceFeatures { get; set; } = null!;
         public virtual DbSet<ServicePackage> ServicePackages { get; set; } = null!;
-        public virtual DbSet<SubscriptionContract> ServicePackageContracts { get; set; } = null!;
-        public virtual DbSet<PackageServiceFeature> ServicePackageFeatures { get; set; } = null!;
+        public virtual DbSet<SubscriptionContract> SubscriptionContracts { get; set; } = null!;
+        public virtual DbSet<PackageServiceFeature> PackageServiceFeatures { get; set; } = null!;
         public virtual DbSet<ServicePackageOrder> ServicePackageOrders { get; set; } = null!;
         public virtual DbSet<ServicePackageOrderPayment> ServicePackageOrderPayments { get; set; } = null!;
-        public virtual DbSet<SystemLog> SystemLogs { get; set; } = null!;
         public virtual DbSet<GardenerIncome> GardenerIncomes { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductPrice> ProductPrices { get; set; } = null!;
@@ -60,7 +52,7 @@ namespace CleanFoodVietAPI.Data.Entities
                     .HasConversion(ulid => ulid.ToString(),str => Ulid.Parse(str))
                     .IsFixedLength();
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.PhoneNumber).HasMaxLength(11);
+                entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(11);
                 entity.Property(e => e.Password).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Gender).IsRequired().HasMaxLength(10);
                 entity.Property(e => e.Avatar).IsRequired();
@@ -92,8 +84,8 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.AddressId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(),str => Ulid.Parse(str))
                     .IsFixedLength();
-                entity.Property(e => e.AddessLine1).IsRequired().HasMaxLength(255);
-                entity.Property(e => e.AddessLine2).HasMaxLength(255);
+                entity.Property(e => e.AddressLine1).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.AddressLine2).HasMaxLength(255);
                 entity.Property(e => e.City).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Province).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.PostalCode).IsRequired().HasMaxLength(20);
@@ -285,8 +277,8 @@ namespace CleanFoodVietAPI.Data.Entities
 
             modelBuilder.Entity<ProductCategory>(entity =>
             {
-                entity.ToTable("CleanFoodCategory");
-                entity.HasKey(e => e.ProductCategoryId).HasName("PK_CleanFoodCategory");
+                entity.ToTable("ProductCategory");
+                entity.HasKey(e => e.ProductCategoryId).HasName("PK_ProductCategory");
 
                 entity.Property(e => e.ProductCategoryId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
@@ -386,6 +378,65 @@ namespace CleanFoodVietAPI.Data.Entities
                       .HasConstraintName("FK_Order_Gardeners");
             });
 
+            modelBuilder.Entity<OrderDelivery>(entity =>
+            {
+                entity.ToTable("OrderDelivery");
+                entity.HasKey(e => e.OrderDeliveryId).HasName("PK_OrderDelivery");
+
+                entity.Property(e => e.OrderDeliveryId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.OrderId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
+                entity.Property(e => e.DeliveryStatus).IsRequired().HasMaxLength(30);
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.Note).HasMaxLength(255);
+
+                entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderDelivery_OrderId");
+
+                entity.HasOne(e => e.Order)
+                      .WithMany(e => e.OrderDeliveries)
+                      .HasForeignKey(e => e.OrderId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("FK_OrderDelivery_Order");
+            });
+
+            modelBuilder.Entity<OrderDeliveryItem>(entity =>
+            {
+                entity.ToTable("OrderDeliveryItem");
+                entity.HasKey(e => e.OrderDeliveryItemId).HasName("PK_OrderDeliveryItem");
+
+                entity.Property(e => e.OrderDeliveryItemId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.OrderDeliveryId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.OrderItemId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.Quantity).IsRequired();
+                entity.Property(e => e.DeliveredAt).HasColumnType("datetime");
+
+                entity.HasIndex(e => e.OrderDeliveryId).HasDatabaseName("IX_OrderDeliveryItem_OrderDeliveryId");
+                entity.HasIndex(e => e.OrderItemId).HasDatabaseName("IX_OrderDeliveryItem_OrderItemId");
+
+                entity.HasOne(e => e.OrderDelivery)
+                      .WithMany(e => e.OrderDeliveryItems)
+                      .HasForeignKey(e => e.OrderDeliveryId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("FK_OrderDeliveryItem_OrderDelivery");
+
+                entity.HasOne(e => e.OrderItem)
+                      .WithMany(e => e.OrderDeliveryItems)
+                      .HasForeignKey(e => e.OrderItemId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("FK_OrderDeliveryItem_OrderItem");
+            });
+
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.ToTable("OrderItem");
@@ -403,7 +454,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.Price).HasColumnType("decimal(14,2)");
                 entity.Property(e => e.Quantity).IsRequired();
                 entity.Property(e => e.ProductUnit).IsRequired().HasMaxLength(10);
-                entity.Property(e => e.ShippingStatus).IsRequired().HasMaxLength(25);
+                entity.Property(e => e.DeliveryStatus).IsRequired().HasMaxLength(25);
 
                 entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderItem_OrderId");
                 entity.HasIndex(e => e.ProductId).HasDatabaseName("IX_OrderItem_ProductId");
@@ -441,7 +492,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Rating).HasColumnType("decimal(3,2)");
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-                entity.Property(e => e.EstimatedEndDate).HasColumnType("datetime");
+                entity.Property(e => e.PostEndDate).HasColumnType("datetime");
                 entity.Property(e => e.Priority).IsRequired();
 
                 entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_Post_GardenerId");
@@ -490,12 +541,17 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.AccountId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
+                entity.Property(e => e.TargetId).HasColumnType("char(26)")
+                   .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                   .IsFixedLength();
                 entity.Property(e => e.ReportType).IsRequired().HasMaxLength(30);
+                entity.Property(e => e.TargetType).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Subject).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Description).HasColumnType("text");
                 entity.Property(e => e.Severity).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
                 entity.HasIndex(e => e.AccountId).HasDatabaseName("IX_Report_AccountId");
 
@@ -557,12 +613,21 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.ToTable("ServiceFeature");
                 entity.HasKey(e => e.ServiceFeatureId).HasName("PK_ServiceFeature");
 
-                entity.Property(e => e.ServiceFeatureId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.ServiceFeatureName).IsRequired().HasMaxLength(255);
-                entity.Property(e => e.Description).HasColumnType("text");
-                entity.Property(e => e.DefaultValue).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.ServiceFeatureId)
+                      .HasColumnType("char(26)")
+                      .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                      .IsFixedLength();
+                entity.Property(e => e.ServiceFeatureName)
+                      .IsRequired()
+                      .HasMaxLength(255);
+                entity.Property(e => e.Description)
+                      .HasColumnType("text");
+                entity.Property(e => e.DefaultValue)
+                      .IsRequired()
+                      .HasMaxLength(100);
+                entity.Property(e => e.Status)
+                      .IsRequired()
+                      .HasMaxLength(20);
             });
 
             modelBuilder.Entity<ServicePackage>(entity =>
@@ -584,8 +649,8 @@ namespace CleanFoodVietAPI.Data.Entities
 
             modelBuilder.Entity<SubscriptionContract>(entity =>
             {
-                entity.ToTable("ServicePackageContract");
-                entity.HasKey(e => e.SubscriptionId).HasName("PK_ServicePackageContract");
+                entity.ToTable("SubscriptionContract");
+                entity.HasKey(e => e.SubscriptionId).HasName("PK_SubscriptionContract");
 
                 entity.Property(e => e.SubscriptionId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
@@ -602,26 +667,26 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.SubscriptionType).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
-                entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_ServicePackageContract_GardenerId");
-                entity.HasIndex(e => e.ServicePackageId).HasDatabaseName("IX_ServicePackageContract_ServicePackageId");
+                entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_SubscriptionContract_GardenerId");
+                entity.HasIndex(e => e.ServicePackageId).HasDatabaseName("IX_SubscriptionContract_ServicePackageId");
 
                 entity.HasOne(e => e.Account)
                       .WithMany(e => e.ServicePackageContracts)
                       .HasForeignKey(e => e.GardenerId)
                       .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("FK_ServicePackageContract_Account");
+                      .HasConstraintName("FK_SubscriptionContract_Account");
 
                 entity.HasOne(e => e.ServicePackage)
-                      .WithMany(e => e.ServicePackageContracts)
+                      .WithMany(e => e.SubscriptionContracts)
                       .HasForeignKey(e => e.ServicePackageId)
                       .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("FK_ServicePackageContract_ServicePackage");
+                      .HasConstraintName("FK_SubscriptionContract_ServicePackage");
             });
 
             modelBuilder.Entity<PackageServiceFeature>(entity =>
             {
-                entity.ToTable("ServicePackageFeature");
-                entity.HasKey(e => e.PackageServiceFeatureId).HasName("PK_ServicePackageFeature");
+                entity.ToTable("PackageServiceFeature");
+                entity.HasKey(e => e.PackageServiceFeatureId).HasName("PK_PackageServiceFeature");
 
                 entity.Property(e => e.PackageServiceFeatureId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
@@ -632,22 +697,21 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ServiceFeatureId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
-                entity.Property(e => e.FeatureValue).IsRequired().HasMaxLength(100);
 
-                entity.HasIndex(e => e.ServicePackageId).HasDatabaseName("IX_ServicePackageFeature_ServicePackageId");
-                entity.HasIndex(e => e.ServiceFeatureId).HasDatabaseName("IX_ServicePackageFeature_ServiceFeatureId");
+                entity.HasIndex(e => e.ServicePackageId).HasDatabaseName("IX_PackageServiceFeature_ServicePackageId");
+                entity.HasIndex(e => e.ServiceFeatureId).HasDatabaseName("IX_PackageServiceFeature_ServiceFeatureId");
 
                 entity.HasOne(e => e.ServiceFeature)
                       .WithMany(e => e.ServicePackageFeatures)
                       .HasForeignKey(e => e.ServiceFeatureId)
                       .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("FK_ServicePackageFeature_ServiceFeature");
+                      .HasConstraintName("FK_PackageServiceFeature_ServiceFeature");
 
                 entity.HasOne(e => e.ServicePackage)
                       .WithMany(e => e.ServicePackageFeatures)
                       .HasForeignKey(e => e.ServicePackageId)
                       .OnDelete(DeleteBehavior.Cascade)
-                      .HasConstraintName("FK_ServicePackageFeature_ServicePackage");
+                      .HasConstraintName("FK_PackageServiceFeature_ServicePackage");
             });
 
             modelBuilder.Entity<ServicePackageOrder>(entity =>
@@ -708,34 +772,6 @@ namespace CleanFoodVietAPI.Data.Entities
                       .HasForeignKey(e => e.ServicePackageOrderId)
                       .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_ServicePackageOrderPayment_ServicePackageOrder");
-            });
-
-            modelBuilder.Entity<SystemLog>(entity =>
-            {
-                entity.ToTable("SystemLog");
-                entity.HasKey(e => e.LogId).HasName("PK_SystemLog");
-
-                entity.Property(e => e.LogId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.AdminId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.Action).IsRequired().HasMaxLength(255);
-                entity.Property(e => e.TargetId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.TargetType).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Desctiption).HasColumnType("text");
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.HasIndex(e => e.AdminId).HasDatabaseName("IX_SystemLog_AdminId");
-
-                entity.HasOne(e => e.Admin)
-                      .WithMany(e => e.SystemLogs)
-                      .HasForeignKey(e => e.AdminId)
-                      .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("FK_SystemLog_Account"); ;
             });
 
             modelBuilder.Entity<GardenerIncome>(entity =>
@@ -803,6 +839,9 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ProductCategoryId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
+                entity.Property(e => e.GardenerId).HasColumnType("char(26)")
+                   .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                   .IsFixedLength();
 
                 entity.HasIndex(e => e.ProductName).HasDatabaseName("IX_Product_ProductName");
 
@@ -811,6 +850,12 @@ namespace CleanFoodVietAPI.Data.Entities
                      .HasForeignKey(e => e.ProductCategoryId)
                      .OnDelete(DeleteBehavior.Restrict)
                      .HasConstraintName("FK_Product_ProductCategory");
+
+                entity.HasOne(e => e.Gardener)
+                     .WithMany(e => e.Products)
+                     .HasForeignKey(e => e.GardenerId)
+                     .OnDelete(DeleteBehavior.Restrict)
+                     .HasConstraintName("FK_Product_GardenerAccount");
             });
         }
     }
