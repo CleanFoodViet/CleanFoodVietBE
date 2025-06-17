@@ -34,5 +34,13 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
             return Ok(res);
         }
+
+        [HttpPatch(ApiEndpointConstant.Report.ReportEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateReportStatus([FromRoute]string id, [FromQuery]string status)
+        {
+            await _reportService.UpdateReportStatus(id, status);
+            return Ok("Update successfully");
+        }
     }
 }

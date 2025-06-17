@@ -2,6 +2,8 @@
 using CleanFoodVietAPI.Application.DTOs.ReportDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.AccountEnums;
+using CleanFoodVietAPI.Data.Enums.ReportEnums;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
+using System.Security.Principal;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -61,6 +64,23 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         ));
 
             return product;
+        }
+
+        public async Task UpdateReportStatus(string reportId, string status)
+        {
+            Ulid rpId = Ulid.Parse(reportId);
+            Report report = await _unitOfWork.GetRepository<Report>()
+                .GetAsync(predicate: rp => rp.ReportId == rpId);
+            if (report == null) throw new BadHttpRequestException("Report is not found");
+
+            if (Enum.TryParse<ReportStatusEnum>(status.ToUpper(), out var result))
+            {
+                report.Status = result.ToString();
+            }
+
+            _unitOfWork.GetRepository<Report>().UpdateAsync(report);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when updating report status");
         }
     }
 }
