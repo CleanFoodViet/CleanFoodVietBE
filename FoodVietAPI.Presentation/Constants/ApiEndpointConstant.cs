@@ -52,5 +52,10 @@
             public const string DisableServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/disable/{id}";
         }
 
+        public static class SubscriptionContract
+        {
+            public const string SubscriptionContractsEndpoint = ApiEndpoint + "/subscription-contracts";
+            public const string SubscriptionContractEndpoint = SubscriptionContractsEndpoint + "/{id}";
+        }
     }
 }
