@@ -7,7 +7,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     public interface IReportService
     {
         Task<IPaginate<ReportListDTO>> GetReportList(int page, int size);
-
         Task<ReportDTO> GetReportInformation(string reportId);
+        Task UpdateReportStatus(string reportId, string status);
     }
 }

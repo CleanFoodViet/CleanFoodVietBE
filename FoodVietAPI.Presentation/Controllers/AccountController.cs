@@ -42,7 +42,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(AccountDTO), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAccountInformation([FromRoute] string id, [FromQuery] string? role = null)
+        public async Task<IActionResult> GetAccountInformation([FromRoute] string id)
         {
             var res = await _accountService.GetAccountInformation(id);
             return Ok(res);
