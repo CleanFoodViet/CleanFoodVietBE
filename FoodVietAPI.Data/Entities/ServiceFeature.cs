@@ -8,7 +8,8 @@ namespace CleanFoodVietAPI.Data.Entities
         public Ulid ServiceFeatureId { get; set; }
         public string ServiceFeatureName { get; set; } = null!;
         public string? Description { get; set; }
-        public string DefaultValue { get; set; } = null!;
+        public int DefaultValue { get; set; }
+        public string Action { get; set; } = null!;
         public string Status { get; set; } = null!;
 
         public virtual ICollection<PackageServiceFeature> ServicePackageFeatures { get; set; } = new HashSet<PackageServiceFeature>();

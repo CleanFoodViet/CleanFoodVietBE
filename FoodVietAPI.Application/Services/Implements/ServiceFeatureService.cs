@@ -42,7 +42,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         sf.ServiceFeatureId,
                         sf.ServiceFeatureName,
                         sf.Description,
-                        sf.DefaultValue),
+                        sf.DefaultValue,
+                        sf.Action),
                     page: page, size: size);
 
             return featuresPage;
@@ -84,10 +85,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!string.IsNullOrEmpty(updateDto.Description))
             {
                 existingFeature.Description = updateDto.Description;
-            }
-            if (!string.IsNullOrEmpty(updateDto.DefaultValue))
-            {
-                existingFeature.DefaultValue = updateDto.DefaultValue;
             }
             if (!string.IsNullOrEmpty(updateDto.Status))
             {

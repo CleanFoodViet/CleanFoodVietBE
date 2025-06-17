@@ -5,7 +5,8 @@
          Ulid ServiceFeatureId,
          string ServiceFeatureName,
          string? Description,
-         string DefaultValue
+         int DefaultValue,
+         string Action
     );
 }
 
