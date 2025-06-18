@@ -285,8 +285,19 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ProductCategoryId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
+                entity.Property(e => e.GardenerId).HasColumnType("char(26)")
+                   .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                   .IsFixedLength();
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Description).HasColumnType("text");
+
+                entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_ProductCategory_GardenderId");
+
+                entity.HasOne(e => e.Gardener)
+                      .WithMany(e => e.ProductCategories)
+                      .HasForeignKey(e => e.GardenerId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("FK_ProductCategory_Gardener");
             });
 
             modelBuilder.Entity<Favorite>(entity =>
