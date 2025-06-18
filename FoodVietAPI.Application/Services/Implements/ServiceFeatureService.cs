@@ -51,6 +51,25 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return featuresPage;
         }
 
+        public async Task<ServiceFeatureDTO> GetServiceFeatureDetailAsync(Ulid id)
+        {
+            var repository = _unitOfWork.GetRepository<ServiceFeature>();
+
+            // Retrieve the service feature entity by ID.
+            var featureEntity = await repository.GetAsync(
+                selector: sf => sf,
+                predicate: sf => sf.ServiceFeatureId == id);
+
+            if (featureEntity == null)
+            {
+                throw new Exception("Service feature not found.");
+            }
+
+            // Map the entity to a DTO.
+            var featureDto = _mapper.Map<ServiceFeatureDTO>(featureEntity);
+            return featureDto;
+        }
+
         public async Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto)
         {
             var newFeature = _mapper.Map<ServiceFeature>(createDto);

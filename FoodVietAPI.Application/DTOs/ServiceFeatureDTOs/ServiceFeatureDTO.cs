@@ -11,7 +11,6 @@ namespace CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs
         public string Action { get; set; }
         public string Status { get; set; }
 
-        // Constructor accepting all six arguments
         public ServiceFeatureDTO(
             Ulid serviceFeatureId,
             string serviceFeatureName,
@@ -28,9 +27,7 @@ namespace CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs
             Status = status;
         }
 
-        // Parameterless constructor (if needed for mapping/serialization)
         public ServiceFeatureDTO() { }
     }
-
 }
 
