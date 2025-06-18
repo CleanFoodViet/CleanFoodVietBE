@@ -1,5 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // GET: api/v1/admin/service-features
         // Returns a paginated list with metadata including filtering and sorting parameters.
         [HttpGet(ApiEndpointConstant.ServiceFeature.ServiceFeaturesEndpoint)]
-        [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<ServiceFeatureDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetServiceFeatureList(
             [FromQuery] int page = 1,
             [FromQuery] int size = 10,
@@ -50,6 +51,16 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
             return Ok(response);
         }
+
+        // GET: api/v1/admin/service-features/{id}
+        // Returns detailed information about a specific service feature by ID.
+        [HttpGet(ApiEndpointConstant.ServiceFeature.ServiceFeatureEndpoint)]
+        [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetServiceFeatureDetail([FromRoute] Ulid id)
+        {
+            var featureDetail = await _serviceFeatureService.GetServiceFeatureDetailAsync(id);
+            return Ok(featureDetail);
+        }   
 
         // PATCH: api/v1/admin/service-features/{id}
         // Update service feature information (including soft-delete by setting status to INACTIVE)

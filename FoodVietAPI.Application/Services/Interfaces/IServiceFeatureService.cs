@@ -14,6 +14,8 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? sortOrder = "asc",
             string? search = null);
 
+        Task<ServiceFeatureDTO> GetServiceFeatureDetailAsync(Ulid id);
+
         Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto);
 
         Task<ServiceFeatureDTO> UpdateServiceFeature(Ulid id, UpdateServiceFeatureDTO updateDto);
