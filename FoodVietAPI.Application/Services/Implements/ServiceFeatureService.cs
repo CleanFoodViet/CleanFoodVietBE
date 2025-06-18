@@ -31,7 +31,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             string? filterValue = null,
             string? sortField = null,
             string? sortOrder = "asc",
-            string? search = null)   // New search parameter
+            string? search = null)
         {
             var specification = new ServiceFeatureSpecification(filterField, filterValue, sortField, sortOrder, search);
 
@@ -42,9 +42,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         sf.ServiceFeatureId,
                         sf.ServiceFeatureName,
                         sf.Description,
-                        sf.DefaultValue,
-                        sf.Action),
-                    page: page, size: size);
+                        sf.DefaultValue,   // now an int
+                        sf.Action,
+                        sf.Status),
+                    page: page,
+                    size: size);
 
             return featuresPage;
         }
@@ -66,7 +68,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         // New update method using PATCH
         public async Task<ServiceFeatureDTO> UpdateServiceFeature(Ulid id, UpdateServiceFeatureDTO updateDto)
         {
-            // Retrieve the existing ServiceFeature entity by id using the generic overload.
+            // Retrieve the existing ServiceFeature entity by id.
             var repository = _unitOfWork.GetRepository<ServiceFeature>();
             var existingFeature = await repository.GetAsync<ServiceFeature>(
                 selector: x => x,
@@ -77,15 +79,23 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new Exception("Service Feature not found.");
             }
 
-            // Update fields if provided
+            // Validate: ensure the Action value remains unchanged.
+            if (updateDto.Action.ToString() != existingFeature.Action)
+            {
+                throw new Exception("Action cannot be updated after creation.");
+            }
+
+            // Update allowed fields
             if (!string.IsNullOrEmpty(updateDto.ServiceFeatureName))
             {
                 existingFeature.ServiceFeatureName = updateDto.ServiceFeatureName;
             }
+
             if (!string.IsNullOrEmpty(updateDto.Description))
             {
                 existingFeature.Description = updateDto.Description;
             }
+
             if (!string.IsNullOrEmpty(updateDto.Status))
             {
                 // If a soft-delete is desired, we expect "DISABLE" (case-insensitive).
@@ -106,8 +116,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 }
             }
 
-            // Save the updates.
+            // Save the updates (remove await if UpdateAsync returns void)
             repository.UpdateAsync(existingFeature);
+
             var isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess)
             {
