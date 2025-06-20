@@ -23,8 +23,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               selector: a => new AddressDTO
                               {
                                   AddressId = a.AddressId,
-                                  AddressLine1 = a.AddressLine1,
-                                  AddressLine2 = a.AddressLine2,
+                                  AddressLine = a.AddressLine,
                                   City = a.City,
                                   Country = a.Country,
                                   PostalCode = a.PostalCode,

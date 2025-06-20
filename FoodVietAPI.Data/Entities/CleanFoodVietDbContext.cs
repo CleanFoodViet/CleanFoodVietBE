@@ -53,6 +53,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.AccountId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(11);
                 entity.Property(e => e.Password).IsRequired().HasMaxLength(255);
@@ -86,8 +87,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.AddressId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
-                entity.Property(e => e.AddressLine1).IsRequired().HasMaxLength(255);
-                entity.Property(e => e.AddressLine2).HasMaxLength(255);
+                entity.Property(e => e.AddressLine).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.City).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Province).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.PostalCode).IsRequired().HasMaxLength(20);
