@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ProductCategoryDTOs;
+using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Data.Entities;
 
 namespace CleanFoodVietAPI.Application.Mappers
@@ -15,6 +16,9 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForAllMembers(opt => opt.Condition((src, des, srcMember) => srcMember != null));
 
             CreateMap<ProductCategory, GetProductCategoryDTO>();
+
+            CreateMap<CreateProductDTO, ProductCategory>()
+                .ForMember(src => src.ProductCategoryId, opt => opt.MapFrom(src => Ulid.NewUlid())); ;
         }
     }
 }
