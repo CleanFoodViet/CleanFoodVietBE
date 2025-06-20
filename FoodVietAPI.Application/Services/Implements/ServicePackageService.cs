@@ -101,17 +101,18 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             // Get the repository for ServiceFeature to validate each provided feature.
             var featureRepo = _unitOfWork.GetRepository<ServiceFeature>();
 
-            // Load all features by provided IDs.
+            // Load all features by the provided IDs.
             var activeFeatures = await featureRepo.GetListAsync(
-                predicate: f => createDto.FeatureIds.Contains(f.ServiceFeatureId));
+                predicate: f => createDto.FeatureIds.Contains(f.ServiceFeatureId)
+            );
 
-            // Validate that we have as many features as provided.
+            // Validate that we found as many features as provided.
             if (activeFeatures.Count() != createDto.FeatureIds.Count)
             {
                 throw new Exception("Some provided features do not exist.");
             }
 
-            // Validate each feature to be ACTIVE.
+            // Validate that each feature is ACTIVE.
             foreach (var feature in activeFeatures)
             {
                 if (!feature.Status.Equals("ACTIVE", StringComparison.OrdinalIgnoreCase))
@@ -120,14 +121,24 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 }
             }
 
-            // Map DTO to entity.
+            // Validate that no duplicate feature actions exist.
+            var duplicateActionGroup = activeFeatures
+                .GroupBy(f => f.Action)
+                .FirstOrDefault(g => g.Count() > 1);
+
+            if (duplicateActionGroup != null)
+            {
+                throw new Exception($"Duplicate feature action '{duplicateActionGroup.Key}' is not allowed in a service package.");
+            }
+
+            // Map the create DTO to the ServicePackage entity.
             var newPackage = _mapper.Map<ServicePackage>(createDto);
             newPackage.ServicePackageId = Ulid.NewUlid();
             newPackage.Status = "ACTIVE";
             newPackage.CreatedAt = DateTime.UtcNow;
             newPackage.UpdatedAt = DateTime.UtcNow;
 
-            // Build the join collection:
+            // Build the join collection from the active features.
             newPackage.ServicePackageFeatures = activeFeatures.Select(f => new PackageServiceFeature
             {
                 PackageServiceFeatureId = Ulid.NewUlid(),
@@ -135,7 +146,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 ServiceFeatureId = f.ServiceFeatureId
             }).ToList();
 
-            // Insert and commit.
+            // Insert the new package and commit changes.
             await _unitOfWork.GetRepository<ServicePackage>().InsertAsync(newPackage);
             var isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess)
@@ -146,6 +157,119 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var packageDto = _mapper.Map<ServicePackageDTO>(newPackage);
             return packageDto;
         }
+
+        // Update an existing service package (only PackageName and Description allowed)
+        public async Task<ServicePackageDTO> UpdateServicePackageAsync(Ulid packageId, UpdateServicePackageDTO updateDto)
+        {
+            var repository = _unitOfWork.GetRepository<ServicePackage>();
+
+            // Retrieve the existing package.
+            var packageEntity = await repository.GetAsync<ServicePackage>(
+                selector: sp => sp,
+                predicate: sp => sp.ServicePackageId == packageId);
+
+            if (packageEntity == null)
+            {
+                throw new Exception("Service Package not found.");
+            }
+
+            // Only update allowed fields.
+            if (!string.IsNullOrWhiteSpace(updateDto.PackageName))
+            {
+                packageEntity.PackageName = updateDto.PackageName;
+            }
+            packageEntity.Description = updateDto.Description; // allow update to null if needed
+
+            // Update the UpdatedAt timestamp.
+            packageEntity.UpdatedAt = DateTime.UtcNow;
+
+            // Do the update (remove await if repository.UpdateAsync returns void)
+            repository.UpdateAsync(packageEntity);
+
+            var isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess)
+            {
+                throw new Exception("Error occurred while updating the Service Package.");
+            }
+
+            return _mapper.Map<ServicePackageDTO>(packageEntity);
+        }
+
+
+        // Disable a service package by setting its status to INACTIVE
+        public async Task<ServicePackageDTO> DisableServicePackageAsync(Ulid packageId)
+        {
+            var repository = _unitOfWork.GetRepository<ServicePackage>();
+
+            var packageEntity = await repository.GetAsync<ServicePackage>(
+                selector: sp => sp,
+                predicate: sp => sp.ServicePackageId == packageId);
+
+            if (packageEntity == null)
+            {
+                throw new Exception("Service Package not found.");
+            }
+
+            // Set status to INACTIVE and update the timestamp.
+            packageEntity.Status = "INACTIVE";
+            packageEntity.UpdatedAt = DateTime.UtcNow;
+
+            repository.UpdateAsync(packageEntity);
+
+            var isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess)
+            {
+                throw new Exception("Error occurred while disabling the Service Package.");
+            }
+
+            return _mapper.Map<ServicePackageDTO>(packageEntity);
+        }
+
+
+        // Activate a service package if all its features are active
+        public async Task<ServicePackageDTO> ActivateServicePackageAsync(Ulid packageId)
+        {
+            var repository = _unitOfWork.GetRepository<ServicePackage>();
+
+            var packageEntity = await repository.GetAsync<ServicePackage>(
+                selector: sp => sp,
+                predicate: sp => sp.ServicePackageId == packageId);
+
+            if (packageEntity == null)
+            {
+                throw new Exception("Service Package not found.");
+            }
+
+            // Check that all features attached to this package are active.
+            if (packageEntity.ServicePackageFeatures == null || !packageEntity.ServicePackageFeatures.Any())
+            {
+                throw new Exception("Cannot activate the package because it has no features assigned.");
+            }
+
+            bool allFeaturesActive = packageEntity.ServicePackageFeatures
+                .All(psf => psf.ServiceFeature != null &&
+                            psf.ServiceFeature.Status.Equals("ACTIVE", StringComparison.OrdinalIgnoreCase));
+
+            if (!allFeaturesActive)
+            {
+                throw new Exception("Cannot activate the package because at least one feature is not active.");
+            }
+
+            // Activate the package.
+            packageEntity.Status = "ACTIVE";
+            packageEntity.UpdatedAt = DateTime.UtcNow;
+
+            repository.UpdateAsync(packageEntity);
+
+            var isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess)
+            {
+                throw new Exception("Error occurred while activating the Service Package.");
+            }
+
+            return _mapper.Map<ServicePackageDTO>(packageEntity);
+        }
+
 
     }
 }
