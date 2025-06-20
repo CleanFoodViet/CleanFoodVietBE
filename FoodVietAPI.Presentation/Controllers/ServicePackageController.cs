@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using static CleanFoodVietAPI.Presentation.Constants.ApiEndpointConstant;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -73,6 +74,38 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         {
             var packageDto = await _servicePackageService.CreateServicePackageAsync(createDto);
             return StatusCode(StatusCodes.Status201Created, packageDto);
+        }
+
+        // PATCH endpoint for updating allowed fields (basic info)
+        // of the service package, excluding features, which are managed separately.
+        [HttpPatch(ServicePackageEndpoint.ServicePackageDetailEndpoint)]
+        [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateServicePackage(
+            [FromRoute] Ulid id,
+            [FromBody] UpdateServicePackageDTO updateDto)
+        {
+            var packageDto = await _servicePackageService.UpdateServicePackageAsync(id, updateDto);
+            return Ok(packageDto);
+        }
+
+        // PATCH endpoint for soft-deleting (disabling) the package.
+        // This endpoint sets the status of the package to INACTIVE.
+        [HttpPatch(ServicePackageEndpoint.DisableServicePackageEndpoint)]
+        [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DisableServicePackage([FromRoute] Ulid id)
+        {
+            var packageDto = await _servicePackageService.DisableServicePackageAsync(id);
+            return Ok(packageDto);
+        }
+
+        // PATCH endpoint for activating the package.
+        // This endpoint sets the status of the package to ACTIVE.
+        [HttpPatch(ServicePackageEndpoint.ActivateServicePackageEndpoint)]
+        [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ActivateServicePackage([FromRoute] Ulid id)
+        {
+            var packageDto = await _servicePackageService.ActivateServicePackageAsync(id);
+            return Ok(packageDto);
         }
     }
 }

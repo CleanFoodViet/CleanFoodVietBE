@@ -18,6 +18,12 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task<ServicePackageDTO> GetServicePackageDetailAsync(Ulid packageId);
 
         Task<ServicePackageDTO> CreateServicePackageAsync(CreateServicePackageDTO createDto);
+
+        Task<ServicePackageDTO> UpdateServicePackageAsync(Ulid packageId, UpdateServicePackageDTO updateDto);
+
+        Task<ServicePackageDTO> DisableServicePackageAsync(Ulid packageId);
+
+        Task<ServicePackageDTO> ActivateServicePackageAsync(Ulid packageId);
     }
 
 }
