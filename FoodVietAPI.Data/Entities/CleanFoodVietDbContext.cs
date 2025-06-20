@@ -537,10 +537,13 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.MediumUrl).IsRequired();
                 entity.Property(e => e.MediumType).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.UploadedAt).HasColumnType("datetime");
+                entity.Property(e => e.PostId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
 
                 entity.HasOne(e => e.Post)
                       .WithMany(e => e.PostMedias)
-                      .HasForeignKey("PostId")
+                      .HasForeignKey(e => e.PostId)
                       .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_PostMedia_Post");
             });

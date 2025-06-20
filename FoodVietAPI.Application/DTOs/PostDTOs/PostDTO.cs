@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
+using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,29 +9,28 @@ using System.Threading.Tasks;
 namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
 {
     public record PostDTO
-    (
-        //Post Data Field
-         Ulid PostId,
-         Ulid GardenerId,
-         string Title, 
-         string Content, 
-         DateTime HarvestDate,
-         string PostStatus,
-         decimal Rating,
-         DateTime CreatedAt,
-         DateTime PostEndDate,
-         int Priority,
+    {
+        // Post Data Field
+        public Ulid PostId { get; set; }
+        public string Title { get; set; } = null!;
+        public string Content { get; set; } = null!;
+        public DateTime HarvestDate { get; set; }
+        public string PostStatus { get; set; } = null!;
+        public decimal Rating { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime PostEndDate { get; set; }
+        public int Priority { get; set; }
 
-    //Product Data Field
-        Ulid ProductId,
-        string ProductName,
-        DateTime UpdatedAt,
-        string ProductStatus,
-        string ProductCategory,
+        // Post Media Data Field
+        public List<PostMediaDTO>? PostMedias { get; set; }
 
-        //Product Price Data Field
-        decimal Price,
-        string Currency,
-        DateTime AvailabledDate
-    );
+        // Gardener Data Field
+        public Ulid GardenerId { get; set; }
+        public string GardenderName { get; set; } = null!;
+        public string GardenerAvatar { get; set; } = null!;
+
+        // Product Data Field
+        public Ulid ProductId { get; set; }
+        public PostProductDTO? ProductData { get; set; }
+    }   
 }
