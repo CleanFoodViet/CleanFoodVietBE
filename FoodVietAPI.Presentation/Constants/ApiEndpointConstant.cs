@@ -31,6 +31,7 @@
             public const string GardenerProductsEndpoint = GardenerApiEndpoint + "/{gardenerId}/products";
             public const string ProductsEndpoint = ApiEndpoint + "/products";
             public const string ProductEndpoint = ProductsEndpoint + "/{id}";
+            public const string ProductPricesEndpoint = ProductEndpoint + "/prices";
         }
 
         public static class ProductCategory

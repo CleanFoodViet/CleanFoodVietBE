@@ -77,8 +77,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             {
                 report.Status = result.ToString();
             }
+            else
+            {
+                throw new BadHttpRequestException($"Report status {status.ToUpper()} is not existed");
+            }
 
-            _unitOfWork.GetRepository<Report>().UpdateAsync(report);
+                _unitOfWork.GetRepository<Report>().UpdateAsync(report);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when updating report status");
         }
