@@ -49,7 +49,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid id = Ulid.Parse(productId);
             DateTime today = DateTime.UtcNow;
 
-            var products = await _unitOfWork.GetRepository<Product>()
+            var product = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(predicate: p => p.GardenerId == id,
                           include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                          .Include(x => x.ProductCategory),
@@ -65,7 +65,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.ProductPrices.First().Currency,
                               p.ProductPrices.First().AvailabledDate));
 
-            return products;
+            if (product == null) throw new BadHttpRequestException("Product cannot be found");
+
+            return product;
         }
 
         public async Task CreateProduct(string gardenerId, CreateProductDTO createProductData)
