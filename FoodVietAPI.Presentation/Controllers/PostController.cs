@@ -30,5 +30,18 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             var res = await _postService.GetPostInformation(id);
             return Ok(res);
         }
+
+        //Create Post
+
+        //Update Post (basic information)
+
+        //Update Status
+        [HttpPatch(ApiEndpointConstant.Post.PostStatusEndpoint)]
+        [ProducesResponseType(typeof(PostDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdatePostStatus([FromRoute] string id, [FromQuery]string status)
+        {
+            await _postService.UpdatePostStatus(id, status);
+            return Ok($"Update post status to {status.ToUpper()} successfully");
+        }
     }
 }

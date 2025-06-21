@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
 using CleanFoodVietAPI.Data.Enums.PostMedia;
 using CleanFoodVietAPI.Data.Paginate;
@@ -11,6 +12,7 @@ using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Security.Principal;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -65,6 +67,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         ProductId = po.ProductId
                     }
                 );
+
+            if (post == null) throw new BadHttpRequestException("Post cannot be found");
 
             var postProduct = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(
