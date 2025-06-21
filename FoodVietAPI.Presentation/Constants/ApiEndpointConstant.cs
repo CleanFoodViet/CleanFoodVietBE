@@ -28,6 +28,7 @@
 
         public static class Post
         {
+            public const string RetailerFavPostEndpoint = RetailerApiEndpoint + "/{retailerId}/fav-posts";
             public const string PostsEndpoint = ApiEndpoint + "/posts";
             public const string PostEndpoint = PostsEndpoint + "/{id}";
             public const string PostStatusEndpoint = PostEndpoint + "/status";
