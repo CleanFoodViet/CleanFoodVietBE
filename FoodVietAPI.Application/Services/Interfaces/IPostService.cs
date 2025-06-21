@@ -7,5 +7,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     {
         Task<IPaginate<PostListDTO>> GetPostList(int page, int size);
         Task<PostDTO> GetPostInformation(string postId);
+
+        Task UpdatePostStatus(string postId, string status);
     }
 }

@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
 using CleanFoodVietAPI.Data.Enums.PostMedia;
 using CleanFoodVietAPI.Data.Paginate;
@@ -11,6 +12,7 @@ using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Security.Principal;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -66,6 +68,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     }
                 );
 
+            if (post == null) throw new BadHttpRequestException("Post cannot be found");
+
             var postProduct = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(
                     include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent)).Include(x => x.ProductCategory),
@@ -93,6 +97,28 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             post.ProductData = postProduct;
 
             return post;
+        }
+
+        public async Task UpdatePostStatus(string postId, string status)
+        {
+            Ulid postID = Ulid.Parse(postId);
+            var post = await _unitOfWork.GetRepository<Post>()
+                .GetAsync(predicate: p => p.PostId == postID);
+
+            if (post == null) throw new BadHttpRequestException("Post cannot be found");
+
+            if (Enum.TryParse<PostStatusEnum>(status.ToUpper(), out var result))
+            {
+                post.Status = result.ToString();
+            }
+            else
+            {
+                post.Status = PostStatusEnum.INACTIVE.ToString();
+            }
+
+            _unitOfWork.GetRepository<Post>().UpdateAsync(post);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when updating post status");
         }
     }
 }

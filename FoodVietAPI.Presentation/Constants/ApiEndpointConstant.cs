@@ -30,6 +30,7 @@
         {
             public const string PostsEndpoint = ApiEndpoint + "/posts";
             public const string PostEndpoint = PostsEndpoint + "/{id}";
+            public const string PostStatusEndpoint = PostEndpoint + "/status";
         }
 
         public static class Product
