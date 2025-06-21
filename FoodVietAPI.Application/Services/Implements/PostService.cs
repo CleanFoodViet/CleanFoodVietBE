@@ -94,5 +94,51 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             return post;
         }
+
+        public async Task<List<PostListDTO>> GetRetailerFavoritePost(string retailerId)
+        {
+            Ulid accountId = Ulid.Parse(retailerId);
+            var favoritePosts = await _unitOfWork.GetRepository<Favorite>()
+            .GetListAsync(
+                include: fav => fav.Include(f => f.Post)
+                                       .ThenInclude(p => p.PostMedias.Where(pm => pm.MediumType == PostMediaTypeEnum.THUMBNAIL.ToString()))
+                                   .Include(f => f.Post.Product)
+                                       .ThenInclude(pr => pr.ProductPrices.Where(pp => pp.IsCurrent))
+                                   .Include(f => f.Account),
+                predicate: fav => fav.RetailerId == accountId && fav.Post.Status == PostStatusEnum.ACTIVE.ToString(),
+                selector: fav => new PostListDTO(
+                    fav.Post.PostId,
+                    fav.Post.Title,
+                    fav.Post.Product.ProductPrices.First().Price,
+                    fav.Post.Product.ProductPrices.First().Currency,
+                    fav.Post.PostMedias.First().MediumUrl,
+                    fav.Post.Account.Name,
+                    fav.Post.Account.Avatar)
+            );
+
+            return favoritePosts.ToList();
+        }
+
+        public async Task UpdatePostStatus(string postId, string status)
+        {
+            Ulid postID = Ulid.Parse(postId);
+            var post = await _unitOfWork.GetRepository<Post>()
+                .GetAsync(predicate: p => p.PostId == postID);
+
+            if (post == null) throw new BadHttpRequestException("Post cannot be found");
+
+            if (Enum.TryParse<PostStatusEnum>(status.ToUpper(), out var result))
+            {
+                post.Status = result.ToString();
+            }
+            else
+            {
+                post.Status = PostStatusEnum.INACTIVE.ToString();
+            }
+
+            _unitOfWork.GetRepository<Post>().UpdateAsync(post);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when updating post status");
+        }
     }
 }
