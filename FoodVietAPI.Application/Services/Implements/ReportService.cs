@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ReportDTOs;
+using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.ReportEnums;
+using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -61,9 +64,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         rp.Account.PhoneNumber,
                         rp.Account.Avatar,
                         rp.Account.Role.Name
-                        ));
+                    ));
 
             return product;
+        }
+
+        public async Task CreateReport(CreateReportDTO createReportData)
+        {
+            var newReport = _mapper.Map<Report>(createReportData);
+            await _unitOfWork.GetRepository<Report>().InsertAsync(newReport);
+            var isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess)
+            {
+                throw new Exception("Error occurred while creating the Report.");
+            }
         }
 
         public async Task UpdateReportStatus(string reportId, string status)
