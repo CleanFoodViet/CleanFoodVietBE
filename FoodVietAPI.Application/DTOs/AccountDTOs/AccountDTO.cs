@@ -15,7 +15,7 @@ namespace CleanFoodVietAPI.Application.DTOs.AccountDTOs
         DateTime UpdatedAt,
         string RoleName,
         List<CertificateDTO>? Certificates,
-        List<AddressDTO>? Addresses
+        List<GetAddressDTO>? Addresses
     );
 };
 

@@ -27,6 +27,6 @@ namespace CleanFoodVietAPI.Application.DTOs.AuthDTOs
 
         //Address data
         [Required]
-        public List<CreateAddressDTO> Addresses { get; set; } = null!;
+        public List<AddressDTO> Addresses { get; set; } = null!;
     }
 }
