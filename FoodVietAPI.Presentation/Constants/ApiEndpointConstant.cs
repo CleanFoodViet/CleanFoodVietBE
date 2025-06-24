@@ -26,11 +26,20 @@
             public const string AccountProfileEndpoint = AccountEndpoint + "/profile";
         }
 
+        public static class Post
+        {
+            public const string RetailerFavPostEndpoint = RetailerApiEndpoint + "/{retailerId}/fav-posts";
+            public const string PostsEndpoint = ApiEndpoint + "/posts";
+            public const string PostEndpoint = PostsEndpoint + "/{id}";
+            public const string PostStatusEndpoint = PostEndpoint + "/status";
+        }
+
         public static class Product
         {
             public const string GardenerProductsEndpoint = GardenerApiEndpoint + "/{gardenerId}/products";
             public const string ProductsEndpoint = ApiEndpoint + "/products";
             public const string ProductEndpoint = ProductsEndpoint + "/{id}";
+            public const string ProductPricesEndpoint = ProductEndpoint + "/prices";
         }
 
         public static class ProductCategory
@@ -52,5 +61,18 @@
             public const string DisableServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/disable/{id}";
         }
 
+        public static class ServicePackageEndpoint
+        {
+            public const string ServicePackagesEndpoint = AdminApiEndpoint + "/service-packages";
+            public const string ServicePackageDetailEndpoint = ServicePackagesEndpoint + "/{id}";
+            public const string DisableServicePackageEndpoint = ServicePackagesEndpoint + "/disable/{id}";
+            public const string ActivateServicePackageEndpoint = ServicePackagesEndpoint + "/activate/{id}";
+        }
+
+        public static class SubscriptionContract
+        {
+            public const string SubscriptionContractsEndpoint = ApiEndpoint + "/subscription-contracts";
+            public const string SubscriptionContractEndpoint = SubscriptionContractsEndpoint + "/{id}";
+        }
     }
 }

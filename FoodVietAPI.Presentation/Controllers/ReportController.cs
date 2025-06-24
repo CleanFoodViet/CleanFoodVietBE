@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
+using ZstdSharp.Unsafe;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -33,6 +34,22 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             var res = await _reportService.GetReportInformation(id);
 
             return Ok(res);
+        }
+
+        [HttpPost(ApiEndpointConstant.Report.ReportsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        public async Task<IActionResult> CreateReport([FromBody]CreateReportDTO request)
+        {
+            await _reportService.CreateReport(request);
+            return StatusCode(StatusCodes.Status201Created, "Report create successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Report.ReportEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateReportStatus([FromRoute]string id, [FromQuery]string status)
+        {
+            await _reportService.UpdateReportStatus(id, status);
+            return Ok("Update successfully");
         }
     }
 }

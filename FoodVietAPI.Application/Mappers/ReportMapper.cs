@@ -1,0 +1,26 @@
+﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.ReportDTOs;
+using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.ReportEnums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CleanFoodVietAPI.Application.Mappers
+{
+    public class ReportMapper : Profile
+    {
+        public ReportMapper()
+        {
+            CreateMap<CreateReportDTO, Report>()
+                .ForMember(des => des.ReportId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+                .ForMember(des => des.Status, opt => opt.MapFrom(src => ReportStatusEnum.PENDING.ToString()))
+                .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+            CreateMap<Report, ReportDTO>();
+        }
+    }
+}

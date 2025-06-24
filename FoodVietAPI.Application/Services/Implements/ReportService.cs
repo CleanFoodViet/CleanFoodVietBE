@@ -1,14 +1,20 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ReportDTOs;
+using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.AccountEnums;
+using CleanFoodVietAPI.Data.Enums.ReportEnums;
+using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
+using System.Security.Principal;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -58,9 +64,41 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         rp.Account.PhoneNumber,
                         rp.Account.Avatar,
                         rp.Account.Role.Name
-                        ));
+                    ));
 
             return product;
+        }
+
+        public async Task CreateReport(CreateReportDTO createReportData)
+        {
+            var newReport = _mapper.Map<Report>(createReportData);
+            await _unitOfWork.GetRepository<Report>().InsertAsync(newReport);
+            var isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess)
+            {
+                throw new Exception("Error occurred while creating the Report.");
+            }
+        }
+
+        public async Task UpdateReportStatus(string reportId, string status)
+        {
+            Ulid rpId = Ulid.Parse(reportId);
+            Report report = await _unitOfWork.GetRepository<Report>()
+                .GetAsync(predicate: rp => rp.ReportId == rpId);
+            if (report == null) throw new BadHttpRequestException("Report is not found");
+
+            if (Enum.TryParse<ReportStatusEnum>(status.ToUpper(), out var result))
+            {
+                report.Status = result.ToString();
+            }
+            else
+            {
+                throw new BadHttpRequestException($"Report status {status.ToUpper()} is not existed");
+            }
+
+                _unitOfWork.GetRepository<Report>().UpdateAsync(report);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when updating report status");
         }
     }
 }

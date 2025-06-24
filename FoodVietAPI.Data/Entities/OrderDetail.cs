@@ -2,10 +2,10 @@
 
 namespace CleanFoodVietAPI.Data.Entities
 {
-    public class OrderItem
+    public class OrderDetail
     {
         [Key]
-        public Ulid OrderItemId { get; set; }
+        public Ulid OrderDetailId { get; set; }
         public Ulid OrderId { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
@@ -16,6 +16,5 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual Order Order { get; set; } = null!;
         public virtual Product Product { get; set; } = null!;
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
-        public virtual ICollection<OrderDeliveryItem> OrderDeliveryItems { get; set; } = new HashSet<OrderDeliveryItem>();
     }
 }

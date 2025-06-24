@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
 using CleanFoodVietAPI.Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Mappers
 {
@@ -13,7 +9,10 @@ namespace CleanFoodVietAPI.Application.Mappers
     {
         public ProductPriceMapper()
         {
-            CreateMap<ProductPrice, ProductPriceDTO>();
+            CreateMap<CreateProductDTO, ProductPrice>()
+                .ForMember(src => src.ProductPriceId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+                .ForMember(src => src.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(src => src.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }
 }

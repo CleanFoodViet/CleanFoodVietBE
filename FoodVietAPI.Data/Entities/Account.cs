@@ -6,6 +6,7 @@ namespace CleanFoodVietAPI.Data.Entities
     {
         [Key]
         public Ulid AccountId { get; set; }
+        public string Name { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
         public string Password { get; set; } = null!;
@@ -37,5 +38,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual ICollection<ServicePackageOrder> ServicePackageOrders { get; set; } = new HashSet<ServicePackageOrder>();
         public virtual ICollection<GardenerIncome> GardenerIncomes { get; set; } = new HashSet<GardenerIncome>();
         public virtual ICollection<Product> Products { get; set; } = new HashSet<Product>();
+        public virtual ICollection<ProductCategory> ProductCategories { get; set; } = new HashSet<ProductCategory>();
     }
 }

@@ -49,7 +49,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid id = Ulid.Parse(productId);
             DateTime today = DateTime.UtcNow;
 
-            var products = await _unitOfWork.GetRepository<Product>()
+            var product = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(predicate: p => p.GardenerId == id,
                           include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                          .Include(x => x.ProductCategory),
@@ -65,13 +65,38 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.ProductPrices.First().Currency,
                               p.ProductPrices.First().AvailabledDate));
 
-            return products;
+            if (product == null) throw new BadHttpRequestException("Product cannot be found");
+
+            return product;
         }
 
-        //public async Task CreateProduct(string gardenerId /*CreateProductDTO*/)
-        //{
+        public async Task CreateProduct(string gardenerId, CreateProductDTO createProductData)
+        {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            Product newProduct = _mapper.Map<Product>(createProductData);
+            ProductPrice newPrice = _mapper.Map<ProductPrice>(createProductData);
 
-        //}
+            newProduct.GardenerId = gardenerID;
+            newPrice.Productd = newProduct.ProductId;
+
+            ProductCategory category = await _unitOfWork.GetRepository<ProductCategory>()
+                   .GetAsync(predicate: pc => pc.ProductCategoryId == createProductData.ProductCategoryId);
+
+            if (category == null)
+            {
+                category = _mapper.Map<ProductCategory>(createProductData);
+                category.GardenerId = gardenerID;
+                newProduct.ProductCategoryId = category.ProductCategoryId;
+
+                await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(category);
+            }
+
+            await _unitOfWork.GetRepository<Product>().InsertAsync(newProduct);
+            await _unitOfWork.GetRepository<ProductPrice>().InsertAsync(newPrice);
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when create product");
+        }
 
         //public async Task UpdateProduct(string productId)
         //{
@@ -82,5 +107,24 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         //{
 
         //}
+
+        public async Task<List<ProductPriceDTO>> GetProductPrices(string productId)
+        {
+            Ulid productID = Ulid.Parse(productId);
+            var priceList = await _unitOfWork.GetRepository<ProductPrice>()
+                .GetListAsync(
+                    predicate: pp => pp.Productd == productID,
+                    selector: pp => new ProductPriceDTO(
+                        pp.ProductPriceId,
+                        pp.Price,
+                        pp.Currency,
+                        pp.AvailabledDate,
+                        pp.CreatedAt,
+                        pp.UpdatedAt,
+                        pp.IsCurrent)
+                );
+
+            return priceList.ToList();
+        }
     }
 }

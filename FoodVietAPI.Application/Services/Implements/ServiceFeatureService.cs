@@ -31,7 +31,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             string? filterValue = null,
             string? sortField = null,
             string? sortOrder = "asc",
-            string? search = null)   // New search parameter
+            string? search = null)
         {
             var specification = new ServiceFeatureSpecification(filterField, filterValue, sortField, sortOrder, search);
 
@@ -42,10 +42,32 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         sf.ServiceFeatureId,
                         sf.ServiceFeatureName,
                         sf.Description,
-                        sf.DefaultValue),
-                    page: page, size: size);
+                        sf.DefaultValue,   // now an int
+                        sf.Action,
+                        sf.Status),
+                    page: page,
+                    size: size);
 
             return featuresPage;
+        }
+
+        public async Task<ServiceFeatureDTO> GetServiceFeatureDetailAsync(Ulid id)
+        {
+            var repository = _unitOfWork.GetRepository<ServiceFeature>();
+
+            // Retrieve the service feature entity by ID.
+            var featureEntity = await repository.GetAsync(
+                selector: sf => sf,
+                predicate: sf => sf.ServiceFeatureId == id);
+
+            if (featureEntity == null)
+            {
+                throw new Exception("Service feature not found.");
+            }
+
+            // Map the entity to a DTO.
+            var featureDto = _mapper.Map<ServiceFeatureDTO>(featureEntity);
+            return featureDto;
         }
 
         public async Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto)
@@ -65,7 +87,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         // New update method using PATCH
         public async Task<ServiceFeatureDTO> UpdateServiceFeature(Ulid id, UpdateServiceFeatureDTO updateDto)
         {
-            // Retrieve the existing ServiceFeature entity by id using the generic overload.
+            // Retrieve the existing ServiceFeature entity by id.
             var repository = _unitOfWork.GetRepository<ServiceFeature>();
             var existingFeature = await repository.GetAsync<ServiceFeature>(
                 selector: x => x,
@@ -76,19 +98,23 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new Exception("Service Feature not found.");
             }
 
-            // Update fields if provided
+            // Validate: ensure the Action value remains unchanged.
+            if (updateDto.Action.ToString() != existingFeature.Action)
+            {
+                throw new Exception("Action cannot be updated after creation.");
+            }
+
+            // Update allowed fields
             if (!string.IsNullOrEmpty(updateDto.ServiceFeatureName))
             {
                 existingFeature.ServiceFeatureName = updateDto.ServiceFeatureName;
             }
+
             if (!string.IsNullOrEmpty(updateDto.Description))
             {
                 existingFeature.Description = updateDto.Description;
             }
-            if (!string.IsNullOrEmpty(updateDto.DefaultValue))
-            {
-                existingFeature.DefaultValue = updateDto.DefaultValue;
-            }
+
             if (!string.IsNullOrEmpty(updateDto.Status))
             {
                 // If a soft-delete is desired, we expect "DISABLE" (case-insensitive).
@@ -109,8 +135,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 }
             }
 
-            // Save the updates.
+            // Save the updates (remove await if UpdateAsync returns void)
             repository.UpdateAsync(existingFeature);
+
             var isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess)
             {

@@ -5,25 +5,26 @@
 namespace CleanFoodVietAPI.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateOrderDeliveryTable : Migration
+    public partial class AddNameFieldInAccount : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Note",
-                table: "OrderDelivery",
-                type: "varchar(255)",
-                maxLength: 255,
-                nullable: true);
+                name: "Name",
+                table: "Account",
+                type: "varchar(100)",
+                maxLength: 100,
+                nullable: false,
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Note",
-                table: "OrderDelivery");
+                name: "Name",
+                table: "Account");
         }
     }
 }

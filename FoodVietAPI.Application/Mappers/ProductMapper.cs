@@ -1,0 +1,22 @@
+﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
+using CleanFoodVietAPI.Data.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CleanFoodVietAPI.Application.Mappers
+{
+    public class ProductMapper : Profile
+    {
+        public ProductMapper()
+        {
+            CreateMap<CreateProductDTO, Product>()
+                .ForMember(des => des.ProductId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+                .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+        }
+    }
+}

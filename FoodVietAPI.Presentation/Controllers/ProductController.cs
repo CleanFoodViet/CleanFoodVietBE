@@ -1,9 +1,11 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
+using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
+using ZstdSharp.Unsafe;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -33,5 +35,27 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
             return Ok(res);
         }
+
+        [HttpPost(ApiEndpointConstant.Product.GardenerProductsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateProduct([FromRoute]string gardenerId, [FromBody]CreateProductDTO createProduct)
+        {
+            await _productService.CreateProduct(gardenerId, createProduct);
+            return Ok("Create Successfully");
+        }
+
+        //Update Product
+
+        //Disable Product
+
+        //Get Price
+        [HttpGet(ApiEndpointConstant.Product.ProductPricesEndpoint)]
+        [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProductPriceList([FromRoute]string id)
+        {
+            var res = await _productService.GetProductPrices(id);
+            return Ok(res);
+        }
+        //Update Product Price
     }
 }
