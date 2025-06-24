@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
 using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
 using CleanFoodVietAPI.Data.Entities;
 using System;
@@ -14,6 +15,9 @@ namespace CleanFoodVietAPI.Application.Mappers
         public CertificateMapper()
         {
             CreateMap<Certificate, CertificateDTO>();
+
+            CreateMap<GardenerRegisterDTO, Certificate>()
+                .ForMember(des => des.CertificateId, opt => opt.MapFrom(src => Ulid.NewUlid()));
         }
     }
 }

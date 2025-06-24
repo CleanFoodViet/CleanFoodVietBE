@@ -34,5 +34,13 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         //Gardener Registration?
+        [HttpPost(ApiEndpointConstant.Authentication.GardenerRegisterEndpoint)]
+        [ProducesResponseType(typeof(AuthDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GardenerRegister([FromBody] GardenerRegisterDTO data)
+        {
+            var res = await _accountService.GardenerRegister(data);
+
+            return Ok(res);
+        }
     }
 }
