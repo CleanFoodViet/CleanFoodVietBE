@@ -5,6 +5,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 {
     public interface ISubscriptionService
     {
-        Task<IPaginate<SubscriptionContractDTO>> GetSubscriptionContractList(int page, int size);
+        Task<IPaginate<SubscriptionContractListDTO>> GetSubscriptionContractList(int page, int size);
+        Task<SubscriptionContractDTO> GetSubscriptionContractInformation(string id);
     }
 }
