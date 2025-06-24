@@ -8,8 +8,8 @@ namespace CleanFoodVietAPI.Application.Mappers
     {
         public AddressMapper()
         {
-            CreateMap<Address, AddressDTO>();
-            CreateMap<CreateAddressDTO, Address>()
+            CreateMap<Address, GetAddressDTO>();
+            CreateMap<AddressDTO, Address>()
                 .ForMember(des => des.AddressId, opt => opt.MapFrom(src => Ulid.NewUlid()));
         }
     }

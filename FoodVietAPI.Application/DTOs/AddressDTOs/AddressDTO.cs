@@ -1,8 +1,13 @@
-﻿namespace CleanFoodVietAPI.Application.DTOs.AddressDTOs
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CleanFoodVietAPI.Application.DTOs.AddressDTOs
 {
     public record AddressDTO
     {
-        public Ulid AddressId { get; set; }
         public string AddressLine { get; set; } = null!;
         public string City { get; set; } = null!;
         public string Province { get; set; } = null!;
