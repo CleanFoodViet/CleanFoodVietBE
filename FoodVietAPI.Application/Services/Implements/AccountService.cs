@@ -158,6 +158,36 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             return new AuthDTO(token, newAccount.AccountId.ToString());
         }
+
+        public async Task<AuthDTO> GardenerRegister(GardenerRegisterDTO registerData)
+        {
+            Account account = await _unitOfWork.GetRepository<Account>()
+                                       .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
+                                                                 a.Email == registerData.Email);
+            if (account != null) throw new BadHttpRequestException("Phone Number or Email have already been used");
+
+            Role role = await _unitOfWork.GetRepository<Role>().GetAsync(predicate: r => r.Name == AccountRoleEnum.GARDENER.ToString());
+
+            var newAccount = _mapper.Map<Account>(registerData);
+            newAccount.RoleId = role.RoleId;
+
+            Certificate certificate = _mapper.Map<Certificate>(registerData);
+            certificate.GardenerId = newAccount.AccountId;
+
+            List<Address> addresses = _mapper.Map<List<Address>>(registerData);
+            addresses.ForEach(x => x.AccountId = newAccount.AccountId);
+
+            await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
+            await _unitOfWork.GetRepository<Certificate>().InsertAsync(certificate);
+            await _unitOfWork.GetRepository<Address>().InsertRangeAsync(addresses);
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when registering");
+
+            var token = JwtUtil.GenerateJwtToken(newAccount);
+
+            return new AuthDTO(token, newAccount.AccountId.ToString());
+        }
         #endregion
     }
 }

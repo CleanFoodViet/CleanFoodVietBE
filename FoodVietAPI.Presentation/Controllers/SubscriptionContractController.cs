@@ -18,10 +18,19 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpGet(ApiEndpointConstant.SubscriptionContract.SubscriptionContractsEndpoint)]
-        [ProducesResponseType(typeof(IPaginate<SubscriptionContractDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IPaginate<SubscriptionContractListDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetListSubscriptionContractList(int page = 1, int size = 10)
         {
             var res = await _subscriptionService.GetSubscriptionContractList(page, size);
+
+            return Ok(res);
+        }
+
+        [HttpGet(ApiEndpointConstant.SubscriptionContract.SubscriptionContractEndpoint)]
+        [ProducesResponseType(typeof(SubscriptionContractDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetListSubscriptionContractInformation([FromRoute]string id)
+        {
+            var res = await _subscriptionService.GetSubscriptionContractInformation(id);
 
             return Ok(res);
         }
