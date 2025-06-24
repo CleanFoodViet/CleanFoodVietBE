@@ -13,8 +13,9 @@
         public static class Authentication
         {
             public const string AuthEndpoint = ApiEndpoint + "/auth";
-            public const string LoginEndpoint = ApiEndpoint + "/auth";
-            public const string RegisterEndpoint = ApiEndpoint + "/auth";
+            public const string LoginEndpoint = ApiEndpoint + "/login";
+            public const string RegisterEndpoint = ApiEndpoint + "/register";
+            public const string GardenerRegisterEndpoint = ApiEndpoint + "/gardener-register";
         }
 
         public static class Account
