@@ -16,5 +16,6 @@ namespace CleanFoodVietAPI.Data.Entities
 
         public virtual Account Account { get; set; } = null!;
         public virtual ServicePackage ServicePackage { get; set; } = null!;
+        public virtual ICollection<SubscriptionContractBenefit> SubscriptionContractBenefits { get; set; } = new HashSet<SubscriptionContractBenefit>();
     }
 }

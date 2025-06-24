@@ -40,6 +40,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual DbSet<ProductPrice> ProductPrices { get; set; } = null!;
         public virtual DbSet<OrderDelivery> OrderDeliveries { get; set; } = null!;
         public virtual DbSet<OrderDeliveryDetail> OrderDeliveryDetails { get; set; } = null!;
+        public virtual DbSet<SubscriptionContractBenefit> SubscriptionContractBenefits { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -876,6 +877,32 @@ namespace CleanFoodVietAPI.Data.Entities
                      .HasForeignKey(e => e.GardenerId)
                      .OnDelete(DeleteBehavior.Restrict)
                      .HasConstraintName("FK_Product_GardenerAccount");
+            });
+
+            modelBuilder.Entity<SubscriptionContractBenefit>(entity =>
+            {
+                entity.ToTable("SubscriptionContractBenefit");
+                entity.HasKey(e => e.SubscriptionContractBenefitId).HasName("PK_SubscriptionContractBenefit");
+
+                entity.Property(e => e.SubscriptionContractBenefitId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.SubscriptionContractId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.BenefitType).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.DefaultValue).IsRequired();
+                entity.Property(e => e.RemainingValue).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired().HasColumnType("datetime");
+                entity.Property(e => e.UpdatedAt).IsRequired().HasColumnType("datetime");
+
+                entity.HasIndex(e => e.SubscriptionContractId).HasDatabaseName("IX_SubscriptionContractBenefit_SubscriptionContractId");
+
+                entity.HasOne(e => e.SubscriptionContract)
+                     .WithMany(e => e.SubscriptionContractBenefits)
+                     .HasForeignKey(e => e.SubscriptionContractId)
+                     .OnDelete(DeleteBehavior.Restrict)
+                     .HasConstraintName("FK_SubscriptionContractBenefit_SubscriptionContract");
             });
         }
     }
