@@ -101,7 +101,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(predicate: ce => ce.CertificateId == certificateID);
             if (certificate == null) throw new BadHttpRequestException("Certificate is not found");
 
-            _mapper.Map(updateData, certificate);
+            certificate.Name = String.IsNullOrEmpty(updateData.Name) ? certificate.Name : updateData.Name; 
+            certificate.ImageUrl = String.IsNullOrEmpty(updateData.ImageUrl) ? certificate.ImageUrl : updateData.ImageUrl; 
+            certificate.IssuingAuthority = String.IsNullOrEmpty(updateData.IssuingAuthority) ? certificate.IssuingAuthority : updateData.IssuingAuthority; 
+            certificate.Status = String.IsNullOrEmpty(updateData.Status) ? certificate.Status : updateData.Status;
+            certificate.IssueDate = updateData.IssueDate;
+            certificate.ExpiryDate = updateData.ExpiryDate;
+
             _unitOfWork.GetRepository<Certificate>().UpdateAsync(certificate);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when update certificate");
