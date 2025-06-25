@@ -1,5 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
@@ -30,11 +31,18 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             [FromQuery] string? filterValue = null,
             [FromQuery] string? sortField = null,
             [FromQuery] string? sortOrder = "asc",
-            [FromQuery] string? search = null)  // New
+            [FromQuery] string? search = null)
         {
+            // 1) Validate incoming filterField & sortField
+            var validationError = ValidateFilterAndSort<ServiceFeature>(filterField, sortField);
+            if (validationError != null)
+                return validationError;
+
+            // 2) Fetch paged data
             var features = await _serviceFeatureService
                 .GetServiceFeatureList(page, size, filterField, filterValue, sortField, sortOrder, search);
 
+            // 3) Shape response
             var response = new
             {
                 page = features.Page,
@@ -44,7 +52,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                 filterField = filterField ?? string.Empty,
                 filterValue = filterValue ?? string.Empty,
                 sortField = sortField ?? string.Empty,
-                sortOrder = sortOrder,
+                sortOrder,
                 search = search ?? string.Empty,
                 items = features.Items
             };

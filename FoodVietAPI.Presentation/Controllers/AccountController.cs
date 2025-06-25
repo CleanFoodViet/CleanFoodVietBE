@@ -65,7 +65,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         //Account address controller
         [HttpGet(ApiEndpointConstant.Account.AccountAddressesEndpoint)]
-        [ProducesResponseType(typeof(List<AddressDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<GetAddressDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAccountAddressList([FromRoute]string id)
         {
             var res = await _addressService.GetAccountAddressList(id);
@@ -73,7 +73,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpGet(ApiEndpointConstant.Account.AccountAddressEndpoint)]
-        [ProducesResponseType(typeof(AddressDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetAddressDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAccountAddressDetail([FromRoute]string id, [FromRoute]string addressId)
         {
             var res = await _addressService.GetAccountAddressDetail(id, addressId);

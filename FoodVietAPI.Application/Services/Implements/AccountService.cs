@@ -79,8 +79,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                 acc.IsVerified,
                                 acc.UpdatedAt,
                                 acc.Role.Name,
-                                _mapper.Map<List<GetCertificateDTO>>(acc.Certificates.ToList()),
-                                _mapper.Map<List<AddressDTO>>(acc.Addresses.ToList())));
+                                _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
+                                _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())));
 
             if (account == null) throw new BadHttpRequestException("Account is not found");
 
