@@ -14,7 +14,7 @@ namespace CleanFoodVietAPI.Application.DTOs.AccountDTOs
         bool IsVerified,
         DateTime UpdatedAt,
         string RoleName,
-        List<CertificateDTO>? Certificates,
+        List<GetCertificateDTO>? Certificates,
         List<AddressDTO>? Addresses
     );
 };
