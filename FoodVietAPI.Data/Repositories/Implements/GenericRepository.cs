@@ -143,6 +143,10 @@ namespace CleanFoodVietAPI.Data.Repositories.Implements
                 query = query.Where(spec.Criteria);
             }
 
+            // apply includes
+            foreach (var include in spec.Includes)
+                query = query.Include(include);
+
             // Apply sorting
             if (spec.OrderBy != null)
             {

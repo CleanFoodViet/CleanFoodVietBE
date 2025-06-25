@@ -10,5 +10,8 @@ namespace CleanFoodVietAPI.Data.Specifications
         // Sorting
         Expression<Func<T, object>>? OrderBy { get; }
         Expression<Func<T, object>>? OrderByDescending { get; }
+
+        // INCLUDES: e.g., x => x.RelatedEntity
+        IReadOnlyList<Expression<Func<T, object>>> Includes { get; }
     }
 }
