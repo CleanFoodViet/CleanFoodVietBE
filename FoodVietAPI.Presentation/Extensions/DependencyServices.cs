@@ -51,6 +51,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IChatMessageService, ChatMessageService>();
+            services.AddScoped<ICertificateService, CertificateService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IOrderService, OrderService>();
