@@ -15,6 +15,12 @@ namespace CleanFoodVietAPI.Data.Specifications
 
         public Expression<Func<T, object>>? OrderByDescending { get; private set; }
 
+        private readonly List<Expression<Func<T, object>>> _includes = new();
+        public IReadOnlyList<Expression<Func<T, object>>> Includes => _includes;
+
+        protected void AddInclude(Expression<Func<T, object>> includeExpression)
+          => _includes.Add(includeExpression);
+
         protected void ApplyOrderBy(Expression<Func<T, object>> orderByExpression)
         {
             OrderBy = orderByExpression;

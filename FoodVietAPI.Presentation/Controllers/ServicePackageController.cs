@@ -1,5 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ServicePackageDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Http;
@@ -36,9 +37,17 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             [FromQuery] string? sortOrder = "asc",
             [FromQuery] string? search = null)
         {
-            var packagesPage = await _servicePackageService.GetServicePackagesWithFeaturesAsync(
-                page, size, filterField, filterValue, sortField, sortOrder, search);
+            // 1) Validate filter & sort fields
+            var validationError = ValidateFilterAndSort<ServicePackage>(filterField, sortField);
+            if (validationError != null)
+                return validationError;
 
+            // 2) Fetch paged packages (with features)
+            var packagesPage = await _servicePackageService
+                .GetServicePackagesWithFeaturesAsync(
+                    page, size, filterField, filterValue, sortField, sortOrder, search);
+
+            // 3) Shape response
             var response = new
             {
                 page = packagesPage.Page,
@@ -48,7 +57,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                 filterField = filterField ?? string.Empty,
                 filterValue = filterValue ?? string.Empty,
                 sortField = sortField ?? string.Empty,
-                sortOrder = sortOrder,
+                sortOrder,
                 search = search ?? string.Empty,
                 items = packagesPage.Items
             };

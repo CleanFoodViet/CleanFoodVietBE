@@ -80,5 +80,11 @@
             public const string SubscriptionContractsEndpoint = ApiEndpoint + "/subscription-contracts";
             public const string SubscriptionContractEndpoint = SubscriptionContractsEndpoint + "/{id}";
         }
+
+        public static class ServicePackageOrder
+        {
+            public const string ServicePackageOrdersEndpoint = AdminApiEndpoint + "/service-package-orders";
+            public const string ServicePackageOrderEndpoint = ServicePackageOrdersEndpoint + "/{id}";
+        }
     }
 }
