@@ -6,7 +6,11 @@ using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
+using Stripe.Checkout;
+using CleanFoodVietAPI.Application.Utils;
 using System.Text;
+
 
 namespace CleanFoodVietAPI.Presentation.Extensions
 {
@@ -46,7 +50,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             #region Service DI
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAccountService, Application.Services.Implements.AccountService>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<ICartService, CartService>();
@@ -56,7 +60,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IPostService, PostService>();
-            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductService, Application.Services.Implements.ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IServiceFeatureService, ServiceFeatureService>();
@@ -110,6 +114,33 @@ namespace CleanFoodVietAPI.Presentation.Extensions
                     }
                 };
             });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Configures Stripe.NET with your SecretKey and registers any required Stripe clients.
+        /// </summary>
+        public static IServiceCollection AddStripeConfiguration(
+            this IServiceCollection services,
+            IConfiguration config)
+        {
+            // 1) Read keys
+            var stripeSection = config.GetSection("Stripe");
+            var secretKey = stripeSection["SecretKey"];
+            var publishableKey = stripeSection["PublishableKey"];
+
+            // 2) Configure the static Stripe API key
+            StripeConfiguration.ApiKey = secretKey;
+
+            // 3) (Optional) make your publishable key available via IOptions<StripeOptions>
+            services.Configure<StripeOptions>(stripeSection);
+
+            // 4) (Optional) register any Stripe SDK clients you want to inject
+            services.AddSingleton<SessionService>();
+            services.AddSingleton<CustomerService>();
+            services.AddSingleton<PaymentIntentService>();
+            // … etc.
 
             return services;
         }
