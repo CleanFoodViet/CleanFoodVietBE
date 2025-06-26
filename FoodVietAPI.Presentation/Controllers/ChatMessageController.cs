@@ -1,12 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CleanFoodVietAPI.Application.DTOs.ChatMessageDTOs;
+using CleanFoodVietAPI.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using ZstdSharp.Unsafe;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
     [ApiController]
     public class ChatMessageController : BaseController<ChatMessageController>
     {
-        public ChatMessageController(ILogger<ChatMessageController> logger) : base(logger)
+        private readonly IChatMessageService _chatMessageService;
+        public ChatMessageController(ILogger<ChatMessageController> logger, IChatMessageService chatMessageService) : base(logger)
         {
+            _chatMessageService = chatMessageService;
+        }
+
+        [HttpPost()]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SaveMessage([FromBody]ChatMessageDTO request)
+        {
+            await _chatMessageService.SaveMessage(request);
+            return Ok("Save message successfully");
         }
     }
 }
