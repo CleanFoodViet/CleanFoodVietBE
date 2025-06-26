@@ -3,6 +3,7 @@ using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
 using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
 using CleanFoodVietAPI.Application.DTOs.NotificationDTOs;
+using CleanFoodVietAPI.Application.DTOs.PostDTOs;
 using CleanFoodVietAPI.Application.Services.Implements;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
@@ -19,9 +20,11 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         private readonly ICertificateService _certificateService;
         private readonly IAppointmentService _appointmentService;
         private readonly INotificationService _notificationService;
+        private readonly IPostService _postService;
 
         public AccountController(ILogger<AccountController> logger, IAccountService accountService, IAddressService addressService,
-            ICertificateService certificateService, IAppointmentService appointmentService, INotificationService notificationService) 
+            ICertificateService certificateService, IAppointmentService appointmentService, INotificationService notificationService,
+            IPostService postService) 
             : base(logger)
         {
             _accountService = accountService;
@@ -29,6 +32,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _certificateService = certificateService;
             _appointmentService = appointmentService;
             _notificationService = notificationService;
+            _postService = postService;
         }
 
         #region Account APIs Controller
@@ -173,6 +177,31 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         {
             var res = await _notificationService.GetNotificationList(id);
             return Ok(res);
+        }
+
+        //Retailer's Favorite post APIs controller
+        [HttpGet(ApiEndpointConstant.Account.RetailerFavPostEndpoint)]
+        [ProducesResponseType(typeof(List<PostListDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetFavoritePostList([FromRoute] string retailerId)
+        {
+            var res = await _postService.GetRetailerFavoritePost(retailerId);
+            return Ok(res);
+        }
+
+        [HttpPost(ApiEndpointConstant.Account.RetailerFavPostEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> AddPostToFavorite([FromRoute]string id, [FromRoute]string postId)
+        {
+            await _postService.AddPostToFavorite(postId, id);
+            return Ok("Add post to favorite successfully");
+        }
+
+        [HttpDelete(ApiEndpointConstant.Account.RetailerFavPostEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> RemovePostFromFavorite([FromRoute] string id, [FromRoute] string postId)
+        {
+            await _postService.RemovePostFromFavorite(postId, id);
+            return Ok("Remove Post from favorite successfully");
         }
     }
 }

@@ -31,14 +31,6 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok(res);
         }
 
-        [HttpGet(ApiEndpointConstant.Post.RetailerFavPostEndpoint)]
-        [ProducesResponseType(typeof(List<PostListDTO>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetPostList([FromRoute] string retailerId)
-        {
-            var res = await _postService.GetRetailerFavoritePost(retailerId);
-            return Ok(res);
-        }
-
         //Create Post
 
         //Update Post (basic information)
