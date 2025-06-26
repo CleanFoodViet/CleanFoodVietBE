@@ -99,6 +99,28 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return post;
         }
 
+        public async Task UpdatePostStatus(string postId, string status)
+        {
+            Ulid postID = Ulid.Parse(postId);
+            var post = await _unitOfWork.GetRepository<Post>()
+                .GetAsync(predicate: p => p.PostId == postID);
+
+            if (post == null) throw new BadHttpRequestException("Post cannot be found");
+
+            if (Enum.TryParse<PostStatusEnum>(status.ToUpper(), out var result))
+            {
+                post.Status = result.ToString();
+            }
+            else
+            {
+                post.Status = PostStatusEnum.INACTIVE.ToString();
+            }
+
+            _unitOfWork.GetRepository<Post>().UpdateAsync(post);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when updating post status");
+        }
+
         public async Task<List<PostListDTO>> GetRetailerFavoritePost(string retailerId)
         {
             Ulid accountId = Ulid.Parse(retailerId);
@@ -123,26 +145,48 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return favoritePosts.ToList();
         }
 
-        public async Task UpdatePostStatus(string postId, string status)
+        public async Task AddPostToFavorite(string postId, string retailerId)
         {
+            Ulid accountId = Ulid.Parse(retailerId);
             Ulid postID = Ulid.Parse(postId);
-            var post = await _unitOfWork.GetRepository<Post>()
-                .GetAsync(predicate: p => p.PostId == postID);
 
-            if (post == null) throw new BadHttpRequestException("Post cannot be found");
+            var account = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: ac => ac.AccountId == accountId);
+            if (account == null) throw new BadHttpRequestException("Account is not found");
 
-            if (Enum.TryParse<PostStatusEnum>(status.ToUpper(), out var result))
+            var post = await _unitOfWork.GetRepository<Post>().GetAsync(predicate: po => po.PostId == postID);
+            if (post == null) throw new BadHttpRequestException("Post is not found");
+
+            Favorite newFavPost = new Favorite
             {
-                post.Status = result.ToString();
-            }
-            else
-            {
-                post.Status = PostStatusEnum.INACTIVE.ToString();
-            }
+                FavoriteId = Ulid.NewUlid(),
+                CreatedAt = DateTime.UtcNow,
+                RetailerId = accountId,
+                PostId = postID
+            };
 
-            _unitOfWork.GetRepository<Post>().UpdateAsync(post);
+            await _unitOfWork.GetRepository<Favorite>().InsertAsync(newFavPost);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when updating post status");
+            if (!isSuccess) throw new Exception("Error occur when add post to favorite");
+        }
+
+        public async Task RemovePostFromFavorite(string postId, string retailerId)
+        {
+            Ulid accountId = Ulid.Parse(retailerId);
+            Ulid postID = Ulid.Parse(postId);
+
+            var account = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: ac => ac.AccountId == accountId);
+            if (account == null) throw new BadHttpRequestException("Account is not found");
+
+            var post = await _unitOfWork.GetRepository<Post>().GetAsync(predicate: po => po.PostId == postID);
+            if (post == null) throw new BadHttpRequestException("Post is not found");
+
+            var favorite = await _unitOfWork.GetRepository<Favorite>()
+                .GetAsync(predicate: fa => fa.PostId == postID && fa.RetailerId == accountId);
+            if (favorite == null) throw new BadHttpRequestException("Favorite post is not found");
+
+            _unitOfWork.GetRepository<Favorite>().DeleteAsync(favorite);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when delete post from favorite");
         }
     }
 }
