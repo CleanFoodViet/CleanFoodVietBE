@@ -80,7 +80,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                 acc.UpdatedAt,
                                 acc.Role.Name,
                                 _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
-                                _mapper.Map<List<AddressDTO>>(acc.Addresses.ToList())));
+                                _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())));
 
             if (account == null) throw new BadHttpRequestException("Account is not found");
 

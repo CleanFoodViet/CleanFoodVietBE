@@ -1,15 +1,15 @@
-﻿using CleanFoodVietAPI.Application.DTOs.SubscriptionContractBenefitDTOs;
+﻿using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderPaymentDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs
+namespace CleanFoodVietAPI.Application.DTOs.SubscriptionOrderDTOs
 {
-    public class SubscriptionContractDTO
+    public class ServicePackageOrderDTO
     {
-        public Ulid SubscriptionId { get; set; }
+        public Ulid ServicePackageOrderId { get; set; }
         public Ulid GardenerId { get; set; }
 
         // NEW: Gardener info
@@ -18,12 +18,10 @@ namespace CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs
         public string GardenerPhone { get; set; } = null!;
 
         public Ulid ServicePackageId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public decimal TotalAmount { get; set; }
         public string Status { get; set; } = null!;
-        public string SubscriptionType { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
-        public List<SubscriptionContractBenefitDTO> Benefits { get; set; } = new();
+        public List<SubscriptionOrderPaymentDTO> Payments { get; set; } = new();
     }
 }
 

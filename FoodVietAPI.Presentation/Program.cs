@@ -8,6 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi("v1",
     options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
+builder.Services.AddSwaggerGen();
 
 #region DI Setup
 builder.Services.AddCorsConfig();
@@ -22,6 +23,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var app = builder.Build();
 
 app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
 app.MapScalarApiReference(options =>
     options
         .WithTitle("Template API")
