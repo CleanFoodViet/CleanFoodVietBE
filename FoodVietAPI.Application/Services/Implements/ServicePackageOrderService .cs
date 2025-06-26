@@ -32,16 +32,23 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 filterField, filterValue, sortField, sortOrder, search);
 
             var repo = _uow.GetRepository<ServicePackageOrder>();
-            var result = await repo.GetPagingListAsync(
+            return await repo.GetPagingListAsync(
                 spec: spec,
                 selector: so => new ServicePackageOrderDTO
                 {
                     ServicePackageOrderId = so.ServicePackageOrderId,
                     GardenerId = so.GardenerId,
+
+                    // map gardener info
+                    GardenerName = so.Gardener.Name,
+                    GardenerEmail = so.Gardener.Email,
+                    GardenerPhone = so.Gardener.PhoneNumber,
+
                     ServicePackageId = so.ServicePackageId,
                     TotalAmount = so.TotalAmount,
                     Status = so.Status,
                     CreatedAt = so.CreatedAt,
+
                     Payments = so.ServicePackageOrderPayments
                                   .Select(p => new SubscriptionOrderPaymentDTO
                                   {
@@ -55,21 +62,19 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 },
                 page: page,
                 size: size);
-
-            return result;
         }
 
-        // Get the details of a specific service package order by its ID
         public async Task<ServicePackageOrderDTO> GetOrderDetailAsync(Ulid orderId)
         {
             var repo = _uow.GetRepository<ServicePackageOrder>();
-
-            // Load the order with its payments
-            var order = await repo.GetAsync(
+            var dto = await repo.GetAsync(
                 selector: so => new ServicePackageOrderDTO
                 {
                     ServicePackageOrderId = so.ServicePackageOrderId,
                     GardenerId = so.GardenerId,
+                    GardenerName = so.Gardener.Name,
+                    GardenerEmail = so.Gardener.Email,
+                    GardenerPhone = so.Gardener.PhoneNumber,
                     ServicePackageId = so.ServicePackageId,
                     TotalAmount = so.TotalAmount,
                     Status = so.Status,
@@ -87,10 +92,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 },
                 predicate: so => so.ServicePackageOrderId == orderId);
 
-            if (order == null)
-                throw new Exception("Order not found.");
+            if (dto == null)
+                throw new KeyNotFoundException("Service package order not found.");
 
-            return order;
+            return dto;
         }
 
     }
