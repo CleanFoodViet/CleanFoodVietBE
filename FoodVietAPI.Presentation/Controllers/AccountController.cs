@@ -1,5 +1,7 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
 using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
+using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
+using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
@@ -12,12 +14,17 @@ namespace CleanFoodVietAPI.Presentation.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IAddressService _addressService;
+        private readonly ICertificateService _certificateService;
+        private readonly IAppointmentService _appointmentService;
 
-        public AccountController(ILogger<AccountController> logger, IAccountService accountService, IAddressService addressService) 
+        public AccountController(ILogger<AccountController> logger, IAccountService accountService, IAddressService addressService,
+            ICertificateService certificateService, IAppointmentService appointmentService) 
             : base(logger)
         {
             _accountService = accountService;
             _addressService = addressService;
+            _certificateService = certificateService;
+            _appointmentService = appointmentService;
         }
 
         [HttpGet(ApiEndpointConstant.Account.RetailerAccountsEndpoint)]
@@ -36,7 +43,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok(res);
         }
 
-        [HttpPatch(ApiEndpointConstant.Account.AccountEndpoint)]
+        [HttpPatch(ApiEndpointConstant.Account.AccountStatuEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateAccountStatus([FromRoute] string id, [FromQuery] string status)
         {
@@ -79,7 +86,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Account.AccountAddressesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateAddres([FromRoute]string id, [FromBody]AddressDTO request)
+        public async Task<IActionResult> CreateAddress([FromRoute]string id, [FromBody]AddressDTO request)
         {
             await _addressService.CreateAddresss(request, id);
             return StatusCode(StatusCodes.Status201Created, "Create address successfully");
@@ -99,6 +106,55 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         {
             await _addressService.DeletAddress(addressId, id);
             return Ok("Delete address successfully");
+        }
+
+        //Gardener Certificate controllers
+        [HttpGet(ApiEndpointConstant.Account.GardenerCertificatesEndpoint)]
+        [ProducesResponseType(typeof(List<AddressDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetGardenerCertificateList([FromRoute] string id)
+        {
+            var res = await _certificateService.GetGardenerCertificateList(id);
+            return Ok(res);
+        }
+
+        [HttpGet(ApiEndpointConstant.Account.GardenerCertificateEndpoint)]
+        [ProducesResponseType(typeof(AddressDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetGardenerCertificateDetail([FromRoute] string id, [FromRoute] string certificateId)
+        {
+            var res = await _certificateService.GetGardenerCertificateDetail(id, certificateId);
+            return Ok(res);
+        }
+
+        [HttpPost(ApiEndpointConstant.Account.GardenerCertificatesEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateCertificate([FromRoute] string id, [FromBody] CertificateDTO request)
+        {
+            await _certificateService.CreateCertificate(request, id);
+            return StatusCode(StatusCodes.Status201Created, "Create address successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Account.GardenerCertificateEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateCertificate([FromRoute] string id, [FromRoute] string certificateId, [FromBody] CertificateDTO request)
+        {
+            await _certificateService.UpdateCertificate(request, certificateId, id);
+            return Ok("Update address successfully");
+        }
+
+        [HttpDelete(ApiEndpointConstant.Account.GardenerCertificateEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteCertificate([FromRoute] string id, [FromRoute] string certificateId)
+        {
+            await _certificateService.DeleteCertificate(certificateId, id);
+            return Ok("Delete address successfully");
+        }
+
+        [HttpGet(ApiEndpointConstant.Account.AccountAppointmentEndpoint)]
+        [ProducesResponseType(typeof(List<AppointmentListDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAccountAppointmentList([FromRoute] string accountId)
+        {
+            var res = await _appointmentService.GetAppointmentList(accountId);
+            return Ok(res);
         }
     }
 }

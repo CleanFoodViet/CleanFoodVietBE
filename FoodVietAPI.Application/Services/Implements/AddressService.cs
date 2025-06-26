@@ -95,6 +95,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(predicate: address => address.AddressId == addressID);
             if (address == null) throw new BadHttpRequestException("Address is not found");
 
+            address.AddressLine = String.IsNullOrEmpty(updateData.AddressLine) ? address.AddressLine : updateData.AddressLine;
+            address.City = String.IsNullOrEmpty(updateData.City) ? address.City : updateData.City;
+            address.Province = String.IsNullOrEmpty(updateData.Province) ? address.Province : updateData.Province;
+            address.PostalCode = String.IsNullOrEmpty(updateData.PostalCode) ? address.PostalCode : updateData.PostalCode;
+            address.Country = String.IsNullOrEmpty(updateData.Country) ? address.Country : updateData.Country;
+
             _mapper.Map(updateData, address);
             _unitOfWork.GetRepository<Address>().UpdateAsync(address);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;

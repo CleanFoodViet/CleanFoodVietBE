@@ -35,8 +35,8 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             {
                 options.AddPolicy("Default", policy =>
                 {
-                    policy.WithOrigins("https://localhost:7174") // Change domain url of FE for server-side cookie purpose
-                    .AllowCredentials()
+                    policy.AllowAnyOrigin() // Change domain url of FE for server-side cookie purpose
+                    //.AllowCredentials()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
@@ -55,6 +55,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IChatMessageService, ChatMessageService>();
+            services.AddScoped<ICertificateService, CertificateService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IOrderService, OrderService>();
@@ -95,19 +96,19 @@ namespace CleanFoodVietAPI.Presentation.Extensions
                     OnMessageReceived = context =>
                     {
                         // Prefer the cookie first
-                        if (context.Request.Cookies.TryGetValue("jwt", out var jwt))
+                        //if (context.Request.Cookies.TryGetValue("jwt", out var jwt))
+                        //{
+                        //    context.Token = jwt;
+                        //}
+                        //// If not found, fall back to header (for Scalar testing)
+                        //else if (context.Request.Headers.ContainsKey("Authorization"))
+                        //{
+                        var token = context.Request.Headers["Authorization"].ToString();
+                        if (token.StartsWith("Bearer "))
                         {
-                            context.Token = jwt;
+                            context.Token = token.Substring("Bearer ".Length);
                         }
-                        // If not found, fall back to header (for Scalar testing)
-                        else if (context.Request.Headers.ContainsKey("Authorization"))
-                        {
-                            var token = context.Request.Headers["Authorization"].ToString();
-                            if (token.StartsWith("Bearer "))
-                            {
-                                context.Token = token.Substring("Bearer ".Length);
-                            }
-                        }
+                        //}
 
                         return Task.CompletedTask;
                     }

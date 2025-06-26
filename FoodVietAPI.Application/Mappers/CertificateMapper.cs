@@ -14,9 +14,12 @@ namespace CleanFoodVietAPI.Application.Mappers
     {
         public CertificateMapper()
         {
-            CreateMap<Certificate, CertificateDTO>();
+            CreateMap<Certificate, GetCertificateDTO>();
 
             CreateMap<GardenerRegisterDTO, Certificate>()
+                .ForMember(des => des.CertificateId, opt => opt.MapFrom(src => Ulid.NewUlid()));
+
+            CreateMap<CertificateDTO, Certificate>()
                 .ForMember(des => des.CertificateId, opt => opt.MapFrom(src => Ulid.NewUlid()));
         }
     }
