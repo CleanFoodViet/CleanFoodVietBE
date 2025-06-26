@@ -54,18 +54,24 @@ namespace CleanFoodVietAPI.Application.Specifications
             }
 
             // SEARCH across GardenerId or ServicePackageId
+            // Currently support ulid, and Gardener name, email, phone number
             if (!string.IsNullOrWhiteSpace(search))
             {
                 Expression<Func<ServicePackageOrder, bool>> searchExpr;
 
                 if (Ulid.TryParse(search, out var parsedUlid))
                 {
-                    searchExpr = x => x.GardenerId == parsedUlid
-                                  || x.ServicePackageId == parsedUlid;
+                    searchExpr = x =>
+                        x.GardenerId == parsedUlid ||
+                        x.ServicePackageId == parsedUlid;
                 }
                 else
                 {
-                    searchExpr = x => x.Status.Contains(search);
+                    searchExpr = x =>
+                        x.Status.Contains(search) ||
+                        x.Gardener.Name.Contains(search) ||
+                        x.Gardener.Email.Contains(search) ||
+                        x.Gardener.PhoneNumber.Contains(search);
                 }
 
                 criteria = criteria == null
@@ -73,7 +79,8 @@ namespace CleanFoodVietAPI.Application.Specifications
                     : criteria.AndAlso(searchExpr);
             }
 
-            Criteria = criteria;
+            this.Criteria = criteria;
+
 
             // SORT
             if (!string.IsNullOrWhiteSpace(sortField))

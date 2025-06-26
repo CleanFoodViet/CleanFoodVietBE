@@ -54,21 +54,25 @@ namespace CleanFoodVietAPI.Application.Specifications
             }
 
             // 2. SEARCH across GardenerId or ServicePackageId
+            // Currently support ulid, and Gardener name, email, phone number
             if (!string.IsNullOrWhiteSpace(search))
             {
                 Expression<Func<SubscriptionContract, bool>> searchExpr;
 
-                // if search is a ULID, compare by equality
                 if (Ulid.TryParse(search, out var parsedUlid))
                 {
-                    searchExpr = x => x.GardenerId == parsedUlid
-                                  || x.ServicePackageId == parsedUlid;
+                    searchExpr = x =>
+                        x.GardenerId == parsedUlid ||
+                        x.ServicePackageId == parsedUlid;
                 }
                 else
                 {
-                    // otherwise only search on string fields
-                    searchExpr = x => x.Status.Contains(search)
-                                  || x.SubscriptionType.Contains(search);
+                    searchExpr = x =>
+                        x.Status.Contains(search) ||
+                        x.SubscriptionType.Contains(search) ||
+                        x.Account.Name.Contains(search) ||
+                        x.Account.Email.Contains(search) ||
+                        x.Account.PhoneNumber.Contains(search);
                 }
 
                 criteria = criteria == null
@@ -76,7 +80,8 @@ namespace CleanFoodVietAPI.Application.Specifications
                     : criteria.AndAlso(searchExpr);
             }
 
-            Criteria = criteria;
+            this.Criteria = criteria;
+
 
             // 3. SORTING
             if (!string.IsNullOrWhiteSpace(sortField))

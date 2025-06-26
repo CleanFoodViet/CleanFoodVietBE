@@ -40,11 +40,19 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 {
                     SubscriptionId = sc.SubscriptionId,
                     GardenerId = sc.GardenerId,
+
+                    // map gardener info
+                    GardenerName = sc.Account.Name,
+                    GardenerEmail = sc.Account.Email,
+                    GardenerPhone = sc.Account.PhoneNumber,
+
                     ServicePackageId = sc.ServicePackageId,
                     StartDate = sc.StartDate,
                     EndDate = sc.EndDate,
                     Status = sc.Status,
                     SubscriptionType = sc.SubscriptionType,
+                    CreatedAt = sc.CreatedAt,
+
                     Benefits = sc.SubscriptionContractBenefits
                                  .Select(b => new SubscriptionContractBenefitDTO
                                  {
@@ -64,13 +72,14 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task<SubscriptionContractDTO> GetContractDetailAsync(Ulid subscriptionId)
         {
             var repo = _uow.GetRepository<SubscriptionContract>();
-
-            // Load the contract with its benefits
-            var contract = await repo.GetAsync(
+            var dto = await repo.GetAsync(
                 selector: sc => new SubscriptionContractDTO
                 {
                     SubscriptionId = sc.SubscriptionId,
                     GardenerId = sc.GardenerId,
+                    GardenerName = sc.Account.Name,
+                    GardenerEmail = sc.Account.Email,
+                    GardenerPhone = sc.Account.PhoneNumber,
                     ServicePackageId = sc.ServicePackageId,
                     StartDate = sc.StartDate,
                     EndDate = sc.EndDate,
@@ -91,10 +100,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 },
                 predicate: sc => sc.SubscriptionId == subscriptionId);
 
-            if (contract == null)
-                throw new Exception("Subscription contract not found.");
+            if (dto == null)
+                throw new KeyNotFoundException("Subscription contract not found.");
 
-            return contract;
+            return dto;
         }
 
     }
