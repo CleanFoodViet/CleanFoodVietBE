@@ -1,5 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ChatMessageDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using ZstdSharp.Unsafe;
 
@@ -14,7 +15,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _chatMessageService = chatMessageService;
         }
 
-        [HttpPost()]
+        [HttpPost(ApiEndpointConstant.ChatMessage.ChatMessagesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> SaveMessage([FromBody]ChatMessageDTO request)
         {

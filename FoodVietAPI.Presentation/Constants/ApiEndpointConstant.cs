@@ -48,6 +48,11 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string AppointmentEndpoint = AppointmentsEndpoint + "/{id}";
         }
 
+        public static class ChatMessage
+        {
+            public const string ChatMessagesEndpoint = ApiEndpoint + "/chat-message";
+        }
+
         public static class Post
         {
             public const string RetailerFavPostEndpoint = RetailerApiEndpoint + "/{retailerId}/fav-posts";
