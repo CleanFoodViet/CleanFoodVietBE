@@ -2,6 +2,8 @@
 using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
 using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
+using CleanFoodVietAPI.Application.DTOs.NotificationDTOs;
+using CleanFoodVietAPI.Application.Services.Implements;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
@@ -16,17 +18,20 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         private readonly IAddressService _addressService;
         private readonly ICertificateService _certificateService;
         private readonly IAppointmentService _appointmentService;
+        private readonly INotificationService _notificationService;
 
         public AccountController(ILogger<AccountController> logger, IAccountService accountService, IAddressService addressService,
-            ICertificateService certificateService, IAppointmentService appointmentService) 
+            ICertificateService certificateService, IAppointmentService appointmentService, INotificationService notificationService) 
             : base(logger)
         {
             _accountService = accountService;
             _addressService = addressService;
             _certificateService = certificateService;
             _appointmentService = appointmentService;
+            _notificationService = notificationService;
         }
 
+        #region Account APIs Controller
         [HttpGet(ApiEndpointConstant.Account.RetailerAccountsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<AccountDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetRetailerAccountList([FromQuery]int page = 1, [FromQuery]int size = 10)
@@ -66,8 +71,9 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             await _accountService.UpdateProfile(id, data);
             return Ok("Update profile successfully");
         }
+        #endregion
 
-        //Account address controller
+        #region Address APIs Controller
         [HttpGet(ApiEndpointConstant.Account.AccountAddressesEndpoint)]
         [ProducesResponseType(typeof(List<GetAddressDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAccountAddressList([FromRoute]string id)
@@ -107,8 +113,9 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             await _addressService.DeletAddress(addressId, id);
             return Ok("Delete address successfully");
         }
+        #endregion
 
-        //Gardener Certificate controllers
+        #region Gardener Certification APIs Controller
         [HttpGet(ApiEndpointConstant.Account.GardenerCertificatesEndpoint)]
         [ProducesResponseType(typeof(List<AddressDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetGardenerCertificateList([FromRoute] string id)
@@ -148,12 +155,23 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             await _certificateService.DeleteCertificate(certificateId, id);
             return Ok("Delete address successfully");
         }
+        #endregion
 
+        //Appointment api controller
         [HttpGet(ApiEndpointConstant.Account.AccountAppointmentEndpoint)]
         [ProducesResponseType(typeof(List<AppointmentListDTO>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAccountAppointmentList([FromRoute] string accountId)
         {
             var res = await _appointmentService.GetAppointmentList(accountId);
+            return Ok(res);
+        }
+
+        //Notificaiton api controller
+        [HttpGet(ApiEndpointConstant.Account.AccountNotificationEndpoint)]
+        [ProducesResponseType(typeof(List<NotificationDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAccountNotification([FromRoute] string id)
+        {
+            var res = await _notificationService.GetNotificationList(id);
             return Ok(res);
         }
     }

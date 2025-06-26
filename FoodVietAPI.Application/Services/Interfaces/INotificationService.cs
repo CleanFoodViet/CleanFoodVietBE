@@ -5,5 +5,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     public interface INotificationService
     {
         Task<List<NotificationDTO>> GetNotificationList(string accountId);
+        Task CreateNotification(CreateNotificationDTO request);
     }
 }

@@ -40,6 +40,8 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string GardenerCertificateEndpoint = GardenerCertificatesEndpoint + "/{certificateId}";
 
             public const string AccountAppointmentEndpoint = AccountEndpoint + "/appointments";
+
+            public const string AccountNotificationEndpoint = AccountEndpoint + "/notifications";
         }
 
         public static class Appointment
@@ -51,6 +53,11 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class ChatMessage
         {
             public const string ChatMessagesEndpoint = ApiEndpoint + "/chat-message";
+        }
+
+        public static class Notification
+        {
+            public const string NotificationEndpoint = ApiEndpoint + "/notifications";
         }
 
         public static class Post
