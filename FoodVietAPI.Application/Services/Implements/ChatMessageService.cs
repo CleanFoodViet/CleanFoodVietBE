@@ -13,5 +13,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
+
+
     }
 }
