@@ -32,5 +32,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             return notificationList.ToList();
         }
+
+        public async Task CreateNotification(CreateNotificationDTO request)
+        {
+            Notification newNoti = _mapper.Map<Notification>(request);
+            await _unitOfWork.GetRepository<Notification>().InsertAsync(newNoti);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when create notification");
+        }
     }
 }
