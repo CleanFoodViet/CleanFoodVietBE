@@ -10,6 +10,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public Ulid ServicePackageId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public int DurationInDays { get; set; } // Duration in days for the subscription contract
         public string Status { get; set; } = null!;
         public string SubscriptionType { get; set; } = null!;
         public DateTime CreatedAt { get; set; }

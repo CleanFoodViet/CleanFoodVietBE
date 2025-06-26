@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddStripeConfiguration(builder.Configuration);
 builder.Services.AddOpenApi("v1",
     options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 
