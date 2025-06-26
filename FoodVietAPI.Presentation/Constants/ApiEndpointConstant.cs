@@ -1,4 +1,6 @@
-﻿namespace CleanFoodVietAPI.Presentation.Constants
+﻿using System.Runtime.CompilerServices;
+
+namespace CleanFoodVietAPI.Presentation.Constants
 {
     public static class ApiEndpointConstant
     {
@@ -22,9 +24,11 @@
         {
             //Account endpoint
             public const string AccountsEndpoint = ApiEndpoint + "/accounts";
+            public const string AccountEndpoint = AccountsEndpoint + "/{id}";
+            public const string AccountStatuEndpoint = AccountEndpoint + "/status";
+
             public const string RetailerAccountsEndpoint = AccountsEndpoint + "/retailers";
             public const string GardenerAccountsEndpoint = AccountsEndpoint + "/gardeners";
-            public const string AccountEndpoint = AccountsEndpoint + "/{id}";
             public const string AccountProfileEndpoint = AccountEndpoint + "/profile";
 
             //Account address endpoints
@@ -34,6 +38,14 @@
             //Gardener Certificate endpoints
             public const string GardenerCertificatesEndpoint = AccountEndpoint + "/gardener/certificates";
             public const string GardenerCertificateEndpoint = GardenerCertificatesEndpoint + "/{certificateId}";
+
+            public const string AccountAppointmentEndpoint = AccountEndpoint + "/appointments";
+        }
+
+        public static class Appointment
+        {
+            public const string AppointmentsEndpoint = ApiEndpoint + "/appointments";
+            public const string AppointmentEndpoint = AppointmentsEndpoint + "/{id}";
         }
 
         public static class Post
