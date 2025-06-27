@@ -44,7 +44,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             public Ulid GardenerId { get; set; }
             public Ulid ServicePackageId { get; set; }
             public int Quantity { get; set; } = 1;
-            public string? Location { get; set; }
+            public string Location { get; set; } = "VN"; // For test only, hard-coded to Vietnam
         }
 
         /// <summary>
