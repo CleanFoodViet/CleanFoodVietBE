@@ -13,5 +13,29 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
+
+        public async Task GetRetailerCarts(string retailerId)
+        {
+
+        }
+
+        public async Task GetCartItemDetail()
+        {
+
+        }
+
+        public async Task UpdateCarts()
+        {
+
+        }
+
+
     }
 }
+
+/* Carts {Cart of 1 Gardener Products}
+ * 
+ * 
+ * 
+ * 
+ */

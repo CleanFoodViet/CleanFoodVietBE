@@ -56,6 +56,6 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             var res = await _productService.GetProductPrices(id);
             return Ok(res);
         }
-        //Update Product Price
+        //Update Product Price - Is Allow?
     }
 }
