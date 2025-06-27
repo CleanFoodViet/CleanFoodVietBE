@@ -30,6 +30,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 predicate: acc => acc.Role.Name == AccountRoleEnum.RETAILER.ToString(),
                 selector: acc => new AccountDTO(
                     acc.AccountId,
+                    acc.Name,
                     acc.Email,
                     acc.PhoneNumber,
                     acc.Gender,
@@ -50,6 +51,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 predicate: acc => acc.Role.Name == AccountRoleEnum.GARDENER.ToString(),
                 selector: acc => new AccountDTO(
                     acc.AccountId,
+                    acc.Name,
                     acc.Email,
                     acc.PhoneNumber,
                     acc.Gender,
@@ -71,6 +73,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                           include: acc => acc.Include(x => x.Role),
                           selector: acc => new AccountDTO(
                                 acc.AccountId,
+                                acc.Name,
                                 acc.Email,
                                 acc.PhoneNumber,
                                 acc.Gender,

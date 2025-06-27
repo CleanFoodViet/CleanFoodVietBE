@@ -170,7 +170,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             {
                 sessionUrl = session.Url,
                 gardenerId = gardenerDto.AccountId,
-                //gardenerName = gardenerDto.Name,
+                gardenerName = gardenerDto.Name,
                 gardenerEmail = gardenerDto.Email,
                 gardenerPhone = gardenerDto.PhoneNumber
             });
