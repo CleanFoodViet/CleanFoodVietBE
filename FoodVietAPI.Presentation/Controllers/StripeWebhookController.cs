@@ -23,6 +23,7 @@ public class StripeWebhookController : ControllerBase
     }
 
     [HttpPost]
+    [Route("test-post")]
     public async Task<IActionResult> TestPost()
     {
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
@@ -60,6 +61,7 @@ public class StripeWebhookController : ControllerBase
     }
 
     [HttpPost]
+    [Route("post")]
     public async Task<IActionResult> Post()
     {
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
