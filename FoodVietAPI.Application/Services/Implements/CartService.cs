@@ -19,23 +19,14 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         }
 
-        public async Task GetCartItemDetail()
+        public async Task GetCartItemDetail(string cartItemId)
         {
 
         }
 
-        public async Task UpdateCarts()
+        public async Task ModifyCart()
         {
 
         }
-
-
     }
 }
-
-/* Carts {Cart of 1 Gardener Products}
- * 
- * 
- * 
- * 
- */
