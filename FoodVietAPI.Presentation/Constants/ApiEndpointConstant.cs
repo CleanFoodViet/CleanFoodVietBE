@@ -39,7 +39,15 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string GardenerCertificatesEndpoint = AccountEndpoint + "/gardener/certificates";
             public const string GardenerCertificateEndpoint = GardenerCertificatesEndpoint + "/{certificateId}";
 
+            //Appointment endpoints
             public const string AccountAppointmentEndpoint = AccountEndpoint + "/appointments";
+
+            //Notification endpoints
+            public const string AccountNotificationEndpoint = AccountEndpoint + "/notifications";
+
+            //Favorite post endpoints
+            public const string RetailerFavPostsEndpoint = AccountEndpoint + "/retailer/fav-posts";
+            public const string RetailerFavPostEndpoint = RetailerFavPostsEndpoint + "/{postId}";
         }
 
         public static class Appointment
@@ -48,9 +56,24 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string AppointmentEndpoint = AppointmentsEndpoint + "/{id}";
         }
 
+        public static class RetailerCart
+        {
+            //Retailer cart endpoint
+            public const string RetailerCartEndpoint = RetailerApiEndpoint + "/{id}/carts";
+        }
+
+        public static class ChatMessage
+        {
+            public const string ChatMessagesEndpoint = ApiEndpoint + "/chat-message";
+        }
+
+        public static class Notification
+        {
+            public const string NotificationEndpoint = ApiEndpoint + "/notifications";
+        }
+
         public static class Post
         {
-            public const string RetailerFavPostEndpoint = RetailerApiEndpoint + "/{retailerId}/fav-posts";
             public const string PostsEndpoint = ApiEndpoint + "/posts";
             public const string PostEndpoint = PostsEndpoint + "/{id}";
             public const string PostStatusEndpoint = PostEndpoint + "/status";

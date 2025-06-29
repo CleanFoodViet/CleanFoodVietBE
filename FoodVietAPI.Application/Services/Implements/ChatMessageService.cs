@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.ChatMessageDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
@@ -14,6 +15,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
+        public async Task SaveMessage(ChatMessageDTO request)
+        {
+            ChatMessage message = _mapper.Map<ChatMessage>(request);
 
+            await _unitOfWork.GetRepository<ChatMessage>().InsertAsync(message);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when saving message");
+        }
     }
 }

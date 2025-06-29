@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Data.Entities
 {
@@ -9,6 +10,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public Ulid AccountId { get; set; }
         public string Message { get; set; } = null!;
         public string? Link { get; set; }
+        public string Sender { get; set; } = null!;
         public bool IsRead { get; set; }
         public DateTime CreatedAt { get; set; }
 

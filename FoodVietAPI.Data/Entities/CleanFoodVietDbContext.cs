@@ -346,6 +346,7 @@ namespace CleanFoodVietAPI.Data.Entities
                     .IsFixedLength();
                 entity.Property(e => e.Message).IsRequired().HasMaxLength(1000);
                 entity.Property(e => e.Link).HasMaxLength(255);
+                entity.Property(e => e.Sender).HasMaxLength(50).IsRequired().HasDefaultValue("System");
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.HasIndex(e => e.AccountId).HasDatabaseName("IX_Notification_AccountId");
