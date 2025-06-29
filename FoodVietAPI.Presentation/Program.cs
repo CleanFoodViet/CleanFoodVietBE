@@ -9,7 +9,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddStripeConfiguration(builder.Configuration);
 builder.Services.AddOpenApi("v1",
     options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
-builder.Services.AddSwaggerGen();
 
 #region DI Setup
 builder.Services.AddCorsConfig();
@@ -17,6 +16,7 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddUnitOfWork();
 builder.Services.AddJwtAuthenticationScheme(builder.Configuration);
 builder.Services.AddServices(builder.Configuration);
+builder.Services.AddConfigSwagger();
 #endregion
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
