@@ -1,5 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Utils;
+using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe.Checkout;
@@ -13,10 +14,9 @@ namespace CleanFoodVietAPI.Presentation.Controllers
     }
 
     [ApiController]
-    [Route("api/v1/admin/payments")]
     public class PaymentsController : ControllerBase
     {
-        private readonly SessionService _sessionService;
+        private readonly SessionService _stripeSession;
         private readonly IServicePackageService _packageSvc;
         private readonly IAccountService _accountSvc;
         private readonly IServicePackageOrderService _orderSvc;
@@ -24,14 +24,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         private readonly IWebHostEnvironment _env;
 
         public PaymentsController(
-            SessionService sessionService,
+            SessionService stripeSession,
             IServicePackageService packageSvc,
             IAccountService accountSvc,
             IServicePackageOrderService orderSvc,
             IConfiguration config,
             IWebHostEnvironment env)
         {
-            _sessionService = sessionService;
+            _stripeSession = stripeSession;
             _packageSvc = packageSvc;
             _accountSvc = accountSvc;
             _orderSvc = orderSvc;
@@ -50,7 +50,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         /// <summary>
         /// Creates a Stripe Checkout Session and returns its URL. TEST ONLY.
         /// </summary>
-        [HttpPost("test-create-checkout-session")]
+        [HttpPost(ApiEndpointConstant.Payment.GardenerTestPaymentsEndpoint)]
         public async Task<IActionResult> TestCreateCheckoutSession()
         {
             // In real life, pull these from your ServicePackage entity:
@@ -94,53 +94,49 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             };
 
             // Create the session
-            var session = await _sessionService.CreateAsync(options);
+            var session = await _stripeSession.CreateAsync(options);
 
             // Return the URL to your FE so you can window.location = session.Url
             return Ok(new { sessionUrl = session.Url });
         }
 
         /// <summary>
-        /// Creates a Stripe Checkout Session for a Service Package Order.
+        /// Creates a real Checkout Session for the specified service package.
         /// </summary>
-        /// 
-        [HttpPost("create-checkout-session")]
+        [HttpPost(ApiEndpointConstant.Payment.GardenerPaymentsEndpoint)]
         public async Task<IActionResult> CreateCheckoutSession(
             [FromBody] CreateCheckoutRequest req)
         {
-            // 1) Load Gardener & Package from your services
-            var gardenerDto = await _accountSvc
-                .GetAccountInformation(req.GardenerId.ToString());
-            var packageDto = await _packageSvc
-                .GetServicePackageDetailAsync(req.ServicePackageId);
+            // 1) load gardener & package
+            var gardenerDto = await _accountSvc.GetAccountInformation(req.GardenerId.ToString());
+            var packageDto = await _packageSvc.GetServicePackageDetailAsync(req.ServicePackageId);
 
-            // 2) Create the pending order (synchronous!)
-            //    This inserts Order + Payment (PENDING) and returns orderId
+            // 2) insert PENDING order+payment
             var orderId = _orderSvc.CreatePendingOrder(
                 gardenerDto.AccountId,
                 packageDto.ServicePackageId,
                 packageDto.Price
             );
 
-            // 3) Build test email for locale (dev only)
-            var emailRaw = gardenerDto.Email;
-            if (_env.IsDevelopment() && !string.IsNullOrEmpty(req.Location))
+            // 3) build test email suffix (dev only)
+            var email = gardenerDto.Email;
+            if (_env.IsDevelopment() && !string.IsNullOrWhiteSpace(req.Location))
             {
-                var parts = emailRaw.Split('@');
-                if (parts.Length == 2)
-                    emailRaw = $"{parts[0]}+location_{req.Location}@{parts[1]}";
+                var at = email.IndexOf('@');
+                if (at > 0)
+                    email = $"{email[..at]}+{req.Location}{email[at..]}";
             }
 
-            // 4) Build Stripe Checkout Session
-            var sessionOptions = new SessionCreateOptions
+            // 4) create Stripe session
+            var session = await _stripeSession.CreateAsync(new SessionCreateOptions
             {
                 PaymentMethodTypes = new List<string> { "card" },
                 Mode = "payment",
-                CustomerEmail = emailRaw,
+                CustomerEmail = email,
                 ClientReferenceId = orderId.ToString(),
                 LineItems = new List<SessionLineItemOptions>
             {
-                new SessionLineItemOptions
+                new()
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
@@ -150,22 +146,18 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                         {
                             Name        = packageDto.PackageName,
                             Description =
-                               $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)"
+                              $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)"
                         }
                     },
-                    // Quantity of package is always 1 in this case
-                    Quantity = 1
+                    Quantity = req.Quantity
                 }
             },
                 SuccessUrl =
                   $"{_config["App:FrontendDomain"]}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl =
-                  $"{_config["App:FrontendDomain"]}/payment-cancelled"
-            };
+                CancelUrl = $"{_config["App:FrontendDomain"]}/payment-cancelled"
+            });
 
-            var session = await _sessionService.CreateAsync(sessionOptions);
-
-            // 5) Return Session URL + Gardener info
+            // 5) return session URL + gardener info
             return Ok(new
             {
                 sessionUrl = session.Url,

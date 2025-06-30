@@ -125,5 +125,17 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string ServicePackageOrdersEndpoint = AdminApiEndpoint + "/service-package-orders";
             public const string ServicePackageOrderEndpoint = ServicePackageOrdersEndpoint + "/{id}";
         }
+
+        public static class Payment
+        {
+            public const string GardenerPaymentsEndpoint = GardenerApiEndpoint + "/payments";
+            public const string GardenerTestPaymentsEndpoint = GardenerApiEndpoint + "/test-payments";
+        }
+
+        public static class Webhook
+        {
+            public const string StripeWebhookEndpointTest = AdminApiEndpoint + "/webhook/stripe/test-post";
+            public const string StripeWebhookEndpoint = AdminApiEndpoint + "/webhook/stripe";
+        }
     }
 }
