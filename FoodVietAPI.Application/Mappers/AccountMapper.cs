@@ -35,7 +35,7 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForAllMembers(opt => opt.Condition((src, des, srcMember) => srcMember != null));
 
-
+            CreateMap<Account, RegisterResponse>();
         }
     }
 }
