@@ -29,5 +29,13 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             await _cartService.ModifyCart(id, request);
             return Ok("Modify Retailers' Cart Successfully");
         }
+
+        [HttpDelete(ApiEndpointConstant.RetailerCart.RetailerCartEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteCarts([FromRoute] string id)
+        {
+            await _cartService.DeleteCart(id);
+            return Ok("Delete Retailers' Cart Successfully");
+        }
     }
 }

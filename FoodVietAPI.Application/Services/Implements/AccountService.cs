@@ -162,6 +162,27 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return new AuthDTO(token, newAccount.AccountId.ToString());
         }
 
+        public async Task<AuthDTO> CreateAdmin(RegisterDTO registerData)
+        {
+            Account account = await _unitOfWork.GetRepository<Account>()
+                                       .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
+                                                                 a.Email == registerData.Email);
+            if (account != null) throw new BadHttpRequestException("Phone Number or Email have already been used");
+
+            Role role = await _unitOfWork.GetRepository<Role>().GetAsync(predicate: r => r.Name == AccountRoleEnum.ADMIN.ToString());
+
+            var newAccount = _mapper.Map<Account>(registerData);
+            newAccount.RoleId = role.RoleId;
+
+            await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when registering");
+
+            var token = JwtUtil.GenerateJwtToken(newAccount);
+
+            return new AuthDTO(token, newAccount.AccountId.ToString());
+        }
+
         public async Task<AuthDTO> GardenerRegister(GardenerRegisterDTO registerData)
         {
             Account account = await _unitOfWork.GetRepository<Account>()

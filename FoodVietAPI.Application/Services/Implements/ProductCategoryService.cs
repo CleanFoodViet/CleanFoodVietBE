@@ -2,6 +2,7 @@
 using CleanFoodVietAPI.Application.DTOs.ProductCategoryDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -77,9 +78,14 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task DeleteProductCategory(string id)
         {
             Ulid categoryId = Ulid.Parse(id);
+
             var category = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetAsync(predicate: pc => pc.ProductCategoryId == categoryId);
             if (category == null) throw new BadHttpRequestException("Product category is not found");
+
+            var products = await _unitOfWork.GetRepository<Product>()
+                .GetListAsync(predicate: p => p.ProductCategoryId == categoryId);
+            if (products != null) throw new DeletionRestrictedException($"Deletion Restricted: Product Category {category.Name} is currently having Product related to.");
 
             _unitOfWork.GetRepository<ProductCategory>().DeleteAsync(category);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
