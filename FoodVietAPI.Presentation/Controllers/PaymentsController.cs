@@ -2,17 +2,12 @@
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using CleanFoodVietAPI.Application.DTOs.Payment;
 using Microsoft.Extensions.Options;
 using Stripe.Checkout;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
-    public class CreateCheckoutRequest
-    {
-        public Ulid GardenerId { get; set; }
-        public Ulid ServicePackageId { get; set; }
-    }
-
     [ApiController]
     public class PaymentsController : ControllerBase
     {
@@ -37,14 +32,6 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _orderSvc = orderSvc;
             _config = config;
             _env = env;
-        }
-
-        public class CreateCheckoutRequest
-        {
-            public Ulid GardenerId { get; set; }
-            public Ulid ServicePackageId { get; set; }
-            public int Quantity { get; set; } = 1;
-            public string Location { get; set; } = "VN"; // For test only, hard-coded to Vietnam
         }
 
         /// <summary>
@@ -149,7 +136,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                               $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)"
                         }
                     },
-                    Quantity = req.Quantity
+                    Quantity = req.Quantity // default to 1 if not specified
                 }
             },
                 SuccessUrl =
