@@ -1,11 +1,11 @@
 ﻿using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stripe;
 using Stripe.Checkout;
 
 [ApiController]
-[Route("api/v1/admin/webhook/stripe")]
 public class StripeWebhookController : ControllerBase
 {
     private readonly string _whSecret;
@@ -22,8 +22,7 @@ public class StripeWebhookController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost]
-    [Route("test-post")]
+    [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpointTest)]
     public async Task<IActionResult> TestPost()
     {
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
@@ -65,14 +64,13 @@ public class StripeWebhookController : ControllerBase
         }
     }
 
-    [HttpPost]
-    [Route("post")]
+    [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpoint)]
     public async Task<IActionResult> Post()
     {
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
         var signature = Request.Headers["Stripe-Signature"];
-
         Event stripeEvent;
+
         try
         {
             stripeEvent = EventUtility.ConstructEvent(
@@ -84,7 +82,7 @@ public class StripeWebhookController : ControllerBase
         }
         catch (StripeException e)
         {
-            _logger.LogWarning("Invalid webhook signature: {Msg}", e.Message);
+            _logger.LogWarning("Invalid signature: {Msg}", e.Message);
             return BadRequest();
         }
 
@@ -93,30 +91,17 @@ public class StripeWebhookController : ControllerBase
         switch (stripeEvent.Type)
         {
             case "checkout.session.completed":
-                var session = stripeEvent.Data.Object as Session;
-                if (session != null)
-                {
-                    _logger.LogInformation("Handling checkout.session.completed for {REF}",
-                                            session.ClientReferenceId);
-                    await _orderSvc.HandleCheckoutSessionCompletedAsync(session);
-                }
+                var session = (Session)stripeEvent.Data.Object!;
+                _logger.LogInformation("Handling session {ID}", session.Id);
+                await _orderSvc.HandleCheckoutSessionCompletedAsync(session);
                 break;
 
             case "payment_intent.payment_failed":
-                var intent = stripeEvent.Data.Object as PaymentIntent;
-                if (intent != null)
-                {
-                    _logger.LogInformation("Handling payment_intent.payment_failed for {ID}",
-                                            intent.Id);
-                    await _orderSvc.HandlePaymentFailedAsync(intent);
-                }
-                break;
-
-            default:
-                _logger.LogInformation("Ignored event type {Type}", stripeEvent.Type);
+                var intent = (PaymentIntent)stripeEvent.Data.Object!;
+                _logger.LogInformation("Handling payment failure {ID}", intent.Id);
+                await _orderSvc.HandlePaymentFailedAsync(intent);
                 break;
         }
-
         return Ok();
     }
 }
