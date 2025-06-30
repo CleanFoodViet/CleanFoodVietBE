@@ -114,5 +114,24 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when modify retailer Cart. (DB error)");
         }
+
+        public async Task DeleteCart(string retailerId)
+        {
+            Ulid retailerID = Ulid.Parse(retailerId);
+            var carts = await _unitOfWork.GetRepository<Cart>()
+                .GetListAsync(include: ca => ca.Include(x => x.CartItems),
+                              predicate: ca => ca.RetailerId == retailerID);
+
+            if (carts == null) throw new Exception("Retailer don't have any carts");
+
+            foreach(var cart in carts)
+            {
+                _unitOfWork.GetRepository<CartItem>().DeleteRangeAsync(cart.CartItems);
+                _unitOfWork.GetRepository<Cart>().DeleteAsync(cart);
+            }
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if(!isSuccess) throw new Exception("Error occur when delete retailer carts (DB error)");
+        }
     }
 }

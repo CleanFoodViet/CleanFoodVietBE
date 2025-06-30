@@ -6,5 +6,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     {
         Task<List<CartDTO>> GetRetailerCarts(string retailerId);
         Task ModifyCart(string reatilerId, List<CartDTO> request);
+        Task DeleteCart(string retailerId);
     }
 }
