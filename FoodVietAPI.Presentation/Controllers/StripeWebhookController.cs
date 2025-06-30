@@ -32,7 +32,12 @@ public class StripeWebhookController : ControllerBase
         Event stripeEvent;
         try
         {
-            stripeEvent = EventUtility.ConstructEvent(json, signature, _whSecret);
+            stripeEvent = EventUtility.ConstructEvent(
+                json: json,
+                stripeSignatureHeader: signature,
+                secret: _whSecret,
+                throwOnApiVersionMismatch: false
+            );
         }
         catch (StripeException e)
         {
@@ -71,7 +76,11 @@ public class StripeWebhookController : ControllerBase
         try
         {
             stripeEvent = EventUtility.ConstructEvent(
-                json, signature, _whSecret);
+                json: json,
+                stripeSignatureHeader: signature,
+                secret: _whSecret,
+                throwOnApiVersionMismatch: false
+            );
         }
         catch (StripeException e)
         {
