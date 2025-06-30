@@ -1,4 +1,5 @@
 ﻿using CleanFoodVietAPI.Application.DTOs;
+using CleanFoodVietAPI.Data.Exceptions;
 using System.Net;
 
 namespace CleanFoodVietAPI.Presentation.Middlewares
@@ -40,6 +41,10 @@ namespace CleanFoodVietAPI.Presentation.Middlewares
                 case UnauthorizedAccessException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     statusCode = (int)HttpStatusCode.Unauthorized;
+                    break;
+                case DeletionRestrictedException:
+                    response.StatusCode = (int)HttpStatusCode.Conflict;
+                    statusCode = (int)HttpStatusCode.Conflict;
                     break;
                 default:
                     //Unhandle Error/Exception
