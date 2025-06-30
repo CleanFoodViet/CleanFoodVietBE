@@ -25,32 +25,32 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpPost(ApiEndpointConstant.Authentication.RegisterEndpoint)]
-        [ProducesResponseType(typeof(AuthDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
         public async Task<IActionResult> Register([FromBody] RegisterDTO data)
         {
             var res = await _accountService.Register(data);
 
-            return Ok(res);
+            return StatusCode(StatusCodes.Status201Created, res);
         }
 
         //Gardener Registration?
         [HttpPost(ApiEndpointConstant.Authentication.GardenerRegisterEndpoint)]
-        [ProducesResponseType(typeof(AuthDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
         public async Task<IActionResult> GardenerRegister([FromBody] GardenerRegisterDTO data)
         {
             var res = await _accountService.GardenerRegister(data);
 
-            return Ok(res);
+            return StatusCode(StatusCodes.Status201Created, res);
         }
 
         //Admin Registration/createion
         [HttpPost(ApiEndpointConstant.Authentication.AdminRegisterEndpoint)]
-        [ProducesResponseType(typeof(AuthDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
         public async Task<IActionResult> AdminRegister([FromBody] RegisterDTO data)
         {
             var res = await _accountService.CreateAdmin(data);
 
-            return Ok(res);
+            return StatusCode(StatusCodes.Status201Created, res);
         }
     }
 }
