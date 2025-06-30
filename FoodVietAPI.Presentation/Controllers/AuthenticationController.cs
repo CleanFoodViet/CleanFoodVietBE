@@ -42,5 +42,15 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
             return Ok(res);
         }
+
+        //Admin Registration/createion
+        [HttpPost(ApiEndpointConstant.Authentication.AdminRegisterEndpoint)]
+        [ProducesResponseType(typeof(AuthDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> AdminRegister([FromBody] RegisterDTO data)
+        {
+            var res = await _accountService.CreateAdmin(data);
+
+            return Ok(res);
+        }
     }
 }

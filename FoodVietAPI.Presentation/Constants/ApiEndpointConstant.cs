@@ -18,6 +18,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string LoginEndpoint = ApiEndpoint + "/login";
             public const string RegisterEndpoint = ApiEndpoint + "/register";
             public const string GardenerRegisterEndpoint = ApiEndpoint + "/gardener-register";
+            public const string AdminRegisterEndpoint = ApiEndpoint + "/admin-register";
         }
 
         public static class Account
