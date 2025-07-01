@@ -108,6 +108,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
                     Format = "time",
                     Example = OpenApiAnyFactory.CreateFromJson("\"13:45:42.0000000\"")
                 });
+                options.EnableAnnotations();
             });
             return services;
         }
