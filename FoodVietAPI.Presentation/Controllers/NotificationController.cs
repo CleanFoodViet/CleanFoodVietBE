@@ -3,6 +3,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -17,6 +18,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Account.AccountNotificationEndpoint)]
         [ProducesResponseType(typeof(List<NotificationDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get account's notification List")]
         public async Task<IActionResult> GetAccountNotification([FromRoute] string id)
         {
             var res = await _notificationService.GetNotificationList(id);
@@ -25,6 +27,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Notification.NotificationEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create a Notification")]
         public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationDTO request)
         {
             await _notificationService.CreateNotification(request);

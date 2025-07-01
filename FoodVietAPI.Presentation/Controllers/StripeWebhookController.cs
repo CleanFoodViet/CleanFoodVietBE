@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stripe;
 using Stripe.Checkout;
+using Swashbuckle.AspNetCore.Annotations;
 
 [ApiController]
 public class StripeWebhookController : ControllerBase
@@ -23,6 +24,7 @@ public class StripeWebhookController : ControllerBase
     }
 
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpointTest)]
+    [SwaggerOperation(Summary = "Test post payment")]
     public async Task<IActionResult> TestPost()
     {
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
@@ -65,6 +67,7 @@ public class StripeWebhookController : ControllerBase
     }
 
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpoint)]
+    [SwaggerOperation(Summary = "Post Payment for Payment Return Process")]
     public async Task<IActionResult> Post()
     {
         var json = await new StreamReader(Request.Body).ReadToEndAsync();

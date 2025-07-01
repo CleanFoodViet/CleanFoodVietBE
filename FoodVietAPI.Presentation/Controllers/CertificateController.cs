@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -18,6 +19,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Certificate.GardenerCertificatesEndpoint)]
         [ProducesResponseType(typeof(List<AddressDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all certificates of Gardener")]
         public async Task<IActionResult> GetGardenerCertificateList([FromRoute] string id)
         {
             var res = await _certificateService.GetGardenerCertificateList(id);
@@ -26,6 +28,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
         [ProducesResponseType(typeof(AddressDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Gardener certificate's information")]
         public async Task<IActionResult> GetGardenerCertificateDetail([FromRoute] string id, [FromRoute] string certificateId)
         {
             var res = await _certificateService.GetGardenerCertificateDetail(id, certificateId);
@@ -34,6 +37,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Certificate.GardenerCertificatesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create a Certificate for Gardener")]
         public async Task<IActionResult> CreateCertificate([FromRoute] string id, [FromBody] CertificateDTO request)
         {
             await _certificateService.CreateCertificate(request, id);
@@ -42,6 +46,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update the Certificate's information")]
         public async Task<IActionResult> UpdateCertificate([FromRoute] string id, [FromRoute] string certificateId, [FromBody] CertificateDTO request)
         {
             await _certificateService.UpdateCertificate(request, certificateId, id);
@@ -50,6 +55,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpDelete(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete a Gardener's Certificate")]
         public async Task<IActionResult> DeleteCertificate([FromRoute] string id, [FromRoute] string certificateId)
         {
             await _certificateService.DeleteCertificate(certificateId, id);

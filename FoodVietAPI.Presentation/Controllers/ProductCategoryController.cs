@@ -3,6 +3,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -19,6 +20,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.ProductCategory.ProductCategoriesEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetProductCategoryDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all Gardener Product Categories")]
         public async Task<IActionResult> GetProductCategoryList([FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             var res = await _productCategoryService.GetProductCategoryList(page, size);
@@ -27,6 +29,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]
         [ProducesResponseType(typeof(GetProductCategoryDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Gardener Product Category Information")]
         public async Task<IActionResult> GetProductCategoryInformation([FromRoute] string id)
         {
             var res = await _productCategoryService.GetProductCategoryInformation(id);
@@ -35,6 +38,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.ProductCategory.ProductCategoriesEndpoint)]
         [ProducesResponseType(typeof(GetProductCategoryDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create Product Category")]
         public async Task<IActionResult> CreateProductCategory([FromBody] CreateProductCategoryDTO categoryData)
         {
             var res = await _productCategoryService.CreateProductCategory(categoryData);
@@ -43,6 +47,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]
         [ProducesResponseType(typeof(GetProductCategoryDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update Product Category Information")]
         public async Task<IActionResult> UpdateProductCategory([FromRoute] string id, [FromBody] UpdateProductCategoryDTO updateData)
         {
             var res = await _productCategoryService.UpdateProductCategory(id, updateData);
@@ -51,6 +56,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpDelete(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete a Product Category which do not have any Products related to")]
         public async Task<IActionResult> DeleteProductCategory([FromRoute] string id)
         {
             await _productCategoryService.DeleteProductCategory(id);

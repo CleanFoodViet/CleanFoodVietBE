@@ -2,6 +2,7 @@
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -14,9 +15,9 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _postService = postService;
         }
 
-        //Retailer's Favorite post APIs controller
         [HttpGet(ApiEndpointConstant.Favorite.RetailerFavPostEndpoint)]
         [ProducesResponseType(typeof(List<PostListDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get retailer's favorite Post")]
         public async Task<IActionResult> GetFavoritePostList([FromRoute] string retailerId)
         {
             var res = await _postService.GetRetailerFavoritePost(retailerId);
@@ -25,6 +26,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Favorite.RetailerFavPostEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Add a post to Retailer Favorite List")]
         public async Task<IActionResult> AddPostToFavorite([FromRoute] string id, [FromRoute] string postId)
         {
             await _postService.AddPostToFavorite(postId, id);
@@ -33,6 +35,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpDelete(ApiEndpointConstant.Favorite.RetailerFavPostEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Remove a post to Retailer Favorite List")]
         public async Task<IActionResult> RemovePostFromFavorite([FromRoute] string id, [FromRoute] string postId)
         {
             await _postService.RemovePostFromFavorite(postId, id);

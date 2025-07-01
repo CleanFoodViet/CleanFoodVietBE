@@ -9,6 +9,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -25,6 +26,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Account.RetailerAccountsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<AccountDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all the retailers' accounts")]
         public async Task<IActionResult> GetRetailerAccountList([FromQuery]int page = 1, [FromQuery]int size = 10)
         {
             var res = await _accountService.GetRetailerAccountList(page, size);
@@ -33,6 +35,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Account.GardenerAccountsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<AccountDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all the gardeners' accounts")]
         public async Task<IActionResult> GetGardenerAccountList([FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             var res = await _accountService.GetGardenerAccountList(page, size);
@@ -41,6 +44,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Account.AccountStatuEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update status of a account")]
         public async Task<IActionResult> UpdateAccountStatus([FromRoute] string id, [FromQuery] string status)
         {
             await _accountService.UpdateAccountStatus(id, status);
@@ -49,6 +53,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Account.AccountEndpoint)]
         [ProducesResponseType(typeof(AccountDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get 1 specific account's information (Include Certificate and Address List. If role does not have 1 of 2 List, the value is null)")]
         public async Task<IActionResult> GetAccountInformation([FromRoute] string id)
         {
             var res = await _accountService.GetAccountInformation(id);
@@ -57,6 +62,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Account.AccountProfileEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update an account's profile")]
         public async Task<IActionResult> UpdateProfile([FromRoute]string id, [FromBody]UpdateAccountDTO data)
         {
             await _accountService.UpdateProfile(id, data);

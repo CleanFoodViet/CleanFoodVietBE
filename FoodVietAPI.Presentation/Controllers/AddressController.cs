@@ -3,6 +3,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -17,6 +18,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Account.AccountAddressesEndpoint)]
         [ProducesResponseType(typeof(List<GetAddressDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all the addresses of a account")]
         public async Task<IActionResult> GetAccountAddressList([FromRoute] string id)
         {
             var res = await _addressService.GetAccountAddressList(id);
@@ -25,6 +27,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Account.AccountAddressEndpoint)]
         [ProducesResponseType(typeof(GetAddressDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get address detail of a account")]
         public async Task<IActionResult> GetAccountAddressDetail([FromRoute] string id, [FromRoute] string addressId)
         {
             var res = await _addressService.GetAccountAddressDetail(id, addressId);
@@ -33,6 +36,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Account.AccountAddressesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create address for a account")]
         public async Task<IActionResult> CreateAddress([FromRoute] string id, [FromBody] AddressDTO request)
         {
             await _addressService.CreateAddresss(request, id);
@@ -41,6 +45,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Account.AccountAddressEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update address information of a account")]
         public async Task<IActionResult> UpdateAddress([FromRoute] string id, [FromRoute] string addressId, [FromBody] AddressDTO request)
         {
             await _addressService.UpdateAddress(request, addressId, id);
@@ -49,6 +54,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpDelete(ApiEndpointConstant.Account.AccountAddressEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Delete address of a account")]
         public async Task<IActionResult> DeleteAddress([FromRoute] string id, [FromRoute] string addressId)
         {
             await _addressService.DeletAddress(addressId, id);

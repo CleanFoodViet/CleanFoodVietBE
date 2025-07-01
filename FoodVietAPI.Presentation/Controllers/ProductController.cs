@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Drawing;
 using ZstdSharp.Unsafe;
 
@@ -20,6 +21,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Product.GardenerProductsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<ProductListDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all Gardener Products")]
         public async Task<IActionResult> GetProductsList([FromRoute] string gardenerId, int page = 1, int size = 10)
         {
             var res = await _productService.GetGardenerProductList(gardenerId, page, size);
@@ -29,6 +31,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Gardener Product Information")]
         public async Task<IActionResult> GetProductsList([FromRoute] string id)
         {
             var res = await _productService.GetProductInformation(id);
@@ -38,6 +41,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Product.GardenerProductsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create a Product")]
         public async Task<IActionResult> CreateProduct([FromRoute]string gardenerId, [FromBody]CreateProductDTO createProduct)
         {
             await _productService.CreateProduct(gardenerId, createProduct);
@@ -51,6 +55,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         //Get Price
         [HttpGet(ApiEndpointConstant.Product.ProductPricesEndpoint)]
         [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Gardener Products' Price")]
         public async Task<IActionResult> GetProductPriceList([FromRoute]string id)
         {
             var res = await _productService.GetProductPrices(id);
