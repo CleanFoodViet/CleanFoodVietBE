@@ -18,10 +18,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryList(int page, int size)
+        public async Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryList(int page, int size, string gardenerId)
         {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+
             var categories = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetPagingListAsync(
+                predicate: pc => pc.GardenerId == gardenerID,
                 selector: pc => new GetProductCategoryDTO(
                     pc.ProductCategoryId,
                     pc.Name,
@@ -31,8 +34,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return categories;
         }
 
-        public async Task<GetProductCategoryDTO> GetProductCategoryInformation(string id)
+        public async Task<GetProductCategoryDTO> GetProductCategoryInformation(string gardenerId, string id)
         {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
+
             Ulid categoryId = Ulid.Parse(id);
             var category = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetAsync(predicate: pc => pc.ProductCategoryId == categoryId,
@@ -46,9 +53,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return category;
         }
 
-        public async Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category)
+        public async Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category, string gardenerId)
         {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
+
             ProductCategory newCategory = _mapper.Map<ProductCategory>(category);
+            newCategory.GardenerId = gardenerID;
+
             await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(newCategory);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when insert new product category");
@@ -57,8 +70,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return productCategoryDTO;
         }
 
-        public async Task<GetProductCategoryDTO> UpdateProductCategory(string id, UpdateProductCategoryDTO data)
+        public async Task<GetProductCategoryDTO> UpdateProductCategory(string id, string gardenerId, UpdateProductCategoryDTO data)
         {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
+
             Ulid categoryId = Ulid.Parse(id);
             var category = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetAsync(predicate: pc => pc.ProductCategoryId == categoryId);
@@ -75,8 +92,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return productCategoryDTO;
         }
 
-        public async Task DeleteProductCategory(string id)
+        public async Task DeleteProductCategory(string id, string gardenerId)
         {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
+
             Ulid categoryId = Ulid.Parse(id);
 
             var category = await _unitOfWork.GetRepository<ProductCategory>()
