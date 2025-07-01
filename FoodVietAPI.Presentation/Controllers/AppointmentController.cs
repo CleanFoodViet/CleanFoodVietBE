@@ -3,6 +3,7 @@ using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -15,8 +16,18 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _appointmentService = appointmentService;
         }
 
+        [HttpGet(ApiEndpointConstant.Account.AccountAppointmentEndpoint)]
+        [ProducesResponseType(typeof(List<AppointmentListDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all appointments of account")]
+        public async Task<IActionResult> GetAccountAppointmentList([FromRoute] string accountId)
+        {
+            var res = await _appointmentService.GetAppointmentList(accountId);
+            return Ok(res);
+        }
+
         [HttpGet(ApiEndpointConstant.Appointment.AppointmentEndpoint)]
         [ProducesResponseType(typeof(AppointmentDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get appointment detail of account")]
         public async Task<IActionResult> GetAppointment([FromRoute] string id)
         {
             var res = await _appointmentService.GetAppointmentDetail(id);
@@ -25,6 +36,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Appointment.AppointmentsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create appointment for account")]
         public async Task<IActionResult> CreateAppointment([FromBody]CreateAppointmentDTO request)
         {
             await _appointmentService.CreateAppointment(request);
@@ -33,10 +45,13 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Appointment.AppointmentEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update appointment information of account")]
         public async Task<IActionResult> UpdateAppointment([FromRoute]string id, [FromBody]UpdateAppointmentDTO request)
         {
             await _appointmentService.UpdateAppointment(id, request);
             return Ok("Update Appointment successfully");
         }
+
+        //Cancel Appointment
     }
 }

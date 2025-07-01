@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleanFoodVietAPI.Application.DTOs.CreateCheckoutRequestDTOs
+namespace CleanFoodVietAPI.Application.DTOs.Payment
 {
     public class CreateCheckoutRequest
     {

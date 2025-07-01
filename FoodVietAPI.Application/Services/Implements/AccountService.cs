@@ -141,7 +141,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return new AuthDTO(token, account.AccountId.ToString());
         }
 
-        public async Task<AuthDTO> Register(RegisterDTO registerData)
+        public async Task<RegisterResponse> Register(RegisterDTO registerData)
         {
             Account account = await _unitOfWork.GetRepository<Account>()
                                        .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
@@ -157,12 +157,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");
 
-            var token = JwtUtil.GenerateJwtToken(newAccount);
+            var response = _mapper.Map<RegisterResponse>(newAccount);
+            response.Role = role.Name;
 
-            return new AuthDTO(token, newAccount.AccountId.ToString());
+            return response;
         }
 
-        public async Task<AuthDTO> CreateAdmin(RegisterDTO registerData)
+        public async Task<RegisterResponse> CreateAdmin(RegisterDTO registerData)
         {
             Account account = await _unitOfWork.GetRepository<Account>()
                                        .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
@@ -178,12 +179,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");
 
-            var token = JwtUtil.GenerateJwtToken(newAccount);
+            var response = _mapper.Map<RegisterResponse>(newAccount);
+            response.Role = role.Name;
 
-            return new AuthDTO(token, newAccount.AccountId.ToString());
+            return response;
         }
 
-        public async Task<AuthDTO> GardenerRegister(GardenerRegisterDTO registerData)
+        public async Task<RegisterResponse> GardenerRegister(GardenerRegisterDTO registerData)
         {
             Account account = await _unitOfWork.GetRepository<Account>()
                                        .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
@@ -208,9 +210,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");
 
-            var token = JwtUtil.GenerateJwtToken(newAccount);
+            var response = _mapper.Map<RegisterResponse>(newAccount);
+            response.Role = role.Name;
 
-            return new AuthDTO(token, newAccount.AccountId.ToString());
+            return response;
         }
         #endregion
     }

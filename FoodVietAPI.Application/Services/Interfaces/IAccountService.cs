@@ -16,9 +16,9 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 
         #region Authentication Functions
         Task<AuthDTO> Login(LoginDTO loginData);
-        Task<AuthDTO> Register(RegisterDTO registerData);
-        Task<AuthDTO> CreateAdmin(RegisterDTO registerData);
-        Task<AuthDTO> GardenerRegister(GardenerRegisterDTO registerData);
+        Task<RegisterResponse> Register(RegisterDTO registerData);
+        Task<RegisterResponse> CreateAdmin(RegisterDTO registerData);
+        Task<RegisterResponse> GardenerRegister(GardenerRegisterDTO registerData);
         #endregion
     }
 }

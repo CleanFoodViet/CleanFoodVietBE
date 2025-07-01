@@ -3,6 +3,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -17,6 +18,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Post.PostsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<PostListDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all available Post List")]
         public async Task<IActionResult> GetPostList([FromQuery]int page = 1, [FromQuery]int size = 10)
         {
             var res = await _postService.GetPostList(page, size);
@@ -25,6 +27,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Post.PostEndpoint)]
         [ProducesResponseType(typeof(PostDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Post detail")]
         public async Task<IActionResult> GetPostInformation([FromRoute]string id)
         {
             var res = await _postService.GetPostInformation(id);
@@ -38,6 +41,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         //Update Status
         [HttpPatch(ApiEndpointConstant.Post.PostStatusEndpoint)]
         [ProducesResponseType(typeof(PostDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update Post Status")]
         public async Task<IActionResult> UpdatePostStatus([FromRoute] string id, [FromQuery]string status)
         {
             await _postService.UpdatePostStatus(id, status);

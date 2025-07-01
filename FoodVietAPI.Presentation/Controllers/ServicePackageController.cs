@@ -6,6 +6,7 @@ using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Threading.Tasks;
 using static CleanFoodVietAPI.Presentation.Constants.ApiEndpointConstant;
 
@@ -28,6 +29,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // Returns a paginated list of service packages with metadata including filtering and sorting parameters.
         [HttpGet(ApiEndpointConstant.ServicePackageEndpoint.ServicePackagesEndpoint)]
         [ProducesResponseType(typeof(IPaginate<ServicePackageDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Returns a paginated list of service packages with metadata including filtering and sorting parameters.")]
         public async Task<IActionResult> GetServicePackages(
             [FromQuery] int page = 1,
             [FromQuery] int size = 10,
@@ -69,6 +71,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // Returns detailed information about a specific service package by ID, including its features.
         [HttpGet(ApiEndpointConstant.ServicePackageEndpoint.ServicePackageDetailEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Returns detailed information about a specific service package by ID, including its features.")]
         public async Task<IActionResult> GetServicePackageDetail([FromRoute] Ulid id)
         {
             var packageDetail = await _servicePackageService.GetServicePackageDetailAsync(id);
@@ -79,6 +82,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // Creates a new service package with the provided details.
         [HttpPost(ApiEndpointConstant.ServicePackageEndpoint.ServicePackagesEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status201Created)]
+        [SwaggerOperation(Summary = "Creates a new service package with the provided details.")]
         public async Task<IActionResult> CreateServicePackage([FromBody] CreateServicePackageDTO createDto)
         {
             var packageDto = await _servicePackageService.CreateServicePackageAsync(createDto);
@@ -89,6 +93,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // of the service package, excluding features, which are managed separately.
         [HttpPatch(ServicePackageEndpoint.ServicePackageDetailEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Updating allowed fields (basic info) of the service package, excluding features, which are managed separately.")]
         public async Task<IActionResult> UpdateServicePackage(
             [FromRoute] Ulid id,
             [FromBody] UpdateServicePackageDTO updateDto)
@@ -101,6 +106,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // This endpoint sets the status of the package to INACTIVE.
         [HttpPatch(ServicePackageEndpoint.DisableServicePackageEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Soft-deleting (disabling) the package (ets the status of the package to INACTIVE).")]
         public async Task<IActionResult> DisableServicePackage([FromRoute] Ulid id)
         {
             var packageDto = await _servicePackageService.DisableServicePackageAsync(id);
@@ -111,6 +117,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // This endpoint sets the status of the package to ACTIVE.
         [HttpPatch(ServicePackageEndpoint.ActivateServicePackageEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Activating the package (sets the status of the package to ACTIVE)")]
         public async Task<IActionResult> ActivateServicePackage([FromRoute] Ulid id)
         {
             var packageDto = await _servicePackageService.ActivateServicePackageAsync(id);
