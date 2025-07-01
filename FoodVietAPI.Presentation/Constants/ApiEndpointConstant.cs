@@ -93,8 +93,8 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
         public static class ProductCategory
         {
-            public const string ProductCategoriesEndpoint = ApiEndpoint + "/product-categories";
-            public const string ProductCategoryEndpoint = ProductCategoriesEndpoint + "/{id}";
+            public const string ProductCategoriesEndpoint = GardenerApiEndpoint + "{id}/product-categories";
+            public const string ProductCategoryEndpoint = ProductCategoriesEndpoint + "/{categoryId}";
         }
 
         public static class Report
