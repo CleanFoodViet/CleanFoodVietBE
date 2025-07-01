@@ -15,6 +15,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _appointmentService = appointmentService;
         }
 
+        [HttpGet(ApiEndpointConstant.Account.AccountAppointmentEndpoint)]
+        [ProducesResponseType(typeof(List<AppointmentListDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAccountAppointmentList([FromRoute] string accountId)
+        {
+            var res = await _appointmentService.GetAppointmentList(accountId);
+            return Ok(res);
+        }
+
         [HttpGet(ApiEndpointConstant.Appointment.AppointmentEndpoint)]
         [ProducesResponseType(typeof(AppointmentDTO), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAppointment([FromRoute] string id)

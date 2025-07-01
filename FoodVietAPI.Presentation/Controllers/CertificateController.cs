@@ -1,0 +1,59 @@
+﻿using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
+using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
+using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Presentation.Constants;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CleanFoodVietAPI.Presentation.Controllers
+{
+    [ApiController]
+    public class CertificateController : BaseController<CertificateController>
+    {
+        private readonly ICertificateService _certificateService;
+        public CertificateController(ILogger<CertificateController> logger, ICertificateService certificateService) : base(logger)
+        {
+            _certificateService = certificateService;
+        }
+
+        [HttpGet(ApiEndpointConstant.Certificate.GardenerCertificatesEndpoint)]
+        [ProducesResponseType(typeof(List<AddressDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetGardenerCertificateList([FromRoute] string id)
+        {
+            var res = await _certificateService.GetGardenerCertificateList(id);
+            return Ok(res);
+        }
+
+        [HttpGet(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
+        [ProducesResponseType(typeof(AddressDTO), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetGardenerCertificateDetail([FromRoute] string id, [FromRoute] string certificateId)
+        {
+            var res = await _certificateService.GetGardenerCertificateDetail(id, certificateId);
+            return Ok(res);
+        }
+
+        [HttpPost(ApiEndpointConstant.Certificate.GardenerCertificatesEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateCertificate([FromRoute] string id, [FromBody] CertificateDTO request)
+        {
+            await _certificateService.CreateCertificate(request, id);
+            return StatusCode(StatusCodes.Status201Created, "Create address successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateCertificate([FromRoute] string id, [FromRoute] string certificateId, [FromBody] CertificateDTO request)
+        {
+            await _certificateService.UpdateCertificate(request, certificateId, id);
+            return Ok("Update address successfully");
+        }
+
+        [HttpDelete(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteCertificate([FromRoute] string id, [FromRoute] string certificateId)
+        {
+            await _certificateService.DeleteCertificate(certificateId, id);
+            return Ok("Delete address successfully");
+        }
+    }
+}

@@ -15,6 +15,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _notificationService = notificationService;
         }
 
+        [HttpGet(ApiEndpointConstant.Account.AccountNotificationEndpoint)]
+        [ProducesResponseType(typeof(List<NotificationDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAccountNotification([FromRoute] string id)
+        {
+            var res = await _notificationService.GetNotificationList(id);
+            return Ok(res);
+        }
+
         [HttpPost(ApiEndpointConstant.Notification.NotificationEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationDTO request)
