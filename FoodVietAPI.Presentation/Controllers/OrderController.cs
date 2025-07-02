@@ -30,7 +30,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.Account.AccountOrderEndpoint)]
         [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get Account's Order Information")]
-        public async Task<IActionResult> GetOrderInformation([FromRoute]string id, [FromRoute]string orderId)
+        public async Task<IActionResult> GetOrderInformation([FromRoute]string id, [FromRoute] string orderId)
         {
             var res = await _orderService.GetOrderInformation(orderId, id);
 
@@ -47,7 +47,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return StatusCode(StatusCodes.Status201Created, "Create order successfully");
         }
 
-        [HttpPatch(ApiEndpointConstant.Account.AccountOrderEndpoint)]
+        [HttpPatch(ApiEndpointConstant.Order.OrderEndpoint)]
         [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = @"Update Order Status. Order Status: 
             PENDING (Created but not approve/reject), PREPARING (after approve), 

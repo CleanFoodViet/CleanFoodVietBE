@@ -12,12 +12,12 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     {
         Task<List<GetCertificateDTO>> GetGardenerCertificateList(string gardenerId);
 
-        Task<GetCertificateDTO> GetGardenerCertificateDetail(string gardenerId, string certificateId);
+        Task<GetCertificateDTO> GetGardenerCertificateDetail(string certificateId);
 
         Task CreateCertificate(CertificateDTO createData, string gardenerId);
 
-        Task UpdateCertificate(CertificateDTO updateData, string certificateId, string gardenerId);
+        Task UpdateCertificate(CertificateDTO updateData, string certificateId);
 
-        Task DeleteCertificate(string certificateId, string gardenerId);
+        Task DeleteCertificate(string certificateId);
     }
 }

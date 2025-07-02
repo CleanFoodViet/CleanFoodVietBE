@@ -40,14 +40,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return accountAddresses.ToList();
         }
 
-        public async Task<GetAddressDTO> GetAccountAddressDetail(string accountId, string addressId)
+        public async Task<GetAddressDTO> GetAddressDetail(string addressId)
         {
-            Ulid accId = Ulid.Parse(accountId);
             Ulid addressID = Ulid.Parse(addressId);
-
-            var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == accId);
-            if (account == null) throw new BadHttpRequestException("Account is not found");
 
             var address = await _unitOfWork.GetRepository<Address>()
                 .GetAsync(
@@ -83,13 +78,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             
         }
 
-        public async Task UpdateAddress(AddressDTO updateData, string addressId, string accountId)
+        public async Task UpdateAddress(AddressDTO updateData, string addressId)
         {
-            Ulid accId = Ulid.Parse(accountId);
-            var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == accId);
-            if (account == null) throw new BadHttpRequestException("Account is not found");
-
             Ulid addressID = Ulid.Parse(addressId);
             var address = await _unitOfWork.GetRepository<Address>()
                 .GetAsync(predicate: address => address.AddressId == addressID);
@@ -101,19 +91,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             address.PostalCode = String.IsNullOrEmpty(updateData.PostalCode) ? address.PostalCode : updateData.PostalCode;
             address.Country = String.IsNullOrEmpty(updateData.Country) ? address.Country : updateData.Country;
 
-            _mapper.Map(updateData, address);
             _unitOfWork.GetRepository<Address>().UpdateAsync(address);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when update address");
         }
 
-        public async Task DeletAddress(string addressId, string accountId)
+        public async Task DeletAddress(string addressId)
         {
-            Ulid accId = Ulid.Parse(accountId);
-            var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == accId);
-            if (account == null) throw new BadHttpRequestException("Account is not found");
-
             Ulid addressID = Ulid.Parse(addressId);
             var address = await _unitOfWork.GetRepository<Address>()
                 .GetAsync(predicate: address => address.AddressId == addressID);

@@ -25,12 +25,12 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok(res);
         }
 
-        [HttpGet(ApiEndpointConstant.Account.AccountAddressEndpoint)]
+        [HttpGet(ApiEndpointConstant.Address.AddressEndpoint)]
         [ProducesResponseType(typeof(GetAddressDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get address detail of a account")]
-        public async Task<IActionResult> GetAccountAddressDetail([FromRoute] string id, [FromRoute] string addressId)
+        public async Task<IActionResult> GetAccountAddressDetail([FromRoute] string id)
         {
-            var res = await _addressService.GetAccountAddressDetail(id, addressId);
+            var res = await _addressService.GetAddressDetail(id);
             return Ok(res);
         }
 
@@ -43,21 +43,21 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return StatusCode(StatusCodes.Status201Created, "Create address successfully");
         }
 
-        [HttpPatch(ApiEndpointConstant.Account.AccountAddressEndpoint)]
+        [HttpPatch(ApiEndpointConstant.Address.AddressEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update address information of a account")]
-        public async Task<IActionResult> UpdateAddress([FromRoute] string id, [FromRoute] string addressId, [FromBody] AddressDTO request)
+        public async Task<IActionResult> UpdateAddress([FromRoute] string id, [FromBody] AddressDTO request)
         {
-            await _addressService.UpdateAddress(request, addressId, id);
+            await _addressService.UpdateAddress(request, id);
             return Ok("Update address successfully");
         }
 
-        [HttpDelete(ApiEndpointConstant.Account.AccountAddressEndpoint)]
+        [HttpDelete(ApiEndpointConstant.Address.AddressEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete address of a account")]
-        public async Task<IActionResult> DeleteAddress([FromRoute] string id, [FromRoute] string addressId)
+        public async Task<IActionResult> DeleteAddress([FromRoute] string id)
         {
-            await _addressService.DeletAddress(addressId, id);
+            await _addressService.DeletAddress(id);
             return Ok("Delete address successfully");
         }
     }

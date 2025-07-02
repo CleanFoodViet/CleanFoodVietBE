@@ -34,12 +34,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return categories;
         }
 
-        public async Task<GetProductCategoryDTO> GetProductCategoryInformation(string gardenerId, string id)
+        public async Task<GetProductCategoryDTO> GetProductCategoryInformation(string id)
         {
-            Ulid gardenerID = Ulid.Parse(gardenerId);
-            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
-            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
-
             Ulid categoryId = Ulid.Parse(id);
             var category = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetAsync(predicate: pc => pc.ProductCategoryId == categoryId,
@@ -70,12 +66,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return productCategoryDTO;
         }
 
-        public async Task<GetProductCategoryDTO> UpdateProductCategory(string id, string gardenerId, UpdateProductCategoryDTO data)
+        public async Task<GetProductCategoryDTO> UpdateProductCategory(string id, UpdateProductCategoryDTO data)
         {
-            Ulid gardenerID = Ulid.Parse(gardenerId);
-            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
-            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
-
             Ulid categoryId = Ulid.Parse(id);
             var category = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetAsync(predicate: pc => pc.ProductCategoryId == categoryId);
@@ -92,12 +84,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return productCategoryDTO;
         }
 
-        public async Task DeleteProductCategory(string id, string gardenerId)
+        public async Task DeleteProductCategory(string id)
         {
-            Ulid gardenerID = Ulid.Parse(gardenerId);
-            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
-            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
-
             Ulid categoryId = Ulid.Parse(id);
 
             var category = await _unitOfWork.GetRepository<ProductCategory>()

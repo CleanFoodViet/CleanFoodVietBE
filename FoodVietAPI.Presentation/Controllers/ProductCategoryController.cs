@@ -18,7 +18,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _productCategoryService = productCategoryService;
         }
 
-        [HttpGet(ApiEndpointConstant.ProductCategory.ProductCategoriesEndpoint)]
+        [HttpGet(ApiEndpointConstant.ProductCategory.GardenerProductCategoriesEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetProductCategoryDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all Gardener Product Categories")]
         public async Task<IActionResult> GetProductCategoryList([FromRoute] string id,[FromQuery] int page = 1, [FromQuery] int size = 10)
@@ -27,16 +27,16 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok(res);
         }
 
-        [HttpGet(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]
+        [HttpGet(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]//
         [ProducesResponseType(typeof(GetProductCategoryDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get Gardener Product Category Information")]
-        public async Task<IActionResult> GetProductCategoryInformation([FromRoute] string id, [FromRoute] string categoryId)
+        public async Task<IActionResult> GetProductCategoryInformation([FromRoute] string id)
         {
-            var res = await _productCategoryService.GetProductCategoryInformation(id, categoryId);
+            var res = await _productCategoryService.GetProductCategoryInformation(id);
             return Ok(res);
         }
 
-        [HttpPost(ApiEndpointConstant.ProductCategory.ProductCategoriesEndpoint)]
+        [HttpPost(ApiEndpointConstant.ProductCategory.GardenerProductCategoriesEndpoint)]
         [ProducesResponseType(typeof(GetProductCategoryDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create Product Category")]
         public async Task<IActionResult> CreateProductCategory([FromRoute]string id, [FromBody] CreateProductCategoryDTO categoryData)
@@ -45,21 +45,21 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return StatusCode(StatusCodes.Status201Created ,res);
         }
 
-        [HttpPatch(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]
+        [HttpPatch(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]//
         [ProducesResponseType(typeof(GetProductCategoryDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update Product Category Information")]
-        public async Task<IActionResult> UpdateProductCategory([FromRoute] string id, [FromRoute]string categoryId, [FromBody] UpdateProductCategoryDTO updateData)
+        public async Task<IActionResult> UpdateProductCategory([FromRoute] string id, [FromBody] UpdateProductCategoryDTO updateData)
         {
-            var res = await _productCategoryService.UpdateProductCategory(categoryId, id, updateData);
+            var res = await _productCategoryService.UpdateProductCategory(id, updateData);
             return Ok(res);
         }
 
-        [HttpDelete(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]
+        [HttpDelete(ApiEndpointConstant.ProductCategory.ProductCategoryEndpoint)]//
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a Product Category which do not have any Products related to")]
-        public async Task<IActionResult> DeleteProductCategory([FromRoute] string id, [FromRoute] string categoryId)
+        public async Task<IActionResult> DeleteProductCategory([FromRoute] string id)
         {
-            await _productCategoryService.DeleteProductCategory(categoryId, id);
+            await _productCategoryService.DeleteProductCategory(id);
             return Ok("Delete product category successfully");
         }
     }
