@@ -1,12 +1,64 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CleanFoodVietAPI.Application.DTOs.CartDTOs;
+using CleanFoodVietAPI.Application.DTOs.OrderDTOs;
+using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Data.Paginate;
+using CleanFoodVietAPI.Presentation.Constants;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
     [ApiController]
     public class OrderController : BaseController<OrderController>
     {
-        public OrderController(ILogger<OrderController> logger) : base(logger)
+        private readonly IOrderService _orderService;
+        public OrderController(ILogger<OrderController> logger, IOrderService orderService) : base(logger)
         {
+            _orderService = orderService;
+        }
+
+        [HttpGet(ApiEndpointConstant.Account.AccountOrdersEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<OrderListDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Account's Order List (Include Retailer and Gardener base on account id input)")]
+        public async Task<IActionResult> GetAccountOrderList([FromRoute]string id, [FromQuery]int page = 1, [FromQuery]int size = 10)
+        {
+            var res = await _orderService.GetAccountOrderList(id, page, size);
+            return Ok(res);
+        }
+
+
+        [HttpGet(ApiEndpointConstant.Account.AccountOrderEndpoint)]
+        [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Account's Order Information")]
+        public async Task<IActionResult> GetOrderInformation([FromRoute]string id, [FromRoute]string orderId)
+        {
+            var res = await _orderService.GetOrderInformation(orderId, id);
+
+            return Ok(res);
+        }
+
+        [HttpPost(ApiEndpointConstant.Account.AccountOrdersEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        [SwaggerOperation(Summary = "Create Order from Retailer Carts (the request is the Information in the CartDTO which use to show the Cart List in UI of Retailer)")]
+        public async Task<IActionResult> CreateOrder([FromQuery] string paymentMethod, [FromBody]List<CartDTO> request)
+        {
+            await _orderService.CreateOrder(request, paymentMethod);
+
+            return StatusCode(StatusCodes.Status201Created, "Create order successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Account.AccountOrderEndpoint)]
+        [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = @"Update Order Status. Order Status: 
+            PENDING (Created but not approve/reject), PREPARING (after approve), 
+            DELIVERING (When a Order Detail Quantity is Delivered partly), 
+            COMPLETED (when all Order Detail Quantity are delivered)), 
+            CANCELLED (be rejected by Gardener or cancelled by Retailer before Gardener Approve/Reject)")]
+        public async Task<IActionResult> UpdateOrderStatus([FromRoute] string id, [FromQuery] string status)
+        {
+            await _orderService.UpdateOrderStatus(id, status);
+
+            return Ok("Update order status successfully");
         }
     }
 }
