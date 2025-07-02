@@ -26,12 +26,12 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok(res);
         }
 
-        [HttpGet(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
+        [HttpGet(ApiEndpointConstant.Certificate.CertificateEndpoint)]
         [ProducesResponseType(typeof(AddressDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get Gardener certificate's information")]
-        public async Task<IActionResult> GetGardenerCertificateDetail([FromRoute] string id, [FromRoute] string certificateId)
+        public async Task<IActionResult> GetGardenerCertificateDetail([FromRoute] string id)
         {
-            var res = await _certificateService.GetGardenerCertificateDetail(id, certificateId);
+            var res = await _certificateService.GetGardenerCertificateDetail(id);
             return Ok(res);
         }
 
@@ -44,21 +44,21 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return StatusCode(StatusCodes.Status201Created, "Create address successfully");
         }
 
-        [HttpPatch(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
+        [HttpPatch(ApiEndpointConstant.Certificate.CertificateEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update the Certificate's information")]
-        public async Task<IActionResult> UpdateCertificate([FromRoute] string id, [FromRoute] string certificateId, [FromBody] CertificateDTO request)
+        public async Task<IActionResult> UpdateCertificate([FromRoute] string id, [FromBody] CertificateDTO request)
         {
-            await _certificateService.UpdateCertificate(request, certificateId, id);
+            await _certificateService.UpdateCertificate(request, id);
             return Ok("Update address successfully");
         }
 
-        [HttpDelete(ApiEndpointConstant.Certificate.GardenerCertificateEndpoint)]
+        [HttpDelete(ApiEndpointConstant.Certificate.CertificateEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Delete a Gardener's Certificate")]
-        public async Task<IActionResult> DeleteCertificate([FromRoute] string id, [FromRoute] string certificateId)
+        public async Task<IActionResult> DeleteCertificate([FromRoute] string id)
         {
-            await _certificateService.DeleteCertificate(certificateId, id);
+            await _certificateService.DeleteCertificate(id);
             return Ok("Delete address successfully");
         }
     }

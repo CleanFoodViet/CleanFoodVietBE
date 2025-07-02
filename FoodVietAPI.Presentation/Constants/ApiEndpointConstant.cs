@@ -34,7 +34,6 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
             //Account address endpoints
             public const string AccountAddressesEndpoint = AccountEndpoint + "/addresses";
-            public const string AccountAddressEndpoint = AccountAddressesEndpoint + "/{addressId}";
 
             //Appointment endpoints
             public const string AccountAppointmentEndpoint = AccountEndpoint + "/appointments";
@@ -45,6 +44,12 @@ namespace CleanFoodVietAPI.Presentation.Constants
             //Order endpoint
             public const string AccountOrdersEndpoint = AccountEndpoint + "/orders";
             public const string AccountOrderEndpoint = AccountOrdersEndpoint + "/{orderId}";
+        }
+
+        public static class Address
+        {
+            public const string AddressesEndpoint = ApiEndpoint + "/addresses";
+            public const string AddressEndpoint = AddressesEndpoint + "/{id}";
         }
 
         public static class Appointment
@@ -61,7 +66,8 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class Certificate
         {
             public const string GardenerCertificatesEndpoint = GardenerApiEndpoint + "/{id}/certificates";
-            public const string GardenerCertificateEndpoint = GardenerCertificatesEndpoint + "/{certificateId}";
+            public const string CertificatesEndpoint = ApiEndpoint + "/certificates";
+            public const string CertificateEndpoint = CertificatesEndpoint + "/{id}";
         }
 
         public static class ChatMessage
@@ -105,8 +111,9 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
         public static class ProductCategory
         {
-            public const string ProductCategoriesEndpoint = GardenerApiEndpoint + "{id}/product-categories";
-            public const string ProductCategoryEndpoint = ProductCategoriesEndpoint + "/{categoryId}";
+            public const string GardenerProductCategoriesEndpoint = GardenerApiEndpoint + "{id}/product-categories";
+            public const string ProductCategoriesEndpoint = ApiEndpoint + "/categories";
+            public const string ProductCategoryEndpoint = ProductCategoriesEndpoint + "/{id}";
         }
 
         public static class Report

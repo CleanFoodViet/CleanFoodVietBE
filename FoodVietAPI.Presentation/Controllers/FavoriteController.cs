@@ -15,7 +15,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _postService = postService;
         }
 
-        [HttpGet(ApiEndpointConstant.Favorite.RetailerFavPostEndpoint)]
+        [HttpGet(ApiEndpointConstant.Favorite.RetailerFavPostsEndpoint)]
         [ProducesResponseType(typeof(List<PostListDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get retailer's favorite Post")]
         public async Task<IActionResult> GetFavoritePostList([FromRoute] string retailerId)
