@@ -41,6 +41,10 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
             //Notification endpoints
             public const string AccountNotificationEndpoint = AccountEndpoint + "/notifications";
+
+            //Order endpoint
+            public const string AccountOrdersEndpoint = AccountEndpoint + "/orders";
+            public const string AccountOrderEndpoint = AccountOrdersEndpoint + "/{orderId}";
         }
 
         public static class Appointment
@@ -74,6 +78,14 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class Notification
         {
             public const string NotificationEndpoint = ApiEndpoint + "/notifications";
+        }
+
+        public static class Order
+        {
+            public const string OrdersEndpoint = ApiEndpoint + "/orders";
+            public const string OrderEndpoint = OrdersEndpoint + "/{id}";
+            public const string OrderDeliveriesEndpoint = OrderEndpoint + "/order-deliveries";
+            public const string OrderDeliveryEndpoint = OrderDeliveriesEndpoint + "/{orderDeliveryId}";
         }
 
         public static class Post
