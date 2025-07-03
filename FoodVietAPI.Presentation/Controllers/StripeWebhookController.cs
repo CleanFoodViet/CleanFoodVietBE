@@ -50,6 +50,13 @@ public class StripeWebhookController : ControllerBase
         }
     }
 
+    [HttpGet("/healthz")]
+    public IActionResult Healthz()
+    {
+        _logger.LogInformation("🔥 Healthz ping at {Now}", DateTime.UtcNow);
+        return Ok("alive");
+    }
+
     // Real webhook
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpoint)]
     public async Task<IActionResult> Post()
