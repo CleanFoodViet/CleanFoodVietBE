@@ -30,9 +30,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Clean
-        run: dotnet clean ./CleanFoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj
-
       - name: Install dependencies
         run: dotnet restore ./CleanFoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj
 
