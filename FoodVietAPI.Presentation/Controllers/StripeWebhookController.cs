@@ -22,86 +22,82 @@ public class StripeWebhookController : ControllerBase
         _logger = logger;
     }
 
+    // Test endpoint (no side-effects)
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpointTest)]
     public async Task<IActionResult> TestPost()
     {
+        _logger.LogInformation("▶️ TestPost webhook hit");
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
-        var signature = Request.Headers["Stripe-Signature"];
+        var signature = Request.Headers["Stripe-Signature"].FirstOrDefault();
 
-        Event stripeEvent;
         try
         {
-            stripeEvent = EventUtility.ConstructEvent(
-                json: json,
-                stripeSignatureHeader: signature,
-                secret: _whSecret,
-                throwOnApiVersionMismatch: false
+            var stripeEvent = EventUtility.ConstructEvent(
+              json: json,
+              stripeSignatureHeader: signature,
+              secret: _whSecret,
+              throwOnApiVersionMismatch: false
             );
+
+            _logger.LogInformation("✔️  Test webhook parsed OK: {Type} [evt_{Id}]",
+                                   stripeEvent.Type, stripeEvent.Id);
+            return Ok(new { Received = stripeEvent.Type });
         }
-        catch (StripeException e)
+        catch (StripeException ex)
         {
-            _logger.LogWarning("⚠️ Invalid signature: {Error}", e.Message);
+            _logger.LogWarning("⚠️  Test webhook signature invalid: {Error}", ex.Message);
             return BadRequest();
-        }
-
-        // Always log what came in
-        _logger.LogInformation("← Webhook received: {Type} [evt_{Id}]",
-                               stripeEvent.Type, stripeEvent.Id);
-
-        switch (stripeEvent.Type)
-        {
-            case "checkout.session.completed":
-                _logger.LogInformation("✔️ Handling checkout.session.completed");
-                return Ok("Payment succeeded");
-
-            case "payment_intent.payment_failed":
-                _logger.LogInformation("❌ Handling payment_intent.payment_failed");
-                return Ok("Payment failed");
-
-            default:
-                // Just acknowledge everything else
-                return Ok();
         }
     }
 
+    // Real webhook
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpoint)]
     public async Task<IActionResult> Post()
     {
+        _logger.LogInformation("▶️  Stripe webhook POST hit");
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
-        var signature = Request.Headers["Stripe-Signature"];
-        Event stripeEvent;
+        var signature = Request.Headers["Stripe-Signature"].FirstOrDefault();
 
+        Event stripeEvent;
         try
         {
             stripeEvent = EventUtility.ConstructEvent(
-                json: json,
-                stripeSignatureHeader: signature,
-                secret: _whSecret,
-                throwOnApiVersionMismatch: false
+              json: json,
+              stripeSignatureHeader: signature,
+              secret: _whSecret,
+              throwOnApiVersionMismatch: false
             );
+            _logger.LogInformation("✔️  Valid signature; event {Type} [evt_{Id}]",
+                                   stripeEvent.Type, stripeEvent.Id);
         }
-        catch (StripeException e)
+        catch (StripeException ex)
         {
-            _logger.LogWarning("Invalid signature: {Msg}", e.Message);
+            _logger.LogWarning("⚠️  Invalid signature: {Error}", ex.Message);
             return BadRequest();
         }
-
-        _logger.LogInformation("Webhook received: {Type}", stripeEvent.Type);
 
         switch (stripeEvent.Type)
         {
             case "checkout.session.completed":
                 var session = (Session)stripeEvent.Data.Object!;
-                _logger.LogInformation("Handling session {ID}", session.Id);
+                _logger.LogInformation("➡️  Handling checkout.session.completed for session {SessionId} (order {OrderId})",
+                                       session.Id, session.ClientReferenceId);
                 await _orderSvc.HandleCheckoutSessionCompletedAsync(session);
                 break;
 
             case "payment_intent.payment_failed":
                 var intent = (PaymentIntent)stripeEvent.Data.Object!;
-                _logger.LogInformation("Handling payment failure {ID}", intent.Id);
+                _logger.LogError("➡️  Handling payment_failed for intent {IntentId} (order {OrderId})",
+                                 intent.Id, intent.Metadata.GetValueOrDefault("orderId"));
                 await _orderSvc.HandlePaymentFailedAsync(intent);
                 break;
+
+            default:
+                _logger.LogDebug("↩️  Ignoring unhandled event type {Type}", stripeEvent.Type);
+                break;
         }
+
+        _logger.LogInformation("✅  Webhook {Type} processed", stripeEvent.Type);
         return Ok();
     }
 }
