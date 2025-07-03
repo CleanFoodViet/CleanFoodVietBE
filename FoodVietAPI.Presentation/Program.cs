@@ -1,5 +1,6 @@
 using CleanFoodVietAPI.Presentation.Extensions;
 using CleanFoodVietAPI.Presentation.Middlewares;
+using Microsoft.Extensions.Logging.AzureAppServices;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,10 @@ builder.Services.AddConfigSwagger();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Logging
+    .ClearProviders()
+    .AddConsole()
+    .AddAzureWebAppDiagnostics(); // Ensure the required package is installeddotnet add package Microsoft.Extensions.Logging.AzureAppServices
 var app = builder.Build();
 
 app.MapOpenApi();
