@@ -3,6 +3,7 @@ using CleanFoodVietAPI.Application.DTOs.PostDTOs;
 using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
@@ -18,18 +19,25 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 {
     public class PostService : BaseService<PostService>, IPostService
     {
-        public PostService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<PostService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) 
+        public PostService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<PostService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
 
-        public async Task<IPaginate<PostListDTO>> GetPostList(int page, int size)
+        public async Task<IPaginate<PostListDTO>> GetPostList(
+            int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? search = null)
         {
+            var specification = new PostSpecification(filterField, filterValue, "Priority", "asc", search);
+
             var postList = await _unitOfWork.GetRepository<Post>()
                 .GetPagingListAsync(
                 include: po => po.Include(x => x.PostMedias.Where(pm => pm.MediumType.Equals(PostMediaTypeEnum.THUMBNAIL.ToString())))
                                  .Include(x => x.Account).Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
                 predicate: po => po.Status.Equals(PostStatusEnum.ACTIVE.ToString()),
+                spec: specification,
                 selector: po => new PostListDTO(
                     po.PostId,
                     po.Title,
@@ -41,6 +49,99 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 page: page, size: size);
 
             return postList;
+        }
+
+        //Get Gardener Post
+        public async Task<IPaginate<PostListDTO>> GetGardenerPostList(
+            string gardenerId,
+            int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? search = null)
+        {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            var specification = new PostSpecification(filterField, filterValue, "Priority", "asc", search);
+
+            var postList = await _unitOfWork.GetRepository<Post>()
+                .GetPagingListAsync(
+                include: po => po.Include(x => x.PostMedias.Where(pm => pm.MediumType.Equals(PostMediaTypeEnum.THUMBNAIL.ToString())))
+                                 .Include(x => x.Account).Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
+                predicate: po => po.GardenerId == gardenerID,
+                spec: specification,
+                selector: po => new PostListDTO(
+                    po.PostId,
+                    po.Title,
+                    po.Product.ProductPrices.First().Price,
+                    po.Product.ProductPrices.First().Currency,
+                    po.PostMedias.First().MediumUrl,
+                    po.Account.Name,
+                    po.Account.Avatar),
+                page: page, size: size);
+
+            return postList;
+        }
+
+        public async Task CreatePost(string gardenerId, CreatePostDTO request)
+        {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            var post = _mapper.Map<Post>(request);
+
+            //Post Create
+            var today = DateTime.UtcNow;
+            var gardenerContract = await _unitOfWork.GetRepository<SubscriptionContract>()
+                .GetAsync(include: sc => sc.Include(x => x.SubscriptionContractBenefits),
+                predicate: sc => sc.GardenerId == gardenerID && sc.StartDate < today && sc.EndDate > today);
+
+            if (gardenerContract == null)
+            {
+                throw new BadHttpRequestException("User does not have Service Package purchased or Service Package Expired, please purchase Service Package to continue this action");
+            }
+            else
+            {
+                var postQuota = gardenerContract.SubscriptionContractBenefits.Where(scb => scb.BenefitType == "POST_QUOTA").First();
+                var imageLimit = gardenerContract.SubscriptionContractBenefits.Where(scb => scb.BenefitType == "IMAGE_LIMIT").First();
+                var postPriority = gardenerContract.SubscriptionContractBenefits.Where(scb => scb.BenefitType == "POST_PRIORITY").First();
+
+                if (postQuota != null)
+                {
+                    if (postQuota.RemainingValue <= 0)
+                        throw new BadHttpRequestException("The amount of posts created has reached limit, please purchase a new one for continue creating post");
+                }
+
+                if (imageLimit != null)
+                {
+                    if (request.postMediaDTOs != null && request.postMediaDTOs.Where(m => m.MediumType == "IMAGE").Count() > imageLimit.DefaultValue)
+                        throw new BadHttpRequestException("The amount of image in the pose exceed the limit allow for your Service Package");
+                }
+
+                post.Priority = postPriority != null ? postPriority.DefaultValue : int.MaxValue;
+            }
+
+            //Post Media Create
+            var postMedia = _mapper.Map<List<PostMedia>>(
+                    request.postMediaDTOs,
+                    opt => opt.Items["PostId"] = post.PostId
+                );
+
+            await _unitOfWork.GetRepository<Post>().InsertAsync(post);
+            await _unitOfWork.GetRepository<PostMedia>().InsertRangeAsync(postMedia);
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when create post (DB query error)");
+        }
+
+        public async Task UpdatePost(string postId, UpdatePostDTO request)
+        {
+            Ulid postID = Ulid.Parse(postId);
+            var post = await _unitOfWork.GetRepository<Post>()
+                .GetAsync(predicate: p => p.PostId == postID);
+
+            if (post == null) throw new BadHttpRequestException("Post is not found");
+
+            _mapper.Map(request, post);
+            _unitOfWork.GetRepository<Post>().UpdateAsync(post);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update post (DB query error)");
         }
 
         public async Task<PostDTO> GetPostInformation(string postId)
