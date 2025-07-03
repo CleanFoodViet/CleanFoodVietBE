@@ -30,15 +30,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
+      - name: Clean
+        run: dotnet clean ./FoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj
+
       - name: Install dependencies
-        run: dotnet restore ./CleanFoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj
+        run: dotnet restore ./FoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj
 
       - name: Build
-        run: dotnet build ./CleanFoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj --configuration Release --no-restore
+        run: dotnet build ./FoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj --configuration Release --no-restore
 
       # publish code
       - name: Publish
-        run: dotnet publish ./CleanFoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj --configuration Release --output ./publish
+        run: dotnet publish ./FoodVietAPI.Presentation/CleanFoodVietAPI.Presentation.csproj --configuration Release --output ./publish
 
       # deploy to Azure
       - name: Deploy API to Azure
