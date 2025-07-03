@@ -19,9 +19,27 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.Post.PostsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<PostListDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all available Post List")]
-        public async Task<IActionResult> GetPostList([FromQuery]int page = 1, [FromQuery]int size = 10)
+        public async Task<IActionResult> GetPostList(
+            [FromQuery]int page = 1, [FromQuery]int size = 10,
+            [FromQuery] string? filterField = null,
+            [FromQuery] string? filterValue = null,
+            [FromQuery] string? search = null)
         {
-            var res = await _postService.GetPostList(page, size);
+            var res = await _postService.GetPostList(page, size, filterField, filterValue, search);
+            return Ok(res);
+        }
+
+        [HttpGet(ApiEndpointConstant.Post.GardenerPostEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<PostListDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get all Gardener Post List")]
+        public async Task<IActionResult> GetGardenerPostList(
+            [FromRoute] string id,
+            [FromQuery] int page = 1, [FromQuery] int size = 10,
+            [FromQuery] string? filterField = null,
+            [FromQuery] string? filterValue = null,
+            [FromQuery] string? search = null)
+        {
+            var res = await _postService.GetGardenerPostList(id, page, size, filterField, filterValue, search);
             return Ok(res);
         }
 
@@ -35,8 +53,24 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         //Create Post
+        [HttpPost(ApiEndpointConstant.Post.GardenerPostEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        [SwaggerOperation(Summary = "Create Post")]
+        public async Task<IActionResult> CreatePost([FromRoute]string id, [FromBody]CreatePostDTO request)
+        {
+            await _postService.CreatePost(id, request);
+            return StatusCode(StatusCodes.Status201Created, "Create post successsfully");
+        }
 
         //Update Post (basic information)
+        [HttpPatch(ApiEndpointConstant.Post.PostEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update Post detail (Title, content)")]
+        public async Task<IActionResult> UpdatePost([FromRoute] string id, [FromBody]UpdatePostDTO request)
+        {
+            await _postService.UpdatePost(id, request);
+            return Ok("Update post successfully");
+        }
 
         //Update Status
         [HttpPatch(ApiEndpointConstant.Post.PostStatusEndpoint)]
