@@ -48,9 +48,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok("Create Successfully");
         }
 
-        //Update Product
-
-        //Disable Product
+        [HttpPatch(ApiEndpointConstant.Product.ProductEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Change a Product Status (Product Status: ACTIVE, INACTIVE (possible when no active/available post contain this product))")]
+        public async Task<IActionResult> ChangeProductStatus([FromRoute] string id, [FromQuery] string status)
+        {
+            await _productService.ChangeProductStatus(id, status);
+            return Ok("Change product status successfully");
+        }
 
         //Get Price
         [HttpGet(ApiEndpointConstant.Product.ProductPricesEndpoint)]
@@ -61,6 +66,23 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             var res = await _productService.GetProductPrices(id);
             return Ok(res);
         }
-        //Update Product Price - Is Allow?
+
+        [HttpPost(ApiEndpointConstant.Product.ProductPricesEndpoint)]
+        [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Gardener Products' Price")]
+        public async Task<IActionResult> CreateProductPrice([FromRoute] string id, [FromQuery] CreateProductPriceDTO request)
+        {
+            await _productService.CreateProductPrice(id, request);
+            return Ok("Create Product Price Successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Product.ProductPriceEndpoint)]
+        [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Gardener Products' Price")]
+        public async Task<IActionResult> SetProductCurrentPrice([FromRoute] string id, [FromRoute]string priceId)
+        {
+            await _productService.SetProductCurrentPrice(id, priceId);
+            return Ok("Product price change successfully");
+        }
     }
 }

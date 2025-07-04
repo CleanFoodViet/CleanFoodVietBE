@@ -3,13 +3,17 @@ using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.PostEnums;
+using CleanFoodVietAPI.Data.Enums.ProductEnums;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -98,15 +102,34 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!isSuccess) throw new Exception("Error occur when create product");
         }
 
-        //public async Task UpdateProduct(string productId)
-        //{
+        public async Task ChangeProductStatus(string productId, string status)
+        {
+            Ulid productID = Ulid.Parse(productId);
+            var product = await _unitOfWork.GetRepository<Product>()
+                .GetAsync(predicate: p => p.ProductId == productID);
+            if (product == null) throw new BadHttpRequestException("Product is not found");
 
-        //}
+            if (Enum.TryParse<ProductStatusEnum>(status.ToUpper(), out var result))
+            {
+                if (result == ProductStatusEnum.INACTIVE)
+                {
+                    var today = DateTime.UtcNow;
+                    var activePost = await _unitOfWork.GetRepository<Post>()
+                        .GetListAsync(predicate: po => po.ProductId == productID && (po.PostEndDate < today || po.Status != PostStatusEnum.ACTIVE.ToString()));
 
-        //public async Task DisableProduct(string productId)
-        //{
+                    if (activePost != null) throw new BadHttpRequestException("Cannot disable the chosen Product because it have appeared in some active/available post");
+                }
 
-        //}
+                product.Status = result.ToString();
+            }
+            else
+            {
+                throw new BadHttpRequestException("Invalid Product Status input.");
+            }
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Erorr occur when change product status (DB query Error)");
+        }
 
         public async Task<List<ProductPriceDTO>> GetProductPrices(string productId)
         {
@@ -125,6 +148,46 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 );
 
             return priceList.ToList();
+        }
+
+        public async Task CreateProductPrice(string productId, CreateProductPriceDTO request)
+        {
+            Ulid productID = Ulid.Parse(productId);
+            var product = await _unitOfWork.GetRepository<Product>()
+                .GetAsync(predicate: p => p.ProductId == productID);
+            if (product == null) throw new BadHttpRequestException("Product is not found");
+
+            var newProduct = _mapper.Map<ProductPrice>(request);
+            newProduct.Productd = productID;
+
+            await _unitOfWork.GetRepository<ProductPrice>().InsertAsync(newProduct);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Erorr occur when create product price (DB query Error)");
+        }
+
+        public async Task SetProductCurrentPrice(string productId, string priceId)
+        {
+            Ulid productID = Ulid.Parse(productId);
+            var product = await _unitOfWork.GetRepository<Product>()
+                .GetAsync(predicate: p => p.ProductId == productID);
+            if (product == null) throw new BadHttpRequestException("Product is not found");
+
+            var currentPrice = await _unitOfWork.GetRepository<ProductPrice>()
+                .GetAsync(predicate: pp => pp.Productd == productID && pp.IsCurrent);
+
+            Ulid priceID = Ulid.Parse(priceId);
+            var updatedPrice = await _unitOfWork.GetRepository<ProductPrice>()
+                .GetAsync(predicate: pp => pp.ProductPriceId == priceID);
+            if (updatedPrice == null) throw new BadHttpRequestException("Product price is not found");
+
+            updatedPrice.IsCurrent = true;
+            currentPrice.IsCurrent = false;
+
+            _unitOfWork.GetRepository<ProductPrice>().UpdateAsync(currentPrice);
+            _unitOfWork.GetRepository<ProductPrice>().UpdateAsync(updatedPrice);
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Erorr occur when change product price (DB query Error)");
         }
     }
 }
