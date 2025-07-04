@@ -1,12 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
-using Stripe;
-using Stripe.Checkout;
-
-using CleanFoodVietAPI.Application.Services.Interfaces;
-using CleanFoodVietAPI.Presentation.Constants;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stripe;
 using Stripe.Checkout;
@@ -25,9 +19,9 @@ public class StripeWebhookController : ControllerBase
         IServicePackageOrderService orderSvc,
         ILogger<StripeWebhookController> logger)
     {
-        // you must add both of these in Azure App Settings:
-        // Stripe:WebhookSecretTest  = <your whsec_test_…>
-        // Stripe:WebhookSecretLive  = <your whsec_live_…>
+        // Ensure these two App Settings exist in Azure:
+        // Stripe:WebhookSecretTest  = <your whsec_test_… from Dashboard>
+        // Stripe:WebhookSecretLive  = <your whsec_live_… from Dashboard>
         _testSecret = config["Stripe:WebhookSecretTest"]!;
         _liveSecret = config["Stripe:WebhookSecretLive"]!;
         _orderSvc = orderSvc;
@@ -36,60 +30,46 @@ public class StripeWebhookController : ControllerBase
 
     /// <summary>
     /// Test‐only endpoint
-    /// POST /api/v1/admin/webhook/stripe/test-post
+    /// POST {AdminApiEndpoint}/webhook/stripe/test-post
     /// </summary>
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpointTest)]
     public Task<IActionResult> TestPost()
-        => HandleWebhookAsync(_testSecret, isTest: true);
+        => HandleWebhookAsync(_testSecret, prefix: "▶️ Test");
 
     /// <summary>
-    /// Health‐check
-    /// GET /api/v1/admin/webhook/stripe/healthz
-    /// </summary>
-    [HttpGet("/api/v1/admin/webhook/stripe/healthz")]
-    public IActionResult Healthz()
-    {
-        _logger.LogInformation("🔥 Healthz ping at {Now}", DateTime.UtcNow);
-        return Ok("alive");
-    }
-
-    /// <summary>
-    /// Live webhook
-    /// POST /api/v1/admin/webhook/stripe
+    /// Live webhook endpoint
+    /// POST {AdminApiEndpoint}/webhook/stripe
     /// </summary>
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpoint)]
     public Task<IActionResult> Post()
-        => HandleWebhookAsync(_liveSecret, isTest: false);
+        => HandleWebhookAsync(_liveSecret, prefix: "▶️ Live");
 
-    private async Task<IActionResult> HandleWebhookAsync(string secret, bool isTest)
+    private async Task<IActionResult> HandleWebhookAsync(string secret, string prefix)
     {
-        var prefix = isTest ? "▶️ Test" : "▶️ Live";
         _logger.LogInformation("{Prefix} webhook POST hit", prefix);
 
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
-        var sigHeader = Request.Headers["Stripe-Signature"].FirstOrDefault();
+        var signature = Request.Headers["Stripe-Signature"].FirstOrDefault();
 
         Event stripeEvent;
         try
         {
             stripeEvent = EventUtility.ConstructEvent(
                 json: json,
-                stripeSignatureHeader: sigHeader,
+                stripeSignatureHeader: signature,
                 secret: secret,
                 throwOnApiVersionMismatch: false
             );
 
             _logger.LogInformation(
                 "✔️  {Prefix} webhook parsed OK: {Type} [evt_{Id}]",
-                prefix, stripeEvent.Type, stripeEvent.Id
-            );
+                prefix, stripeEvent.Type, stripeEvent.Id);
         }
         catch (StripeException ex)
         {
             _logger.LogWarning(
                 "⚠️  {Prefix} webhook invalid signature: {Error}",
-                prefix, ex.Message
-            );
+                prefix, ex.Message);
             return BadRequest();
         }
 
