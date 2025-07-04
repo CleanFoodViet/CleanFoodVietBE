@@ -219,7 +219,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<Post>().UpdateAsync(post);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when updating post status");
+            if (!isSuccess) throw new Exception("Error occurs when updating post status (DB query error)");
         }
 
         public async Task<List<PostListDTO>> GetRetailerFavoritePost(string retailerId)
@@ -267,7 +267,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             await _unitOfWork.GetRepository<Favorite>().InsertAsync(newFavPost);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when add post to favorite");
+            if (!isSuccess) throw new Exception("Error occur when add post to favorite (DB query error)");
         }
 
         public async Task RemovePostFromFavorite(string postId, string retailerId)
@@ -287,7 +287,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<Favorite>().DeleteAsync(favorite);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when delete post from favorite");
+            if (!isSuccess) throw new Exception("Error occur when delete post from favorite (DB query error)");
         }
     }
 }

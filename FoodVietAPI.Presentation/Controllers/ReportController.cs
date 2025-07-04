@@ -48,7 +48,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Report.ReportEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Admin Update a Report Status")]
+        [SwaggerOperation(Summary = @"Admin Update a Report Status. 
+                        (Report Status: PENDING (Wait for admin to view detail),
+                                        INPROGRESS (Admin start take action for the report),
+                                        ESCALATED (The Report is getting more serve),
+                                        DUPLICATED (The report content have already been sent by the other),
+                                        RESOLVED (Admin have resolved the report),
+                                        REJECTED (Admin reject report),
+                                        CLOSED (Report close))")]
         public async Task<IActionResult> UpdateReportStatus([FromRoute]string id, [FromQuery]string status)
         {
             await _reportService.UpdateReportStatus(id, status);

@@ -99,7 +99,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             await _unitOfWork.GetRepository<ProductPrice>().InsertAsync(newPrice);
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when create product");
+            if (!isSuccess) throw new Exception("Error occur when create product (DB query error)");
         }
 
         public async Task ChangeProductStatus(string productId, string status)
@@ -126,6 +126,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             {
                 throw new BadHttpRequestException("Invalid Product Status input.");
             }
+
+            product.UpdatedAt = DateTime.UtcNow;
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Erorr occur when change product status (DB query Error)");
@@ -181,7 +183,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (updatedPrice == null) throw new BadHttpRequestException("Product price is not found");
 
             updatedPrice.IsCurrent = true;
+            updatedPrice.UpdatedAt = DateTime.UtcNow;
             currentPrice.IsCurrent = false;
+            currentPrice.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.GetRepository<ProductPrice>().UpdateAsync(currentPrice);
             _unitOfWork.GetRepository<ProductPrice>().UpdateAsync(updatedPrice);

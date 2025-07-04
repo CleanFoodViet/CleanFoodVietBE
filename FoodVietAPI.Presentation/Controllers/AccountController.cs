@@ -44,7 +44,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Account.AccountStatuEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Update status of a account")]
+        [SwaggerOperation(Summary = "Update status of a account (Account Status: ACTIVE, INACTIVE, BANNED)")]
         public async Task<IActionResult> UpdateAccountStatus([FromRoute] string id, [FromQuery] string status)
         {
             await _accountService.UpdateAccountStatus(id, status);

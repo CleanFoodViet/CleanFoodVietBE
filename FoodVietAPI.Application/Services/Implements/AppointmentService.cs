@@ -64,6 +64,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Duration = ap.Duration
                     }
                 );
+
             return appointment;
         }
 
@@ -72,7 +73,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var newAppointment = _mapper.Map<Appointment>(createData);
             await _unitOfWork.GetRepository<Appointment>().InsertAsync(newAppointment);
             bool isSucces = await _unitOfWork.CommitAsync() > 0;
-            if (!isSucces) throw new Exception("Error occur when create appointment");
+            if (!isSucces) throw new Exception("Error occur when create appointment (DB query error)");
         }
         
         public async Task UpdateAppointment(string appointmentId, UpdateAppointmentDTO updateData)
@@ -86,7 +87,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             _mapper.Map(updateData, appointment);
             _unitOfWork.GetRepository<Appointment>().UpdateAsync(appointment);
             bool isSucces = await _unitOfWork.CommitAsync() > 0;
-            if (!isSucces) throw new Exception("Error occur when update appointment");
+            if (!isSucces) throw new Exception("Error occur when update appointment (DB query error)");
         }
     }
 }

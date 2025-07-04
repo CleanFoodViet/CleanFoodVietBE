@@ -21,7 +21,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             await _unitOfWork.GetRepository<ChatMessage>().InsertAsync(message);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when saving message");
+            if (!isSuccess) throw new Exception("Error occur when saving message (DB query error)");
         }
     }
 }

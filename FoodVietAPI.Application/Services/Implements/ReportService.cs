@@ -76,7 +76,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess)
             {
-                throw new Exception("Error occurred while creating the Report.");
+                throw new Exception("Error occurred while creating the Report (DB query error)");
             }
         }
 
@@ -96,9 +96,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new BadHttpRequestException($"Report status {status.ToUpper()} is not existed");
             }
 
-                _unitOfWork.GetRepository<Report>().UpdateAsync(report);
+            report.UpdatedAt = DateTime.UtcNow;
+
+            _unitOfWork.GetRepository<Report>().UpdateAsync(report);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when updating report status");
+            if (!isSuccess) throw new Exception("Error occurs when updating report status (DB query error)");
         }
     }
 }
