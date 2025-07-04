@@ -1,9 +1,16 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.CartDTOs;
+using CleanFoodVietAPI.Application.DTOs.OrderDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.AccountEnums;
+using CleanFoodVietAPI.Data.Enums.OrderEnums;
+using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -12,6 +19,120 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public OrderService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<OrderService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) 
             : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
+        }
+
+        public async Task<IPaginate<OrderListDTO>> GetAccountOrderList(string accountId, int page, int size)
+        {
+            Ulid accId = Ulid.Parse(accountId);
+            var orders = await _unitOfWork.GetRepository<Order>()
+                .GetPagingListAsync(
+                    include: o => o.Include(x => x.OrderDetails),
+                    predicate: o => o.GardenerId == accId || o.RetailerId == accId,
+                    selector: o => new OrderListDTO(
+                        o.OrderId,
+                        o.RetailerId,
+                        o.GardenerId,
+                        o.Status,
+                        o.TotalAmount,
+                        o.CreatedAt,
+                        o.OrderDetails.Count()),
+                    page: page, size: size
+                );
+
+            return orders;
+        }
+
+        public async Task<OrderDTO> GetOrderInformation(string orderId, string accountId)
+        {
+            Ulid accId = Ulid.Parse(accountId);
+            var account = await _unitOfWork.GetRepository<Account>()
+                .GetAsync(include: acc => acc.Include(x => x.Role),
+                          predicate: acc => acc.AccountId == accId);
+            if (account == null) throw new BadHttpRequestException("Account is not found");
+
+            Ulid orderID = Ulid.Parse(orderId);
+            var orderInfo = await _unitOfWork.GetRepository<Order>()
+                .GetAsync(
+                    include: o => o.Include(x => x.OrderDetails),
+                    predicate: o => o.OrderId == orderID,
+                    selector: o => new OrderDTO
+                    {
+                        OrderId = o.OrderId,
+                        RetailerId = o.RetailerId,
+                        GardenerId = o.GardenerId,
+                        AccountName = account.Role.Name == AccountRoleEnum.RETAILER.ToString() ?
+                                        o.Retailer.Name : o.Gardener.Name,
+                        Status = o.Status,
+                        TotalAmount = o.TotalAmount,
+                        PaymentMethod = o.PaymentMethod,
+                        CreatedAt = o.CreatedAt
+                    }
+                );
+            if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
+
+            var orderDetails = await _unitOfWork.GetRepository<OrderDetail>()
+                .GetListAsync(
+                    include: od => od.Include(x => x.Product)
+                                     .ThenInclude(x => x.OrderDeliveryDetails.Where(odd => odd.ProductId == x.ProductId)),
+                    predicate: od => od.OrderId == orderID,
+                    selector: od => new OrderDetailDTO
+                    {
+                         OrderDetailId = od.OrderDetailId,
+                         Price = od.Price,
+                         Quantity = od.Quantity,
+                         ProductUnit = od.ProductUnit,
+                         DeliveryStatus = od.DeliveryStatus,
+                         ProductId = od.ProductId,
+                         ProductName = od.Product.ProductName,
+                         RemainDeliveredQuantity = od.Product.OrderDeliveryDetails.Sum(x => x.Quantity)
+                    }
+                );
+
+            orderInfo.orderDetails = orderDetails.ToList();
+
+            return orderInfo;
+        }
+
+        public async Task CreateOrder(List<CartDTO> carts, string paymentMethod)
+        {
+            foreach(var cart in carts)
+            {
+                var order = _mapper.Map<Order>(cart);
+                order.PaymentMethod = paymentMethod;
+                order.TotalAmount = cart.CartItems.Sum(ct => ct.Price * ct.Quantity); //Need to detailed discuss.
+
+                var orderDetails = _mapper.Map<List<OrderDetail>>(
+                        cart.CartItems,
+                        opt => opt.Items["OrderId"] = order.OrderId //Take the Id of newly created Order above and asign the value to OrderId Field
+                    );
+
+                await _unitOfWork.GetRepository<Order>().InsertAsync(order);
+                await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
+            }
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when create Order (DB query Error)");
+        }
+
+        public async Task UpdateOrderStatus(string orderId, string status)
+        {
+            Ulid orderID = Ulid.Parse(orderId);
+            var order = await _unitOfWork.GetRepository<Order>()
+                .GetAsync(predicate: o => o.OrderId == orderID);
+            if (order == null) throw new BadHttpRequestException("Order is not found");
+
+            if (Enum.TryParse<OrderStatusEnum>(status.ToUpper(), out var result))
+            {
+                order.Status = result.ToString();
+            }
+            else
+            {
+                throw new BadHttpRequestException("Invalid order status");
+            }
+
+            _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update the Order Status (DB query Error)");
         }
     }
 }

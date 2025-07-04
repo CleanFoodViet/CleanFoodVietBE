@@ -2,11 +2,6 @@
 using CleanFoodVietAPI.Application.DTOs.ReportDTOs;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.ReportEnums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Mappers
 {

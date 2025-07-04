@@ -47,18 +47,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return certificates.ToList();
         }
 
-        public async Task<GetCertificateDTO> GetGardenerCertificateDetail(string gardenerId, string certificateId)
+        public async Task<GetCertificateDTO> GetGardenerCertificateDetail(string certificateId)
         {
-            Ulid accountId = Ulid.Parse(gardenerId);
             Ulid cerId = Ulid.Parse(certificateId);
-
-            var gardener = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == accountId);
-            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
 
             var certificate = await _unitOfWork.GetRepository<Certificate>()
                 .GetAsync(
-                    predicate: ce => ce.GardenerId == accountId,
+                    predicate: ce => ce.CertificateId == cerId,
                     selector: ce => new GetCertificateDTO
                     {
                         CertificateId = ce.CertificateId,
@@ -86,16 +81,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             await _unitOfWork.GetRepository<Certificate>().InsertAsync(newCertificate);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when create certificate");
+            if (!isSuccess) throw new Exception("Error occurs when create certificate (DB query error)");
         }
 
-        public async Task UpdateCertificate(CertificateDTO updateData, string certificateId, string gardenerId)
+        public async Task UpdateCertificate(CertificateDTO updateData, string certificateId)
         {
-            Ulid accountId = Ulid.Parse(gardenerId);
-            var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == accountId);
-            if (account == null) throw new BadHttpRequestException("Gardener is not found");
-
             Ulid certificateID = Ulid.Parse(certificateId);
             var certificate = await _unitOfWork.GetRepository<Certificate>()
                 .GetAsync(predicate: ce => ce.CertificateId == certificateID);
@@ -110,16 +100,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<Certificate>().UpdateAsync(certificate);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when update certificate");
+            if (!isSuccess) throw new Exception("Error occurs when update certificate (DB query error)");
         }
 
-        public async Task DeleteCertificate(string certificateId, string gardenerId)
+        public async Task DeleteCertificate(string certificateId)
         {
-            Ulid accountId = Ulid.Parse(gardenerId);
-            var account = await _unitOfWork.GetRepository<Account>()
-                .GetAsync(predicate: acc => acc.AccountId == accountId);
-            if (account == null) throw new BadHttpRequestException("Gardener is not found");
-
             Ulid certificateID = Ulid.Parse(certificateId);
             var certificate = await _unitOfWork.GetRepository<Certificate>()
                 .GetAsync(predicate: ce => ce.CertificateId == certificateID);
@@ -127,7 +112,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<Certificate>().DeleteAsync(certificate);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when delete certificate");
+            if (!isSuccess) throw new Exception("Error occurs when delete certificate (DB query error)");
         }
     }
 }

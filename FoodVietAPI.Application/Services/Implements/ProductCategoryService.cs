@@ -18,10 +18,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryList(int page, int size)
+        public async Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryList(int page, int size, string gardenerId)
         {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+
             var categories = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetPagingListAsync(
+                predicate: pc => pc.GardenerId == gardenerID,
                 selector: pc => new GetProductCategoryDTO(
                     pc.ProductCategoryId,
                     pc.Name,
@@ -46,12 +49,18 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return category;
         }
 
-        public async Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category)
+        public async Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category, string gardenerId)
         {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
+
             ProductCategory newCategory = _mapper.Map<ProductCategory>(category);
+            newCategory.GardenerId = gardenerID;
+
             await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(newCategory);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when insert new product category");
+            if (!isSuccess) throw new Exception("Error occur when insert new product category (DB query error)");
             
             var productCategoryDTO = _mapper.Map<GetProductCategoryDTO>(newCategory);
             return productCategoryDTO;
@@ -69,7 +78,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<ProductCategory>().UpdateAsync(category);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when updating product category");
+            if (!isSuccess) throw new Exception("Error occur when updating product category (DB query error)");
 
             var productCategoryDTO = _mapper.Map<GetProductCategoryDTO>(category);
             return productCategoryDTO;
@@ -89,7 +98,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<ProductCategory>().DeleteAsync(category);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when deleting product category");
+            if (!isSuccess) throw new Exception("Error occur when deleting product category (DB query error)");
         }
     }
 }

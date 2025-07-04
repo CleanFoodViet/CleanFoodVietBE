@@ -1,6 +1,15 @@
-﻿namespace CleanFoodVietAPI.Application.Services.Interfaces
+﻿using CleanFoodVietAPI.Application.DTOs.CartDTOs;
+using CleanFoodVietAPI.Application.DTOs.OrderDTOs;
+using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Paginate;
+
+namespace CleanFoodVietAPI.Application.Services.Interfaces
 {
     public interface IOrderService
     {
+        Task<IPaginate<OrderListDTO>> GetAccountOrderList(string accountId, int page, int size);
+        Task<OrderDTO> GetOrderInformation(string orderId, string accountId);
+        Task CreateOrder(List<CartDTO> carts, string paymentMethod);
+        Task UpdateOrderStatus(string orderId, string status);
     }
 }

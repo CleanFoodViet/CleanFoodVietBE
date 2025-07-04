@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -23,6 +24,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // GET /api/v1/admin/subscription-contracts
         [HttpGet(ApiEndpointConstant.SubscriptionContract.SubscriptionContractsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<SubscriptionContractDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Subscription Contract List")]
         public async Task<IActionResult> GetContracts(
             [FromQuery] int page = 1,
             [FromQuery] int size = 10,
@@ -63,6 +65,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // GET /api/v1/admin/subscription-contracts/{id}
         [HttpGet(ApiEndpointConstant.SubscriptionContract.SubscriptionContractEndpoint)]
         [ProducesResponseType(typeof(SubscriptionContractDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Subscription Contract Detail")]
         public async Task<IActionResult> GetContractDetail([FromRoute] Ulid id)
         {
             var dto = await _svc.GetContractDetailAsync(id);

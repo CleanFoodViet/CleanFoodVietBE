@@ -112,7 +112,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             }
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when modify retailer Cart. (DB error)");
+            if (!isSuccess) throw new Exception("Error occur when modify retailer Cart. (DB query error)");
         }
 
         public async Task DeleteCart(string retailerId)

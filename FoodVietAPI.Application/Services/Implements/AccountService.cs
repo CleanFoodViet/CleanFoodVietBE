@@ -107,9 +107,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 account.Status = AccountStatusEnum.INACTIVE.ToString();
             }
 
+            account.UpdatedAt = DateTime.UtcNow;
+
             _unitOfWork.GetRepository<Account>().UpdateAsync(account);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when updating account status");
+            if (!isSuccess) throw new Exception("Error occurs when updating account status (DB query error)");
         }
 
         public async Task UpdateProfile(string id, UpdateAccountDTO data)
@@ -123,7 +125,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             _mapper.Map(data, account);
             _unitOfWork.GetRepository<Account>().UpdateAsync(account);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when updating profile");
+            if (!isSuccess) throw new Exception("Error occurs when updating profile (DB query error)");
         }
         #endregion
 
@@ -141,7 +143,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return new AuthDTO(token, account.AccountId.ToString());
         }
 
-        public async Task<AuthDTO> Register(RegisterDTO registerData)
+        public async Task<RegisterResponse> Register(RegisterDTO registerData)
         {
             Account account = await _unitOfWork.GetRepository<Account>()
                                        .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
@@ -157,12 +159,35 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");
 
-            var token = JwtUtil.GenerateJwtToken(newAccount);
+            var response = _mapper.Map<RegisterResponse>(newAccount);
+            response.Role = role.Name;
 
-            return new AuthDTO(token, newAccount.AccountId.ToString());
+            return response;
         }
 
-        public async Task<AuthDTO> GardenerRegister(GardenerRegisterDTO registerData)
+        public async Task<RegisterResponse> CreateAdmin(RegisterDTO registerData)
+        {
+            Account account = await _unitOfWork.GetRepository<Account>()
+                                       .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
+                                                                 a.Email == registerData.Email);
+            if (account != null) throw new BadHttpRequestException("Phone Number or Email have already been used");
+
+            Role role = await _unitOfWork.GetRepository<Role>().GetAsync(predicate: r => r.Name == AccountRoleEnum.ADMIN.ToString());
+
+            var newAccount = _mapper.Map<Account>(registerData);
+            newAccount.RoleId = role.RoleId;
+
+            await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when registering");
+
+            var response = _mapper.Map<RegisterResponse>(newAccount);
+            response.Role = role.Name;
+
+            return response;
+        }
+
+        public async Task<RegisterResponse> GardenerRegister(GardenerRegisterDTO registerData)
         {
             Account account = await _unitOfWork.GetRepository<Account>()
                                        .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
@@ -187,9 +212,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");
 
-            var token = JwtUtil.GenerateJwtToken(newAccount);
+            var response = _mapper.Map<RegisterResponse>(newAccount);
+            response.Role = role.Name;
 
-            return new AuthDTO(token, newAccount.AccountId.ToString());
+            return response;
         }
         #endregion
     }
