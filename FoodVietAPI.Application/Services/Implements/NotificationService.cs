@@ -38,7 +38,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Notification newNoti = _mapper.Map<Notification>(request);
             await _unitOfWork.GetRepository<Notification>().InsertAsync(newNoti);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when create notification");
+            if (!isSuccess) throw new Exception("Error occur when create notification (DB query error)");
         }
     }
 }

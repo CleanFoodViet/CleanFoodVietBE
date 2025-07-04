@@ -74,8 +74,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             await _unitOfWork.GetRepository<Address>().InsertAsync(newAddress);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when create address");
-
-            
         }
 
         public async Task UpdateAddress(AddressDTO updateData, string addressId)
@@ -93,7 +91,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<Address>().UpdateAsync(address);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when update address");
+            if (!isSuccess) throw new Exception("Error occurs when update address (DB query error)");
         }
 
         public async Task DeletAddress(string addressId)
@@ -105,7 +103,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<Address>().DeleteAsync(address);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when delete address");
+            if (!isSuccess) throw new Exception("Error occurs when delete address (DB query error)");
         }
     }
 }

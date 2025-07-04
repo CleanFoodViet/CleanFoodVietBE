@@ -13,6 +13,12 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForMember(src => src.ProductPriceId, opt => opt.MapFrom(src => Ulid.NewUlid()))
                 .ForMember(src => src.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(src => src.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+            CreateMap<CreateProductPriceDTO, ProductPrice>()
+                .ForMember(src => src.ProductPriceId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+                .ForMember(src => src.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(src => src.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
         }
     }
 }

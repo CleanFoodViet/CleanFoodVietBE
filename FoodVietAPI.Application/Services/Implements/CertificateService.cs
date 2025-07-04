@@ -81,7 +81,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             await _unitOfWork.GetRepository<Certificate>().InsertAsync(newCertificate);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when create certificate");
+            if (!isSuccess) throw new Exception("Error occurs when create certificate (DB query error)");
         }
 
         public async Task UpdateCertificate(CertificateDTO updateData, string certificateId)
@@ -100,7 +100,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<Certificate>().UpdateAsync(certificate);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when update certificate");
+            if (!isSuccess) throw new Exception("Error occurs when update certificate (DB query error)");
         }
 
         public async Task DeleteCertificate(string certificateId)
@@ -112,7 +112,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<Certificate>().DeleteAsync(certificate);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when delete certificate");
+            if (!isSuccess) throw new Exception("Error occurs when delete certificate (DB query error)");
         }
     }
 }

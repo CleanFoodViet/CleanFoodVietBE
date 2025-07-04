@@ -60,7 +60,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(newCategory);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when insert new product category");
+            if (!isSuccess) throw new Exception("Error occur when insert new product category (DB query error)");
             
             var productCategoryDTO = _mapper.Map<GetProductCategoryDTO>(newCategory);
             return productCategoryDTO;
@@ -78,7 +78,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<ProductCategory>().UpdateAsync(category);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when updating product category");
+            if (!isSuccess) throw new Exception("Error occur when updating product category (DB query error)");
 
             var productCategoryDTO = _mapper.Map<GetProductCategoryDTO>(category);
             return productCategoryDTO;
@@ -98,7 +98,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _unitOfWork.GetRepository<ProductCategory>().DeleteAsync(category);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when deleting product category");
+            if (!isSuccess) throw new Exception("Error occur when deleting product category (DB query error)");
         }
     }
 }

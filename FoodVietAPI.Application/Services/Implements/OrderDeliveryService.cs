@@ -79,6 +79,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             {
                 throw new BadHttpRequestException("Invalid Order Delivery Status");
             }
+            orderDelivery.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.GetRepository<OrderDelivery>().UpdateAsync(orderDelivery);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;

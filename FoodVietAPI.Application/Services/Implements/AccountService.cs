@@ -107,9 +107,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 account.Status = AccountStatusEnum.INACTIVE.ToString();
             }
 
+            account.UpdatedAt = DateTime.UtcNow;
+
             _unitOfWork.GetRepository<Account>().UpdateAsync(account);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when updating account status");
+            if (!isSuccess) throw new Exception("Error occurs when updating account status (DB query error)");
         }
 
         public async Task UpdateProfile(string id, UpdateAccountDTO data)
@@ -123,7 +125,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             _mapper.Map(data, account);
             _unitOfWork.GetRepository<Account>().UpdateAsync(account);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occurs when updating profile");
+            if (!isSuccess) throw new Exception("Error occurs when updating profile (DB query error)");
         }
         #endregion
 
