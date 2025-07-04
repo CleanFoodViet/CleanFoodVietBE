@@ -18,6 +18,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string LoginEndpoint = ApiEndpoint + "/login";
             public const string RegisterEndpoint = ApiEndpoint + "/register";
             public const string GardenerRegisterEndpoint = ApiEndpoint + "/gardener-register";
+            public const string AdminRegisterEndpoint = ApiEndpoint + "/admin-register";
         }
 
         public static class Account
@@ -33,11 +34,6 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
             //Account address endpoints
             public const string AccountAddressesEndpoint = AccountEndpoint + "/addresses";
-            public const string AccountAddressEndpoint = AccountAddressesEndpoint + "/{addressId}";
-
-            //Gardener Certificate endpoints
-            public const string GardenerCertificatesEndpoint = AccountEndpoint + "/gardener/certificates";
-            public const string GardenerCertificateEndpoint = GardenerCertificatesEndpoint + "/{certificateId}";
 
             //Appointment endpoints
             public const string AccountAppointmentEndpoint = AccountEndpoint + "/appointments";
@@ -45,9 +41,15 @@ namespace CleanFoodVietAPI.Presentation.Constants
             //Notification endpoints
             public const string AccountNotificationEndpoint = AccountEndpoint + "/notifications";
 
-            //Favorite post endpoints
-            public const string RetailerFavPostsEndpoint = AccountEndpoint + "/retailer/fav-posts";
-            public const string RetailerFavPostEndpoint = RetailerFavPostsEndpoint + "/{postId}";
+            //Order endpoint
+            public const string AccountOrdersEndpoint = AccountEndpoint + "/orders";
+            public const string AccountOrderEndpoint = AccountOrdersEndpoint + "/{orderId}";
+        }
+
+        public static class Address
+        {
+            public const string AddressesEndpoint = ApiEndpoint + "/addresses";
+            public const string AddressEndpoint = AddressesEndpoint + "/{id}";
         }
 
         public static class Appointment
@@ -58,8 +60,14 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
         public static class RetailerCart
         {
-            //Retailer cart endpoint
             public const string RetailerCartEndpoint = RetailerApiEndpoint + "/{id}/carts";
+        }
+
+        public static class Certificate
+        {
+            public const string GardenerCertificatesEndpoint = GardenerApiEndpoint + "/{id}/certificates";
+            public const string CertificatesEndpoint = ApiEndpoint + "/certificates";
+            public const string CertificateEndpoint = CertificatesEndpoint + "/{id}";
         }
 
         public static class ChatMessage
@@ -67,9 +75,23 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string ChatMessagesEndpoint = ApiEndpoint + "/chat-message";
         }
 
+        public static class Favorite
+        {
+            public const string RetailerFavPostsEndpoint = RetailerApiEndpoint + "/{id}/fav-posts";
+            public const string RetailerFavPostEndpoint = RetailerFavPostsEndpoint + "/{postId}";
+        }
+
         public static class Notification
         {
             public const string NotificationEndpoint = ApiEndpoint + "/notifications";
+        }
+
+        public static class Order
+        {
+            public const string OrdersEndpoint = ApiEndpoint + "/orders";
+            public const string OrderEndpoint = OrdersEndpoint + "/{id}";
+            public const string OrderDeliveriesEndpoint = OrderEndpoint + "/order-deliveries";
+            public const string OrderDeliveryEndpoint = OrderDeliveriesEndpoint + "/{orderDeliveryId}";
         }
 
         public static class Post
@@ -77,6 +99,8 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string PostsEndpoint = ApiEndpoint + "/posts";
             public const string PostEndpoint = PostsEndpoint + "/{id}";
             public const string PostStatusEndpoint = PostEndpoint + "/status";
+
+            public const string GardenerPostEndpoint = GardenerApiEndpoint + "/{id}/posts";
         }
 
         public static class Product
@@ -85,11 +109,13 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string ProductsEndpoint = ApiEndpoint + "/products";
             public const string ProductEndpoint = ProductsEndpoint + "/{id}";
             public const string ProductPricesEndpoint = ProductEndpoint + "/prices";
+            public const string ProductPriceEndpoint = ProductPricesEndpoint + "/{priceId}";
         }
 
         public static class ProductCategory
         {
-            public const string ProductCategoriesEndpoint = ApiEndpoint + "/product-categories";
+            public const string GardenerProductCategoriesEndpoint = GardenerApiEndpoint + "{id}/product-categories";
+            public const string ProductCategoriesEndpoint = ApiEndpoint + "/categories";
             public const string ProductCategoryEndpoint = ProductCategoriesEndpoint + "/{id}";
         }
 

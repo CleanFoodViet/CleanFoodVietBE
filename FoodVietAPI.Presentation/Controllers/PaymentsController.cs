@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using CleanFoodVietAPI.Application.DTOs.Payment;
 using Microsoft.Extensions.Options;
 using Stripe.Checkout;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -38,6 +39,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         /// Creates a Stripe Checkout Session and returns its URL. TEST ONLY.
         /// </summary>
         [HttpPost(ApiEndpointConstant.Payment.GardenerTestPaymentsEndpoint)]
+        [SwaggerOperation(Summary = "Creates a Stripe Checkout Session and returns its URL. TEST ONLY.")]
         public async Task<IActionResult> TestCreateCheckoutSession()
         {
             // In real life, pull these from your ServicePackage entity:
@@ -91,6 +93,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         /// Creates a real Checkout Session for the specified service package.
         /// </summary>
         [HttpPost(ApiEndpointConstant.Payment.GardenerPaymentsEndpoint)]
+        [SwaggerOperation(Summary = "Creates a real Checkout Session for the specified service package.")]
         public async Task<IActionResult> CreateCheckoutSession(
             [FromBody] CreateCheckoutRequest req)
         {

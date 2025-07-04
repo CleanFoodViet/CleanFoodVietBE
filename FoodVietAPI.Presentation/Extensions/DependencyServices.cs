@@ -58,9 +58,9 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IChatMessageService, ChatMessageService>();
             services.AddScoped<ICertificateService, CertificateService>();
-            services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderDeliveryService, OrderDeliveryService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IProductService, Application.Services.Implements.ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
@@ -108,6 +108,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
                     Format = "time",
                     Example = OpenApiAnyFactory.CreateFromJson("\"13:45:42.0000000\"")
                 });
+                options.EnableAnnotations();
             });
             return services;
         }

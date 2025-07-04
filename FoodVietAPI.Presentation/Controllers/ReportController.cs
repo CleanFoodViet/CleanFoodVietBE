@@ -3,8 +3,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
-using ZstdSharp.Unsafe;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -20,6 +19,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Report.ReportsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<ReportListDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get User' Report for Admin")]
         public async Task<IActionResult> GetReportList(int page = 1, int size = 10)
         {
             var res = await _reportService.GetReportList(page, size);
@@ -29,6 +29,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Report.ReportEndpoint)]
         [ProducesResponseType(typeof(ReportDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get a Report Information")]
         public async Task<IActionResult> GetReportInformation(string id)
         {
             var res = await _reportService.GetReportInformation(id);
@@ -38,6 +39,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Report.ReportsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        [SwaggerOperation(Summary = "Create a new Report to Admin")]
         public async Task<IActionResult> CreateReport([FromBody]CreateReportDTO request)
         {
             await _reportService.CreateReport(request);
@@ -46,6 +48,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Report.ReportEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = @"Admin Update a Report Status. 
+                        (Report Status: PENDING (Wait for admin to view detail),
+                                        INPROGRESS (Admin start take action for the report),
+                                        ESCALATED (The Report is getting more serve),
+                                        DUPLICATED (The report content have already been sent by the other),
+                                        RESOLVED (Admin have resolved the report),
+                                        REJECTED (Admin reject report),
+                                        CLOSED (Report close))")]
         public async Task<IActionResult> UpdateReportStatus([FromRoute]string id, [FromQuery]string status)
         {
             await _reportService.UpdateReportStatus(id, status);

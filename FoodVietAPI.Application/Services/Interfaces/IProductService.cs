@@ -9,8 +9,9 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task<IPaginate<ProductListDTO>> GetGardenerProductList(string gardenerId, int page, int size);
         Task<ProductDTO> GetProductInformation(string productId);
         Task CreateProduct(string gardenerId, CreateProductDTO createProductData);
-
-
+        Task ChangeProductStatus(string productId, string status);
         Task<List<ProductPriceDTO>> GetProductPrices(string productId);
+        Task CreateProductPrice(string productId, CreateProductPriceDTO request);
+        Task SetProductCurrentPrice(string productId, string priceId);
     }
 }
