@@ -28,7 +28,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             int page, int size,
             string? filterField = null,
             string? filterValue = null,
-            string? search = null)
+            string? search = null,
+            string? address = null)
         {
             var specification = new PostSpecification(filterField, filterValue, "Priority", "asc", search);
 

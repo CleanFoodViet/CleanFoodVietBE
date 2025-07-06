@@ -10,7 +10,8 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             int page, int size,
             string? filterField = null,
             string? filterValue = null,
-            string? search = null);
+            string? search = null,
+            string? address = null);
         Task<IPaginate<PostListDTO>> GetGardenerPostList(
             string gardenerId,
             int page, int size,
