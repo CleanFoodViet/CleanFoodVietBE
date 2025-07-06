@@ -47,7 +47,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Status,
                     acc.IsVerified,
                     acc.UpdatedAt,
-                    acc.Role.Name, null, null),
+                    acc.Role.Name,
+                    _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
+                    _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())),
                 page: page, size: size,
                 spec: accountSpecification);
 
@@ -77,8 +79,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Status,
                     acc.IsVerified,
                     acc.UpdatedAt,
-                    acc.Role.Name, null, null),
-                page: page, size: size, 
+                    acc.Role.Name,
+                    _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
+                    _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())),
+        page: page, size: size, 
                 spec: accountSpecification);
 
             return accountList;
