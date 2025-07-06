@@ -1,4 +1,4 @@
-﻿using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,7 +9,8 @@ using Swashbuckle.AspNetCore.Annotations;
 [ApiController]
 public class StripeWebhookController : ControllerBase
 {
-    private readonly string _whSecret;
+    private readonly string _testSecret;
+    private readonly string _liveSecret;
     private readonly IServicePackageOrderService _orderSvc;
     private readonly ILogger<StripeWebhookController> _logger;
 
@@ -18,53 +19,35 @@ public class StripeWebhookController : ControllerBase
         IServicePackageOrderService orderSvc,
         ILogger<StripeWebhookController> logger)
     {
-        _whSecret = config["Stripe:WebhookSecret"]!;
+        // Ensure these two App Settings exist in Azure:
+        // Stripe:WebhookSecretTest  = <your whsec_test_… from Dashboard>
+        // Stripe:WebhookSecretLive  = <your whsec_live_… from Dashboard>
+        _testSecret = config["Stripe:WebhookSecretTest"]!;
+        _liveSecret = config["Stripe:WebhookSecretLive"]!;
         _orderSvc = orderSvc;
         _logger = logger;
     }
 
-    // Test endpoint (no side-effects)
+    /// <summary>
+    /// Test‐only endpoint
+    /// POST {AdminApiEndpoint}/webhook/stripe/test-post
+    /// </summary>
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpointTest)]
-    [SwaggerOperation(Summary = "Test post payment")]
-    public async Task<IActionResult> TestPost()
-    {
-        _logger.LogInformation("▶️ TestPost webhook hit");
-        var json = await new StreamReader(Request.Body).ReadToEndAsync();
-        var signature = Request.Headers["Stripe-Signature"].FirstOrDefault();
+    public Task<IActionResult> TestPost()
+        => HandleWebhookAsync(_testSecret, prefix: "▶️ Test");
 
-        try
-        {
-            var stripeEvent = EventUtility.ConstructEvent(
-              json: json,
-              stripeSignatureHeader: signature,
-              secret: _whSecret,
-              throwOnApiVersionMismatch: false
-            );
-
-            _logger.LogInformation("✔️  Test webhook parsed OK: {Type} [evt_{Id}]",
-                                   stripeEvent.Type, stripeEvent.Id);
-            return Ok(new { Received = stripeEvent.Type });
-        }
-        catch (StripeException ex)
-        {
-            _logger.LogWarning("⚠️  Test webhook signature invalid: {Error}", ex.Message);
-            return BadRequest();
-        }
-    }
-
-    [HttpGet("/healthz")]
-    public IActionResult Healthz()
-    {
-        _logger.LogInformation("🔥 Healthz ping at {Now}", DateTime.UtcNow);
-        return Ok("alive");
-    }
-
-    // Real webhook
+    /// <summary>
+    /// Live webhook endpoint
+    /// POST {AdminApiEndpoint}/webhook/stripe
+    /// </summary>
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpoint)]
-    [SwaggerOperation(Summary = "Post Payment for Payment Return Process")]
-    public async Task<IActionResult> Post()
+    public Task<IActionResult> Post()
+        => HandleWebhookAsync(_liveSecret, prefix: "▶️ Live");
+
+    private async Task<IActionResult> HandleWebhookAsync(string secret, string prefix)
     {
-        _logger.LogInformation("▶️  Stripe webhook POST hit");
+        _logger.LogInformation("{Prefix} webhook POST hit", prefix);
+
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
         var signature = Request.Headers["Stripe-Signature"].FirstOrDefault();
 
@@ -72,17 +55,21 @@ public class StripeWebhookController : ControllerBase
         try
         {
             stripeEvent = EventUtility.ConstructEvent(
-              json: json,
-              stripeSignatureHeader: signature,
-              secret: _whSecret,
-              throwOnApiVersionMismatch: false
+                json: json,
+                stripeSignatureHeader: signature,
+                secret: secret,
+                throwOnApiVersionMismatch: false
             );
-            _logger.LogInformation("✔️  Valid signature; event {Type} [evt_{Id}]",
-                                   stripeEvent.Type, stripeEvent.Id);
+
+            _logger.LogInformation(
+                "✔️  {Prefix} webhook parsed OK: {Type} [evt_{Id}]",
+                prefix, stripeEvent.Type, stripeEvent.Id);
         }
         catch (StripeException ex)
         {
-            _logger.LogWarning("⚠️  Invalid signature: {Error}", ex.Message);
+            _logger.LogWarning(
+                "⚠️  {Prefix} webhook invalid signature: {Error}",
+                prefix, ex.Message);
             return BadRequest();
         }
 
@@ -90,24 +77,31 @@ public class StripeWebhookController : ControllerBase
         {
             case "checkout.session.completed":
                 var session = (Session)stripeEvent.Data.Object!;
-                _logger.LogInformation("➡️  Handling checkout.session.completed for session {SessionId} (order {OrderId})",
-                                       session.Id, session.ClientReferenceId);
+                _logger.LogInformation(
+                    "➡️  Handling checkout.session.completed for session {SessionId} (order {OrderId})",
+                    session.Id, session.ClientReferenceId);
                 await _orderSvc.HandleCheckoutSessionCompletedAsync(session);
                 break;
 
             case "payment_intent.payment_failed":
                 var intent = (PaymentIntent)stripeEvent.Data.Object!;
-                _logger.LogError("➡️  Handling payment_failed for intent {IntentId} (order {OrderId})",
-                                 intent.Id, intent.Metadata.GetValueOrDefault("orderId"));
+                _logger.LogError(
+                    "➡️  Handling payment_intent.payment_failed for intent {IntentId} (order {OrderId})",
+                    intent.Id,
+                    intent.Metadata.GetValueOrDefault("orderId"));
                 await _orderSvc.HandlePaymentFailedAsync(intent);
                 break;
 
             default:
-                _logger.LogDebug("↩️  Ignoring unhandled event type {Type}", stripeEvent.Type);
+                _logger.LogDebug(
+                    "↩️  Ignoring unhandled event type {Type}", stripeEvent.Type);
                 break;
         }
 
-        _logger.LogInformation("✅  Webhook {Type} processed", stripeEvent.Type);
+        _logger.LogInformation(
+            "✅  {Prefix} webhook {Type} processed",
+            prefix, stripeEvent.Type);
+
         return Ok();
     }
 }
