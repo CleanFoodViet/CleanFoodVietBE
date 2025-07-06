@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
 using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
@@ -23,8 +24,16 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         }
 
         #region Account Functions
-        public async Task<IPaginate<AccountDTO>> GetRetailerAccountList(int page, int size)
+        public async Task<IPaginate<AccountDTO>> GetRetailerAccountList(
+            int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? sortField = null,
+            string? sortOrder = "asc",
+            string? search = null)
         {
+            AccountSpecification accountSpecification = new AccountSpecification(filterField, filterValue, sortField, sortOrder, search);
+
             var accountList = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
                 include: acc => acc.Include(x => x.Role),
                 predicate: acc => acc.Role.Name == AccountRoleEnum.RETAILER.ToString(),
@@ -39,13 +48,22 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.IsVerified,
                     acc.UpdatedAt,
                     acc.Role.Name, null, null),
-                page: page, size: size);
+                page: page, size: size,
+                spec: accountSpecification);
 
             return accountList;
         }
 
-        public async Task<IPaginate<AccountDTO>> GetGardenerAccountList(int page, int size)
+        public async Task<IPaginate<AccountDTO>> GetGardenerAccountList(
+            int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? sortField = null,
+            string? sortOrder = "asc",
+            string? search = null)
         {
+            AccountSpecification accountSpecification = new AccountSpecification(filterField, filterValue, sortField, sortOrder, search);
+
             var accountList = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
                 include: acc => acc.Include(x => x.Role),
                 predicate: acc => acc.Role.Name == AccountRoleEnum.GARDENER.ToString(),
@@ -60,7 +78,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.IsVerified,
                     acc.UpdatedAt,
                     acc.Role.Name, null, null),
-                page: page, size: size);
+                page: page, size: size, 
+                spec: accountSpecification);
 
             return accountList;
         }

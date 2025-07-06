@@ -6,7 +6,14 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 {
     public interface IProductService
     {
-        Task<IPaginate<ProductListDTO>> GetGardenerProductList(string gardenerId, int page, int size);
+        Task<IPaginate<ProductListDTO>> GetGardenerProductList(
+            string gardenerId, int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? sortField = null,
+            string? sortOrder = "asc",
+            string? search = null,
+            string? category = null);
         Task<ProductDTO> GetProductInformation(string productId);
         Task CreateProduct(string gardenerId, CreateProductDTO createProductData);
         Task ChangeProductStatus(string productId, string status);
