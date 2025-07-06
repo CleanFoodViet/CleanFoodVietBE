@@ -93,6 +93,8 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.Province).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.PostalCode).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Country).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Longtitude).IsRequired();
+                entity.Property(e => e.Latitude).IsRequired();
                 entity.Property(e => e.AccountId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
