@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs;
 using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
@@ -71,6 +72,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Address newAddress = _mapper.Map<Address>(createData);
             newAddress.AccountId = accId;
 
+            //Get longitude and latitude
+            LocationProperties location = await LocationUtil.GetAddressLongLat(newAddress.AddressLine);
+            if (location == null) throw new BadHttpRequestException("Cannot found the location");
+            newAddress.Longitude = location.Lon;
+            newAddress.Latitude = location.Lat;
+
             await _unitOfWork.GetRepository<Address>().InsertAsync(newAddress);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when create address");
@@ -88,6 +95,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             address.Province = String.IsNullOrEmpty(updateData.Province) ? address.Province : updateData.Province;
             address.PostalCode = String.IsNullOrEmpty(updateData.PostalCode) ? address.PostalCode : updateData.PostalCode;
             address.Country = String.IsNullOrEmpty(updateData.Country) ? address.Country : updateData.Country;
+
+            //Get longitude and latitude
+            if(updateData.AddressLine != null)
+            {
+                LocationProperties location = await LocationUtil.GetAddressLongLat(updateData.AddressLine);
+                if (location == null) throw new BadHttpRequestException("Cannot found the location");
+                address.Longitude = location.Lon;
+                address.Latitude = location.Lat;
+            }
 
             _unitOfWork.GetRepository<Address>().UpdateAsync(address);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
