@@ -2,6 +2,7 @@
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
 using CleanFoodVietAPI.Data.Enums.ProductEnums;
@@ -24,26 +25,39 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<ProductListDTO>> GetGardenerProductList(string gardenerId, int page, int size)
+        public async Task<IPaginate<ProductListDTO>> GetGardenerProductList(
+            string gardenerId, int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? sortField = null,
+            string? sortOrder = "asc",
+            string? search = null,
+            string? category = null)
         {
             Ulid gardenerID = Ulid.Parse(gardenerId);
+            ProductSpecification productSpecification = new ProductSpecification(filterField, filterValue, sortField, sortOrder, search);
+
             var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: g => g.AccountId == gardenerID);
             if (gardener == null) throw new BadHttpRequestException("Gardener is not found!");
 
             DateTime today = DateTime.UtcNow;
             var products = await _unitOfWork.GetRepository<Product>()
-                .GetPagingListAsync(predicate: p => p.GardenerId == gardenerID,
-                          include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
-                                         .Include(x => x.ProductCategory),
-                          selector: p => new ProductListDTO(
-                              p.ProductId,
-                              p.ProductName,
-                              p.UpdatedAt,
-                              p.Status,
-                              p.ProductCategory.Name,
-                              p.ProductPrices.First().Price,
-                              p.ProductPrices.First().Currency),
-                          page: page, size: size);
+                .GetPagingListAsync(
+                        include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                        .Include(x => x.ProductCategory),
+                        predicate: p => category == null ? 
+                                p.GardenerId == gardenerID :
+                                p.GardenerId == gardenerID && p.ProductCategory.Name.ToUpper() == category.ToUpper(),
+                        selector: p => new ProductListDTO(
+                            p.ProductId,
+                            p.ProductName,
+                            p.UpdatedAt,
+                            p.Status,
+                            p.ProductCategory.Name,
+                            p.ProductPrices.First().Price,
+                            p.ProductPrices.First().Currency),
+                        page: page, size: size,
+                        spec: productSpecification);
 
             return products;
         }
