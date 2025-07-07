@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs;
 using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
 using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
@@ -226,7 +227,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             certificate.GardenerId = newAccount.AccountId;
 
             List<Address> addresses = _mapper.Map<List<Address>>(registerData);
-            addresses.ForEach(x => x.AccountId = newAccount.AccountId);
+            foreach(var address in addresses)
+            {
+                address.AccountId = newAccount.AccountId;
+                //Get longitude and latitude
+                LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
+                if (location == null) throw new BadHttpRequestException("Cannot found the location");
+                address.Longitude = location.Lon;
+                address.Latitude = location.Lat;
+            }
 
             await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
             await _unitOfWork.GetRepository<Certificate>().InsertAsync(certificate);
