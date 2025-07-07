@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs;
 using CleanFoodVietAPI.Application.DTOs.PostDTOs;
 using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
+using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
@@ -29,15 +31,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             string? filterField = null,
             string? filterValue = null,
             string? search = null,
-            string? address = null)
+            string? address = null,
+            double? range = null)
         {
             var specification = new PostSpecification(filterField, filterValue, "Priority", "asc", search);
+
+            List<Ulid>? accountIds = await GetGardnerIdHaveLocationInRange(address, range);
 
             var postList = await _unitOfWork.GetRepository<Post>()
                 .GetPagingListAsync(
                 include: po => po.Include(x => x.PostMedias.Where(pm => pm.MediumType.Equals(PostMediaTypeEnum.THUMBNAIL.ToString())))
-                                 .Include(x => x.Account).Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
-                predicate: po => po.Status.Equals(PostStatusEnum.ACTIVE.ToString()),
+                                 .Include(x => x.Account).ThenInclude(x => x.Addresses)
+                                 .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
+                predicate: po => po.Status.Equals(PostStatusEnum.ACTIVE.ToString()) && 
+                                 accountIds != null ? accountIds.Any(x => x == po.GardenerId) : true,
                 spec: specification,
                 selector: po => new PostListDTO(
                     po.PostId,
@@ -50,6 +57,22 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 page: page, size: size);
 
             return postList;
+        }
+
+        private async Task<List<Ulid>?> GetGardnerIdHaveLocationInRange(string? address, double? range)
+        {
+            if (address == null || range == null) return null;
+
+            LocationProperties location = new LocationProperties();
+            //Get longitude and latitude
+            location = await LocationUtil.GetAddressLongLat(address);
+
+             var accountIds = await _unitOfWork.GetRepository<Address>()
+                .GetListAsync(
+                    predicate: ad => LocationUtil.CheckAddressesInRange(range, location.Lon, location.Lat, ad.Longitude, ad.Latitude),
+                    selector: ad => ad.AccountId);
+
+            return accountIds.Distinct().ToList();
         }
 
         //Get Gardener Post

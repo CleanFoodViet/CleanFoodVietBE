@@ -1,4 +1,5 @@
 ﻿using CleanFoodVietAPI.Application.DTOs;
+using GeoCoordinatePortable;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -53,10 +54,14 @@ namespace CleanFoodVietAPI.Application.Utils
         }
 
         //Get Post have address near input address in range (xx
-        public static bool CheckAddressesInRange(int range, double lon1, double lat1, double lon2, long lat2)
+        public static bool CheckAddressesInRange(double? range, double lon1, double lat1, double lon2, double lat2)
         {
+            GeoCoordinate location1 = new GeoCoordinate(lat1, lon1);
+            GeoCoordinate location2 = new GeoCoordinate(lat2, lon2);
 
-            return true;
+            double distanceBetween = location1.GetDistanceTo(location2);
+
+            return distanceBetween < range ? true : false;
         }
     }
 }
