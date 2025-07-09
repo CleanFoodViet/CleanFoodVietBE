@@ -9,6 +9,7 @@ using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
+using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -161,6 +162,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                         .GetAsync(include: a => a.Include(x => x.Role),
                                                   predicate: a => a.PhoneNumber == loginData.PhoneNumber);
             if (account == null) throw new BadHttpRequestException("This PhoneNUmber does not registered in the system");
+
+            if (account.Status != AccountStatusEnum.ACTIVE.ToString()) throw new ForbiddenException("Your account has been banned or disable");
 
             if (!HashUtil.VerifyPassword(loginData.Password, account.Password, out var rehashedPassword))
                 throw new UnauthorizedAccessException("Incorrect Account Password");

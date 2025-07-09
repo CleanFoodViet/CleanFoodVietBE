@@ -43,8 +43,13 @@ namespace CleanFoodVietAPI.Presentation.Middlewares
                     errorResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
                     break;
                 case DeletionRestrictedException:
+                case UpdateRestrictedException:
                     response.StatusCode = (int)HttpStatusCode.Conflict;
                     errorResponse.StatusCode = (int)HttpStatusCode.Conflict;
+                    break;
+                case ForbiddenException:
+                    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    errorResponse.StatusCode = (int)HttpStatusCode.Forbidden;
                     break;
                 default:
                     //Unhandle Error/Exception

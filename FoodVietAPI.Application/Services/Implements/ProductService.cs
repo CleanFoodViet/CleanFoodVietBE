@@ -4,8 +4,10 @@ using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.OrderEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
 using CleanFoodVietAPI.Data.Enums.ProductEnums;
+using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -120,8 +122,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
             Ulid productID = Ulid.Parse(productId);
             var product = await _unitOfWork.GetRepository<Product>()
-                .GetAsync(predicate: p => p.ProductId == productID);
+                .GetAsync(
+                    predicate: p => p.ProductId == productID);
             if (product == null) throw new BadHttpRequestException("Product is not found");
+
+
 
             if (Enum.TryParse<ProductStatusEnum>(status.ToUpper(), out var result))
             {
@@ -131,7 +136,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     var activePost = await _unitOfWork.GetRepository<Post>()
                         .GetListAsync(predicate: po => po.ProductId == productID && (po.PostEndDate < today || po.Status != PostStatusEnum.ACTIVE.ToString()));
 
-                    if (activePost != null) throw new BadHttpRequestException("Cannot disable the chosen Product because it have appeared in some active/available post");
+                    if (activePost != null) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some active/available post");
+
+                    var inProgressOrder = await _unitOfWork.GetRepository<Order>()
+                        .GetListAsync(
+                            include: o => o.Include(x => x.OrderDetails),
+                            predicate: o => o.OrderDetails.Any(od => od.ProductId == productID) &&
+                            (o.Status != OrderStatusEnum.COMPLETED.ToString() || o.Status != OrderStatusEnum.CANCELLED.ToString())
+                        );
+                    if(inProgressOrder != null) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
                 }
 
                 product.Status = result.ToString();
