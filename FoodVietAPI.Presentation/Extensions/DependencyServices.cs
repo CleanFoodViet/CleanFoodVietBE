@@ -1,17 +1,17 @@
 ﻿using CleanFoodVietAPI.Application.Services.Implements;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Repositories.Implements;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Stripe;
 using Stripe.Checkout;
-using CleanFoodVietAPI.Application.Utils;
-using System.Text;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
 
 
 namespace CleanFoodVietAPI.Presentation.Extensions
@@ -69,6 +69,9 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<IServicePackageService, ServicePackageService>();
             services.AddScoped<ISubscriptionContractService, SubscriptionContractService>();
             services.AddScoped<IServicePackageOrderService, ServicePackageOrderService>();
+            //services.AddScoped<ISubscriptionReconciler, SubscriptionReconciler>();
+            //services.AddScoped<IGardenerRepository, GardenerRepository>();
+            services.AddScoped<ExpireContractsJob>();
             #endregion
 
             return services;
