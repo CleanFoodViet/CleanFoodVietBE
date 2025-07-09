@@ -14,6 +14,7 @@ using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -156,11 +157,22 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         #region Authentication Functions
         public async Task<AuthDTO> Login(LoginDTO loginData)
         {
-            string hashedPassword = HashUtil.PasswordHash(loginData.Password);
             Account account = await _unitOfWork.GetRepository<Account>()
-                                        .GetAsync(predicate: a => a.PhoneNumber == loginData.PhoneNumber &&
-                                                                  a.Password == hashedPassword);
-            if (account == null) throw new BadHttpRequestException("Incorrect Phone Number or Password");
+                                        .GetAsync(include: a => a.Include(x => x.Role),
+                                                  predicate: a => a.PhoneNumber == loginData.PhoneNumber);
+            if (account == null) throw new BadHttpRequestException("This PhoneNUmber does not registered in the system");
+
+            if (!HashUtil.VerifyPassword(loginData.Password, account.Password, out var rehashedPassword))
+                throw new UnauthorizedAccessException("Incorrect Account Password");
+
+            if (rehashedPassword != null)
+            {
+                account.Password = rehashedPassword;
+                _unitOfWork.GetRepository<Account>().UpdateAsync(account);
+                bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+
+                if (!isSuccess) throw new Exception("An error occured when executing sign-in");
+            }
 
             var token = JwtUtil.GenerateJwtToken(account);
 
