@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanFoodVietAPI.Applicatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanFoodVietAPI.Data", "FoodVietAPI.Data\CleanFoodVietAPI.Data.csproj", "{548FBD0E-6927-47F8-A790-30842C3D9C71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanFoodVietAPI.Functions", "CleanFoodVietAPI.Functions\CleanFoodVietAPI.Functions.csproj", "{356E6AB3-EF0B-47BA-A1B0-E9E58BC5B695}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{548FBD0E-6927-47F8-A790-30842C3D9C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{548FBD0E-6927-47F8-A790-30842C3D9C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{548FBD0E-6927-47F8-A790-30842C3D9C71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{356E6AB3-EF0B-47BA-A1B0-E9E58BC5B695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{356E6AB3-EF0B-47BA-A1B0-E9E58BC5B695}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{356E6AB3-EF0B-47BA-A1B0-E9E58BC5B695}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{356E6AB3-EF0B-47BA-A1B0-E9E58BC5B695}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -19,9 +19,9 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.Account.AccountAppointmentEndpoint)]
         [ProducesResponseType(typeof(List<AppointmentListDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all appointments of account")]
-        public async Task<IActionResult> GetAccountAppointmentList([FromRoute] string accountId)
+        public async Task<IActionResult> GetAccountAppointmentList([FromRoute] string id)
         {
-            var res = await _appointmentService.GetAppointmentList(accountId);
+            var res = await _appointmentService.GetAppointmentList(id);
             return Ok(res);
         }
 
