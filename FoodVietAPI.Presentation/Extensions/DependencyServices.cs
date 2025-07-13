@@ -71,7 +71,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<IServicePackageOrderService, ServicePackageOrderService>();
             //services.AddScoped<ISubscriptionReconciler, SubscriptionReconciler>();
             //services.AddScoped<IGardenerRepository, GardenerRepository>();
-            services.AddScoped<ExpireContractsJob>();
+            //services.AddScoped<ExpireContractsJob>();
             #endregion
 
             return services;
