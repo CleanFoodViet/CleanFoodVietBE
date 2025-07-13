@@ -1,5 +1,4 @@
 using CleanFoodVietAPI.Presentation.Extensions;
-using CleanFoodVietAPI.Presentation.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,7 +26,7 @@ builder.Services
 // 3) (Optional) Hangfire for local testing only
 // if (builder.Environment.IsDevelopment())
 // {
-//     builder.Services.AddHangfire(…);
+//     builder.Services.AddHangfire(â€¦);
 //     builder.Services.AddHangfireServer();
 // }
 
@@ -35,7 +34,7 @@ var app = builder.Build();
 
 // 4) Global middleware
 app.UseMiddleware<GlobalException>();
-// (You’ve removed the old ReconcileMiddleware here)
+// (Youâ€™ve removed the old ReconcileMiddleware here)
 
 // 5) Standard pipeline
 app.UseHttpsRedirection();
@@ -53,8 +52,8 @@ app.UseSwaggerUI();
 // if (app.Environment.IsDevelopment())
 // {
 //     app.UseHangfireDashboard("/hangfire");
-//     RecurringJob.AddOrUpdate<ExpireContractsJob>(…);
-//     RecurringJob.AddOrUpdate("heartbeat", …);
+//     RecurringJob.AddOrUpdate<ExpireContractsJob>(â€¦);
+//     RecurringJob.AddOrUpdate("heartbeat", â€¦);
 // }
 
 // 8) MVC endpoints

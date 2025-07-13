@@ -26,6 +26,7 @@
         //public DateTime CreatedAt { get; set; }
         //public DateTime UpdatedAt { get; set; }
         public bool IsCurrent { get; set; }
+        public string WeightUnit { get; set; } = null!;
         //public Ulid Productd { get; set; } <<<<
     }
 }

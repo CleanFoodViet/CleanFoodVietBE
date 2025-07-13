@@ -2,9 +2,12 @@
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.OrderEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
 using CleanFoodVietAPI.Data.Enums.ProductEnums;
+using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -24,26 +27,40 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<ProductListDTO>> GetGardenerProductList(string gardenerId, int page, int size)
+        public async Task<IPaginate<ProductListDTO>> GetGardenerProductList(
+            string gardenerId, int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? sortField = null,
+            string? sortOrder = "asc",
+            string? search = null,
+            string? category = null)
         {
             Ulid gardenerID = Ulid.Parse(gardenerId);
+            ProductSpecification productSpecification = new ProductSpecification(filterField, filterValue, sortField, sortOrder, search);
+
             var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: g => g.AccountId == gardenerID);
             if (gardener == null) throw new BadHttpRequestException("Gardener is not found!");
 
             DateTime today = DateTime.UtcNow;
             var products = await _unitOfWork.GetRepository<Product>()
-                .GetPagingListAsync(predicate: p => p.GardenerId == gardenerID,
-                          include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
-                                         .Include(x => x.ProductCategory),
-                          selector: p => new ProductListDTO(
-                              p.ProductId,
-                              p.ProductName,
-                              p.UpdatedAt,
-                              p.Status,
-                              p.ProductCategory.Name,
-                              p.ProductPrices.First().Price,
-                              p.ProductPrices.First().Currency),
-                          page: page, size: size);
+                .GetPagingListAsync(
+                        include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                        .Include(x => x.ProductCategory),
+                        predicate: p => category == null ? 
+                                p.GardenerId == gardenerID :
+                                p.GardenerId == gardenerID && p.ProductCategory.Name.ToUpper() == category.ToUpper(),
+                        selector: p => new ProductListDTO(
+                            p.ProductId,
+                            p.ProductName,
+                            p.UpdatedAt,
+                            p.Status,
+                            p.ProductCategory.Name,
+                            p.ProductPrices.First().Price,
+                            p.ProductPrices.First().Currency,
+                            p.ProductPrices.First().WeightUnit),
+                        page: page, size: size,
+                        spec: productSpecification);
 
             return products;
         }
@@ -67,7 +84,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.ProductPrices.First().ProductPriceId,
                               p.ProductPrices.First().Price,
                               p.ProductPrices.First().Currency,
-                              p.ProductPrices.First().AvailabledDate));
+                              p.ProductPrices.First().AvailabledDate,
+                              p.ProductPrices.First().WeightUnit));
 
             if (product == null) throw new BadHttpRequestException("Product cannot be found");
 
@@ -106,8 +124,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
             Ulid productID = Ulid.Parse(productId);
             var product = await _unitOfWork.GetRepository<Product>()
-                .GetAsync(predicate: p => p.ProductId == productID);
+                .GetAsync(
+                    predicate: p => p.ProductId == productID);
             if (product == null) throw new BadHttpRequestException("Product is not found");
+
+
 
             if (Enum.TryParse<ProductStatusEnum>(status.ToUpper(), out var result))
             {
@@ -117,7 +138,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     var activePost = await _unitOfWork.GetRepository<Post>()
                         .GetListAsync(predicate: po => po.ProductId == productID && (po.PostEndDate < today || po.Status != PostStatusEnum.ACTIVE.ToString()));
 
-                    if (activePost != null) throw new BadHttpRequestException("Cannot disable the chosen Product because it have appeared in some active/available post");
+                    if (activePost != null) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some active/available post");
+
+                    var inProgressOrder = await _unitOfWork.GetRepository<Order>()
+                        .GetListAsync(
+                            include: o => o.Include(x => x.OrderDetails),
+                            predicate: o => o.OrderDetails.Any(od => od.ProductId == productID) &&
+                            (o.Status != OrderStatusEnum.COMPLETED.ToString() || o.Status != OrderStatusEnum.CANCELLED.ToString())
+                        );
+                    if(inProgressOrder != null) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
                 }
 
                 product.Status = result.ToString();
@@ -143,6 +172,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         pp.ProductPriceId,
                         pp.Price,
                         pp.Currency,
+                        pp.WeightUnit,
                         pp.AvailabledDate,
                         pp.CreatedAt,
                         pp.UpdatedAt,

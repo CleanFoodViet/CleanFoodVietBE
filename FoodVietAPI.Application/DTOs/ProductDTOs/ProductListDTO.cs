@@ -8,6 +8,7 @@
         string Status,
         string ProductCategory,
         decimal Price,
-        string Currency
+        string Currency,
+        string WeightUnit
     );
 }

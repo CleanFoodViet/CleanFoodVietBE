@@ -17,3 +17,4 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual Account Account { get; set; } = null!;
     }
 }
+    

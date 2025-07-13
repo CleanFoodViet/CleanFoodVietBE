@@ -6,6 +6,6 @@
         int Page { get; }
         int Total { get; }
         int TotalPages { get; }
-        IList<TResult> Items { get; }
+        IList<TResult> Items { get; set; }
     }
 }

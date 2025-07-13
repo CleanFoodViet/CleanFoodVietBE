@@ -14,6 +14,7 @@
         Ulid ProductPriceId,
         decimal Price,  
         string Currency,
-        DateTime AvailabledDate
+        DateTime AvailabledDate,
+        string WeightUnit
     );
 }
