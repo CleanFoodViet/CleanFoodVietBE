@@ -80,25 +80,25 @@ app.MapScalarApiReference(o =>
      .WithDarkMode(true));
 
 // Manual trigger endpoint for your 30 sec heartbeat
-app.MapGet("/hangfire/trigger-heartbeat", (IRecurringJobManager mgr) =>
-{
-    mgr.Trigger("heartbeat-2mins");
-    return Results.Ok("Heartbeat job triggered");
-});
+//app.MapGet("/hangfire/trigger-heartbeat", (IRecurringJobManager mgr) =>
+//{
+//    mgr.Trigger("heartbeat-2mins");
+//    return Results.Ok("Heartbeat job triggered");
+//});
 
 // 7. Recurring jobs (outside of HTTP pipeline)
-RecurringJob.AddOrUpdate<ExpireContractsJob>(
-    "expire-contracts",
-    job => job.ExecuteAsync(),
-    Cron.MinuteInterval(15),
-    new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
+//RecurringJob.AddOrUpdate<ExpireContractsJob>(
+//    "expire-contracts",
+//    job => job.ExecuteAsync(),
+//    Cron.MinuteInterval(15),
+//    new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
 
 // Heartbeat job that runs every 2 minutes
-RecurringJob.AddOrUpdate(
-    "heartbeat-2min",
-    () => Console.WriteLine($"[Hangfire] Heartbeat at {DateTime.UtcNow:O}"),
-    "*/2 * * * *"
-);
+//RecurringJob.AddOrUpdate(
+//    "heartbeat-2min",
+//    () => Console.WriteLine($"[Hangfire] Heartbeat at {DateTime.UtcNow:O}"),
+//    "*/2 * * * *"
+//);
 
 // 8. Start the host
 app.Run();

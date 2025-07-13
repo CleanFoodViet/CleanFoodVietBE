@@ -79,7 +79,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Product.ProductPricesEndpoint)]
         [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get Gardener Products' Price")]
+        [SwaggerOperation(Summary = "Create Gardener Products' Price")]
         public async Task<IActionResult> CreateProductPrice([FromRoute] string id, [FromQuery] CreateProductPriceDTO request)
         {
             await _productService.CreateProductPrice(id, request);
@@ -88,7 +88,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Product.ProductPriceEndpoint)]
         [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get Gardener Products' Price")]
+        [SwaggerOperation(Summary = "Set product current price")]
         public async Task<IActionResult> SetProductCurrentPrice([FromRoute] string id, [FromRoute]string priceId)
         {
             await _productService.SetProductCurrentPrice(id, priceId);

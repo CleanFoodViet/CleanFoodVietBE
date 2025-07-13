@@ -49,6 +49,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Avatar,
                     acc.Status,
                     acc.IsVerified,
+                    acc.CreatedAt,
                     acc.UpdatedAt,
                     acc.Role.Name,
                     _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
@@ -81,6 +82,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Avatar,
                     acc.Status,
                     acc.IsVerified,
+                    acc.CreatedAt,
                     acc.UpdatedAt,
                     acc.Role.Name,
                     _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
@@ -106,6 +108,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                 acc.Avatar,
                                 acc.Status,
                                 acc.IsVerified,
+                                acc.CreatedAt,
                                 acc.UpdatedAt,
                                 acc.Role.Name,
                                 _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
@@ -179,7 +182,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             var token = JwtUtil.GenerateJwtToken(account);
 
-            return new AuthDTO(token, account.AccountId.ToString());
+            return new AuthDTO(token, account.AccountId.ToString(), account.Name, account.Avatar);
         }
 
         public async Task<RegisterResponse> Register(RegisterDTO registerData)
