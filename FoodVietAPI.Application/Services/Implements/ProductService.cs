@@ -57,7 +57,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                             p.Status,
                             p.ProductCategory.Name,
                             p.ProductPrices.First().Price,
-                            p.ProductPrices.First().Currency),
+                            p.ProductPrices.First().Currency,
+                            p.ProductPrices.First().WeightUnit),
                         page: page, size: size,
                         spec: productSpecification);
 
@@ -83,7 +84,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.ProductPrices.First().ProductPriceId,
                               p.ProductPrices.First().Price,
                               p.ProductPrices.First().Currency,
-                              p.ProductPrices.First().AvailabledDate));
+                              p.ProductPrices.First().AvailabledDate,
+                              p.ProductPrices.First().WeightUnit));
 
             if (product == null) throw new BadHttpRequestException("Product cannot be found");
 
@@ -170,6 +172,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         pp.ProductPriceId,
                         pp.Price,
                         pp.Currency,
+                        pp.WeightUnit,
                         pp.AvailabledDate,
                         pp.CreatedAt,
                         pp.UpdatedAt,

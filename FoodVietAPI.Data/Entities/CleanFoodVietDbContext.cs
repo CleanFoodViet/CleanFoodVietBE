@@ -832,6 +832,7 @@ namespace CleanFoodVietAPI.Data.Entities
                     .IsFixedLength();
                 entity.Property(e => e.Price).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.Currency).IsRequired().HasMaxLength(10);
+                entity.Property(e => e.WeightUnit).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.AvailabledDate).HasColumnType("datetime");
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
