@@ -30,32 +30,36 @@ namespace CleanFoodVietAPI.Presentation.Middlewares
         {
             context.Response.ContentType = "application/json";
             var response = context.Response;
-            int statusCode = 500;
 
+            var errorResponse = new ErrorDTO() { TimeStamp = DateTime.UtcNow, Error = exception.Message }; ;
             switch (exception)
             {
                 case BadHttpRequestException:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    statusCode = (int)HttpStatusCode.BadRequest;
+                    errorResponse.StatusCode = (int)HttpStatusCode.BadRequest;
                     break;
                 case UnauthorizedAccessException:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    statusCode = (int)HttpStatusCode.Unauthorized;
+                    errorResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
                     break;
                 case DeletionRestrictedException:
+                case UpdateRestrictedException:
                     response.StatusCode = (int)HttpStatusCode.Conflict;
-                    statusCode = (int)HttpStatusCode.Conflict;
+                    errorResponse.StatusCode = (int)HttpStatusCode.Conflict;
+                    break;
+                case ForbiddenException:
+                    response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    errorResponse.StatusCode = (int)HttpStatusCode.Forbidden;
                     break;
                 default:
                     //Unhandle Error/Exception
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    statusCode = (int)HttpStatusCode.InternalServerError;
+                    errorResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
                     break;
             }
 
-            var errorResponse = new ErrorDTO(statusCode, exception.Message, DateTime.UtcNow);
-            var result = errorResponse.ToString();
             _logger.LogError($"Error at {DateTime.UtcNow} - {exception}");
+            var result = errorResponse.ToString();
             await context.Response.WriteAsync(result);
         }
     }

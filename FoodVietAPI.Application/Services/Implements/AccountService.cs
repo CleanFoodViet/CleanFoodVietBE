@@ -1,17 +1,21 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs;
 using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
 using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
 using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
+using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -23,8 +27,16 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         }
 
         #region Account Functions
-        public async Task<IPaginate<AccountDTO>> GetRetailerAccountList(int page, int size)
+        public async Task<IPaginate<AccountDTO>> GetRetailerAccountList(
+            int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? sortField = null,
+            string? sortOrder = "asc",
+            string? search = null)
         {
+            AccountSpecification accountSpecification = new AccountSpecification(filterField, filterValue, sortField, sortOrder, search);
+
             var accountList = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
                 include: acc => acc.Include(x => x.Role),
                 predicate: acc => acc.Role.Name == AccountRoleEnum.RETAILER.ToString(),
@@ -37,15 +49,27 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Avatar,
                     acc.Status,
                     acc.IsVerified,
+                    acc.CreatedAt,
                     acc.UpdatedAt,
-                    acc.Role.Name, null, null),
-                page: page, size: size);
+                    acc.Role.Name,
+                    _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
+                    _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())),
+                page: page, size: size,
+                spec: accountSpecification);
 
             return accountList;
         }
 
-        public async Task<IPaginate<AccountDTO>> GetGardenerAccountList(int page, int size)
+        public async Task<IPaginate<AccountDTO>> GetGardenerAccountList(
+            int page, int size,
+            string? filterField = null,
+            string? filterValue = null,
+            string? sortField = null,
+            string? sortOrder = "asc",
+            string? search = null)
         {
+            AccountSpecification accountSpecification = new AccountSpecification(filterField, filterValue, sortField, sortOrder, search);
+
             var accountList = await _unitOfWork.GetRepository<Account>().GetPagingListAsync(
                 include: acc => acc.Include(x => x.Role),
                 predicate: acc => acc.Role.Name == AccountRoleEnum.GARDENER.ToString(),
@@ -58,9 +82,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Avatar,
                     acc.Status,
                     acc.IsVerified,
+                    acc.CreatedAt,
                     acc.UpdatedAt,
-                    acc.Role.Name, null, null),
-                page: page, size: size);
+                    acc.Role.Name,
+                    _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
+                    _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())),
+        page: page, size: size, 
+                spec: accountSpecification);
 
             return accountList;
         }
@@ -80,6 +108,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                 acc.Avatar,
                                 acc.Status,
                                 acc.IsVerified,
+                                acc.CreatedAt,
                                 acc.UpdatedAt,
                                 acc.Role.Name,
                                 _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
@@ -132,15 +161,28 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         #region Authentication Functions
         public async Task<AuthDTO> Login(LoginDTO loginData)
         {
-            string hashedPassword = HashUtil.PasswordHash(loginData.Password);
             Account account = await _unitOfWork.GetRepository<Account>()
-                                        .GetAsync(predicate: a => a.PhoneNumber == loginData.PhoneNumber &&
-                                                                  a.Password == hashedPassword);
-            if (account == null) throw new BadHttpRequestException("Incorrect Phone Number or Password");
+                                        .GetAsync(include: a => a.Include(x => x.Role),
+                                                  predicate: a => a.PhoneNumber == loginData.PhoneNumber);
+            if (account == null) throw new BadHttpRequestException("This PhoneNUmber does not registered in the system");
+
+            if (account.Status != AccountStatusEnum.ACTIVE.ToString()) throw new ForbiddenException("Your account has been banned or disable");
+
+            if (!HashUtil.VerifyPassword(loginData.Password, account.Password, out var rehashedPassword))
+                throw new UnauthorizedAccessException("Incorrect Account Password");
+
+            if (rehashedPassword != null)
+            {
+                account.Password = rehashedPassword;
+                _unitOfWork.GetRepository<Account>().UpdateAsync(account);
+                bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+
+                if (!isSuccess) throw new Exception("An error occured when executing sign-in");
+            }
 
             var token = JwtUtil.GenerateJwtToken(account);
 
-            return new AuthDTO(token, account.AccountId.ToString());
+            return new AuthDTO(token, account.AccountId.ToString(), account.Name, account.Avatar);
         }
 
         public async Task<RegisterResponse> Register(RegisterDTO registerData)
@@ -203,7 +245,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             certificate.GardenerId = newAccount.AccountId;
 
             List<Address> addresses = _mapper.Map<List<Address>>(registerData);
-            addresses.ForEach(x => x.AccountId = newAccount.AccountId);
+            foreach(var address in addresses)
+            {
+                address.AccountId = newAccount.AccountId;
+                //Get longitude and latitude
+                LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
+                if (location == null) throw new BadHttpRequestException("Cannot found the location");
+                address.Longitude = location.Lon;
+                address.Latitude = location.Lat;
+            }
 
             await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
             await _unitOfWork.GetRepository<Certificate>().InsertAsync(certificate);

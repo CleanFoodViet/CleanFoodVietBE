@@ -23,9 +23,10 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             [FromQuery]int page = 1, [FromQuery]int size = 10,
             [FromQuery] string? filterField = null,
             [FromQuery] string? filterValue = null,
-            [FromQuery] string? search = null)
+            [FromQuery] string? search = null,
+            [FromQuery] string? address = null)
         {
-            var res = await _postService.GetPostList(page, size, filterField, filterValue, search);
+            var res = await _postService.GetPostList(page, size, filterField, filterValue, search, address);
             return Ok(res);
         }
 

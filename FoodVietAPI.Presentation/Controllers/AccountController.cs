@@ -27,18 +27,34 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.Account.RetailerAccountsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<AccountDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all the retailers' accounts")]
-        public async Task<IActionResult> GetRetailerAccountList([FromQuery]int page = 1, [FromQuery]int size = 10)
+        public async Task<IActionResult> GetRetailerAccountList(
+             [FromQuery] int page = 1,
+             [FromQuery] int size = 10,
+             [FromQuery] string? filterField = null,
+             [FromQuery] string? filterValue = null,
+             [FromQuery] string? sortField = null,
+             [FromQuery] string? sortOrder = "asc",
+             [FromQuery] string? search = null)
         {
-            var res = await _accountService.GetRetailerAccountList(page, size);
+            var res = await _accountService.GetRetailerAccountList(
+                page, size, filterField, filterValue, sortField, sortOrder, search);
             return Ok(res);
         }
 
         [HttpGet(ApiEndpointConstant.Account.GardenerAccountsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<AccountDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all the gardeners' accounts")]
-        public async Task<IActionResult> GetGardenerAccountList([FromQuery] int page = 1, [FromQuery] int size = 10)
+        public async Task<IActionResult> GetGardenerAccountList(
+             [FromQuery] int page = 1,
+             [FromQuery] int size = 10,
+             [FromQuery] string? filterField = null,
+             [FromQuery] string? filterValue = null,
+             [FromQuery] string? sortField = null,
+             [FromQuery] string? sortOrder = "asc",
+             [FromQuery] string? search = null)
         {
-            var res = await _accountService.GetGardenerAccountList(page, size);
+            var res = await _accountService.GetGardenerAccountList(
+                page, size, filterField, filterValue, sortField, sortOrder, search);
             return Ok(res);
         }
 

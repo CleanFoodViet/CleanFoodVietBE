@@ -13,6 +13,7 @@ namespace CleanFoodVietAPI.Application.DTOs.AccountDTOs
         string Avatar,
         string Status,
         bool IsVerified,
+        DateTime CreateAt,
         DateTime UpdatedAt,
         string RoleName,
         List<CertificateDTO>? Certificates,

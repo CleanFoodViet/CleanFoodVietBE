@@ -2,6 +2,8 @@
 {
     public record AuthDTO(
         string Token,
-        string AccountId
+        string AccountId,
+        string Name,
+        string Avatar
         );
 }

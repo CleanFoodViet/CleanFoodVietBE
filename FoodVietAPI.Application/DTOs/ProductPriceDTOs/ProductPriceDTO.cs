@@ -5,6 +5,7 @@
         Ulid ProductPriceId,
         decimal Price,
         string Currency,
+        string WeightUnit,
         DateTime AvailabledDate,
         DateTime CreatedAt,
         DateTime UpdatedAt,

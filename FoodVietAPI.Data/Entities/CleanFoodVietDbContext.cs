@@ -93,6 +93,8 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.Province).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.PostalCode).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Country).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Longitude).IsRequired();
+                entity.Property(e => e.Latitude).IsRequired();
                 entity.Property(e => e.AccountId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
@@ -830,6 +832,7 @@ namespace CleanFoodVietAPI.Data.Entities
                     .IsFixedLength();
                 entity.Property(e => e.Price).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.Currency).IsRequired().HasMaxLength(10);
+                entity.Property(e => e.WeightUnit).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.AvailabledDate).HasColumnType("datetime");
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
