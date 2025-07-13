@@ -1,7 +1,9 @@
 using CleanFoodVietAPI.Presentation.Extensions;
 using CleanFoodVietAPI.Presentation.Middlewares;
-using Hangfire;
-using Hangfire.MySql;
+
+// using CleanFoodVietAPI.Presentation.Middlewares;   // no longer needed
+// using Hangfire;
+// using Hangfire.MySql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,36 +28,36 @@ builder.Services.AddServices(builder.Configuration);
 builder.Services.AddConfigSwagger();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// Hangfire and MySQL
-builder.Services.AddHangfire(cfg =>
-    cfg.UseStorage(new MySqlStorage(
-        builder.Configuration.GetConnectionString("DefaultConnection")!,
-        new MySqlStorageOptions
-        {
-            TablesPrefix = "Hangfire",
-            PrepareSchemaIfNecessary = true,
-            QueuePollInterval = TimeSpan.FromSeconds(15),
-
-            TransactionTimeout = TimeSpan.FromMinutes(1),
-
-            JobExpirationCheckInterval = TimeSpan.FromMinutes(5),
-            CountersAggregateInterval = TimeSpan.FromMinutes(5),
-            DashboardJobListLimit = 10000
-        })));
-builder.Services.AddHangfireServer();
+// Hangfire and MySQL (commented out for production; enable for local fun)
+// builder.Services.AddHangfire(cfg =>
+//     cfg.UseStorage(new MySqlStorage(
+//         builder.Configuration.GetConnectionString("DefaultConnection")!,
+//         new MySqlStorageOptions
+//         {
+//             TablesPrefix               = "Hangfire",
+//             PrepareSchemaIfNecessary   = true,
+//             QueuePollInterval          = TimeSpan.FromSeconds(15),
+//             TransactionTimeout         = TimeSpan.FromMinutes(1),
+//             JobExpirationCheckInterval = TimeSpan.FromMinutes(5),
+//             CountersAggregateInterval  = TimeSpan.FromMinutes(5),
+//             DashboardJobListLimit      = 10000
+//         })));
+// builder.Services.AddHangfireServer();
 
 // Logging
 builder.Logging
-  .ClearProviders()
-  .AddConsole()
-  .AddAzureWebAppDiagnostics()
-  .AddFilter("Hangfire", LogLevel.Debug);
+    .ClearProviders()
+    .AddConsole()
+    .AddAzureWebAppDiagnostics()
+    // .AddFilter("Hangfire", LogLevel.Debug)   // only if Hangfire is in use
+    ;
 
+// build the app
 var app = builder.Build();
 
 // 2. Global and custom middleware
 app.UseMiddleware<GlobalException>();
-app.UseMiddleware<ReconcileMiddleware>();
+// app.UseMiddleware<ReconcileMiddleware>();   // removed in favor of scheduled job
 
 // 3. HTTPS, Routing, CORS, Auth
 app.UseHttpsRedirection();
@@ -65,12 +67,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // 4. OpenAPI endpoints + Swagger UI
-app.MapOpenApi();       // <— serves your /openapi/v1 document
-app.UseSwagger();       // <— serves /swagger/v1/swagger.json
-app.UseSwaggerUI();     // <— serves the Swagger UI at /swagger
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-// 5. Hangfire Dashboard (relies on the routing middleware)
-app.UseHangfireDashboard("/hangfire");
+// 5. Hangfire Dashboard (local only; comment for prod)
+// app.UseHangfireDashboard("/hangfire");
 
 // 6. Top level route registrations
 app.MapControllers();
@@ -79,26 +81,24 @@ app.MapScalarApiReference(o =>
      .WithTheme(ScalarTheme.BluePlanet)
      .WithDarkMode(true));
 
-// Manual trigger endpoint for your 30 sec heartbeat
-//app.MapGet("/hangfire/trigger-heartbeat", (IRecurringJobManager mgr) =>
-//{
-//    mgr.Trigger("heartbeat-2mins");
-//    return Results.Ok("Heartbeat job triggered");
-//});
+// Manual trigger endpoint for heartbeat (local only)
+// app.MapGet("/hangfire/trigger-heartbeat", (IRecurringJobManager mgr) =>
+// {
+//     mgr.Trigger("heartbeat-2mins");
+//     return Results.Ok("Heartbeat job triggered");
+// });
 
-// 7. Recurring jobs (outside of HTTP pipeline)
-//RecurringJob.AddOrUpdate<ExpireContractsJob>(
-//    "expire-contracts",
-//    job => job.ExecuteAsync(),
-//    Cron.MinuteInterval(15),
-//    new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
-
-// Heartbeat job that runs every 2 minutes
-//RecurringJob.AddOrUpdate(
-//    "heartbeat-2min",
-//    () => Console.WriteLine($"[Hangfire] Heartbeat at {DateTime.UtcNow:O}"),
-//    "*/2 * * * *"
-//);
+// 7. Recurring jobs (outside of HTTP pipeline; local only)
+// RecurringJob.AddOrUpdate<ExpireContractsJob>(
+//     "expire-contracts",
+//     job => job.ExecuteAsync(),
+//     Cron.MinuteInterval(15),
+//     new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc });
+// RecurringJob.AddOrUpdate(
+//     "heartbeat-2min",
+//     () => Console.WriteLine($"[Hangfire] Heartbeat at {DateTime.UtcNow:O}"),
+//     "*/2 * * * *"
+// );
 
 // 8. Start the host
 app.Run();
