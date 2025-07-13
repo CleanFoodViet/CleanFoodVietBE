@@ -1,4 +1,5 @@
 using CleanFoodVietAPI.Presentation.Extensions;
+using CleanFoodVietAPI.Presentation.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
