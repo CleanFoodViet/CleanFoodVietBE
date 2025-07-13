@@ -16,7 +16,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 
         Task CreateCertificate(CertificateDTO createData, string gardenerId);
 
-        Task UpdateCertificate(CertificateDTO updateData, string certificateId);
+        Task UpdateCertificate(UpdateCertificateDTO updateData, string certificateId);
 
         Task DeleteCertificate(string certificateId);
     }

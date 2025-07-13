@@ -47,7 +47,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpPatch(ApiEndpointConstant.Certificate.CertificateEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update the Certificate's information")]
-        public async Task<IActionResult> UpdateCertificate([FromRoute] string id, [FromBody] CertificateDTO request)
+        public async Task<IActionResult> UpdateCertificate([FromRoute] string id, [FromBody] UpdateCertificateDTO request)
         {
             await _certificateService.UpdateCertificate(request, id);
             return Ok("Update address successfully");

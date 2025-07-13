@@ -84,7 +84,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!isSuccess) throw new Exception("Error occurs when create certificate (DB query error)");
         }
 
-        public async Task UpdateCertificate(CertificateDTO updateData, string certificateId)
+        public async Task UpdateCertificate(UpdateCertificateDTO updateData, string certificateId)
         {
             Ulid certificateID = Ulid.Parse(certificateId);
             var certificate = await _unitOfWork.GetRepository<Certificate>()
@@ -92,7 +92,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (certificate == null) throw new BadHttpRequestException("Certificate is not found");
 
             certificate.Name = String.IsNullOrEmpty(updateData.Name) ? certificate.Name : updateData.Name; 
-            certificate.ImageUrl = String.IsNullOrEmpty(updateData.ImageUrl) ? certificate.ImageUrl : updateData.ImageUrl; 
             certificate.IssuingAuthority = String.IsNullOrEmpty(updateData.IssuingAuthority) ? certificate.IssuingAuthority : updateData.IssuingAuthority; 
             certificate.Status = String.IsNullOrEmpty(updateData.Status) ? certificate.Status : updateData.Status;
             certificate.IssueDate = updateData.IssueDate;
