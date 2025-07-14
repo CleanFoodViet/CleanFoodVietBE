@@ -14,12 +14,12 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? sortOrder = "asc",
             string? search = null);
 
-        Task<ServiceFeatureDTO> GetServiceFeatureDetailAsync(Ulid id);
+        Task<ServiceFeatureDTO> GetServiceFeatureDetailAsync(string id);
 
         Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto);
 
         Task<ServiceFeatureDTO> UpdateServiceFeature(Ulid id, UpdateServiceFeatureDTO updateDto);
 
-        Task<ServiceFeatureDTO> SoftDeleteServiceFeature(Ulid id);
+        Task<ServiceFeatureDTO> SoftDeleteServiceFeature(string id);
     }
 }

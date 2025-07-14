@@ -7,6 +7,7 @@ using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Stripe;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Threading.Tasks;
 
@@ -72,10 +73,32 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.ServicePackageEndpoint.ServicePackageDetailEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Returns detailed information about a specific service package by ID, including its features.")]
-        public async Task<IActionResult> GetServicePackageDetail([FromQuery] Ulid id)
+        public async Task<IActionResult> GetServicePackageDetail([FromQuery] string id)
         {
-            var packageDetail = await _servicePackageService.GetServicePackageDetailAsync(id);
-            return Ok(packageDetail);
+            try
+            {
+                var dto = await _servicePackageService.GetServicePackageDetailAsync(id);
+                return Ok(dto);
+            }
+            catch (DomainValidationException dv)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid Package ID",
+                    Detail = dv.Message,
+                    Extensions = { ["errorCode"] = "InvalidPackageId" }
+                });
+            }
+            catch (NotFoundException nf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Package not found",
+                    Detail = nf.Message
+                });
+            }
         }
 
         // POST: api/v1/admin/service-packages
@@ -108,7 +131,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Soft-deleting (disabling) the package (ets the status of the package to INACTIVE).")]
-        public async Task<IActionResult> DisableServicePackage([FromQuery] Ulid id)
+        public async Task<IActionResult> DisableServicePackage([FromQuery] string id)
         {
             try
             {
@@ -141,10 +164,32 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpPatch(ApiEndpointConstant.ServicePackageEndpoint.ActivateServicePackageEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Activating the package (sets the status of the package to ACTIVE)")]
-        public async Task<IActionResult> ActivateServicePackage([FromQuery] Ulid id)
+        public async Task<IActionResult> ActivateServicePackage([FromQuery] string id)
         {
-            var packageDto = await _servicePackageService.ActivateServicePackageAsync(id);
-            return Ok(packageDto);
+            try
+            {
+                var dto = await _servicePackageService.ActivateServicePackageAsync(id);
+                return Ok(dto);
+            }
+            catch (DomainValidationException dv)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Cannot activate package",
+                    Detail = dv.Message,
+                    Extensions = { ["errorCode"] = "PackageActivateFailed" }
+                });
+            }
+            catch (NotFoundException nf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Package not found",
+                    Detail = nf.Message
+                });
+            }
         }
     }
 }
