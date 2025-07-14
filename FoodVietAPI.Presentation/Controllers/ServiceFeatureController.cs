@@ -69,20 +69,30 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Returns detailed information about a specific service feature by ID.")]
-        public async Task<IActionResult> GetServiceFeatureDetail([FromQuery] Ulid id)
+        public async Task<IActionResult> GetServiceFeatureDetail([FromQuery] string id)
         {
             try
             {
                 var dto = await _serviceFeatureService.GetServiceFeatureDetailAsync(id);
                 return Ok(dto);
             }
-            catch (NotFoundException ex)
+            catch (DomainValidationException dv)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid ID",
+                    Detail = dv.Message,
+                    Extensions = { ["errorCode"] = "InvalidFeatureId" }
+                });
+            }
+            catch (NotFoundException nf)
             {
                 return NotFound(new ProblemDetails
                 {
-                    Status = 404,
+                    Status = StatusCodes.Status404NotFound,
                     Title = "Feature not found",
-                    Detail = ex.Message
+                    Detail = nf.Message
                 });
             }
         }   
@@ -116,12 +126,21 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
         [SwaggerOperation(Summary = "Soft Delete Service Feature: changes status to INACTIVE after checking for active usage.")]
-        public async Task<IActionResult> SoftDeleteServiceFeature([FromQuery] Ulid id)
+        public async Task<IActionResult> SoftDeleteServiceFeature([FromQuery] string id)
         {
             try
             {
-                var result = await _serviceFeatureService.SoftDeleteServiceFeature(id);
-                return Ok(result);
+                var dto = await _serviceFeatureService.SoftDeleteServiceFeature(id);
+                return Ok(dto);
+            }
+            catch (NotFoundException nf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = 404,
+                    Title = "Feature not found",
+                    Detail = nf.Message
+                });
             }
             catch (DomainValidationException ex)
             {
