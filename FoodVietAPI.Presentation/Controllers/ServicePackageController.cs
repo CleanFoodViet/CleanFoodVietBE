@@ -118,10 +118,9 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Updating allowed fields (basic info) of the service package, excluding features, which are managed separately.")]
         public async Task<IActionResult> UpdateServicePackage(
-            [FromRoute] Ulid id,
             [FromBody] UpdateServicePackageDTO updateDto)
         {
-            var packageDto = await _servicePackageService.UpdateServicePackageAsync(id, updateDto);
+            var packageDto = await _servicePackageService.UpdateServicePackageAsync(updateDto);
             return Ok(packageDto);
         }
 

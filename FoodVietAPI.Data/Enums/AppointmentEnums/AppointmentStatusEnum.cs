@@ -8,9 +8,11 @@ namespace CleanFoodVietAPI.Data.Enums.AppointmentEnums
 {
     public enum AppointmentStatusEnum
     {
-        ACTIVE,
-        INACTIVE,
-        CANCELLED,
-        ACCEPTED
+        PENDING,
+        REJECTED,
+        ACCEPTED,
+        COMPLETED,
+        EXPIRED,
+        CANCELLED
     }
 }

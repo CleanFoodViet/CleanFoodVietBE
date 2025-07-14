@@ -11,7 +11,7 @@ namespace CleanFoodVietAPI.Application.Mappers
         {
             CreateMap<CreateAppointmentDTO, Appointment>()
                 .ForMember(des => des.AppointmentId, opt => opt.MapFrom(src => Ulid.NewUlid()))
-                .ForMember(des => des.Status, opt => opt.MapFrom(src => AppointmentStatusEnum.ACTIVE.ToString()))
+                .ForMember(des => des.Status, opt => opt.MapFrom(src => AppointmentStatusEnum.PENDING.ToString()))
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 

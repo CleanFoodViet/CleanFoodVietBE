@@ -19,7 +19,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 
         Task<ServicePackageDTO> CreateServicePackageAsync(CreateServicePackageDTO createDto);
 
-        Task<ServicePackageDTO> UpdateServicePackageAsync(Ulid packageId, UpdateServicePackageDTO updateDto);
+        Task<ServicePackageDTO> UpdateServicePackageAsync(UpdateServicePackageDTO updateDto);
 
         Task<ServicePackageDTO> DisableServicePackageAsync(string packageId);
 

@@ -162,14 +162,16 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         }
 
         // Update an existing service package (only PackageName and Description allowed)
-        public async Task<ServicePackageDTO> UpdateServicePackageAsync(Ulid packageId, UpdateServicePackageDTO updateDto)
+        public async Task<ServicePackageDTO> UpdateServicePackageAsync(UpdateServicePackageDTO updateDto)
         {
             var repository = _unitOfWork.GetRepository<ServicePackage>();
+
+            Ulid packageID = Ulid.Parse(updateDto.PackageId);
 
             // Retrieve the existing package.
             var packageEntity = await repository.GetAsync<ServicePackage>(
                 selector: sp => sp,
-                predicate: sp => sp.ServicePackageId == packageId);
+                predicate: sp => sp.ServicePackageId == packageID);
 
             if (packageEntity == null)
             {
