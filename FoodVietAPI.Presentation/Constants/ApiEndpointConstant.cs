@@ -128,16 +128,17 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class ServiceFeature
         {
             public const string ServiceFeaturesEndpoint = AdminApiEndpoint + "/service-features";
-            public const string ServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/{id}";
-            public const string DisableServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/disable/{id}";
+            public const string ServiceFeatureDetailEndpoint = ServiceFeaturesEndpoint + "/detail";
+            public const string DisableServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/disable";
+            public const string UpdateServiceFeatureEndpoint = ServiceFeaturesEndpoint + "/update";
         }
 
         public static class ServicePackageEndpoint
         {
             public const string ServicePackagesEndpoint = AdminApiEndpoint + "/service-packages";
-            public const string ServicePackageDetailEndpoint = ServicePackagesEndpoint + "/{id}";
-            public const string DisableServicePackageEndpoint = ServicePackagesEndpoint + "/disable/{id}";
-            public const string ActivateServicePackageEndpoint = ServicePackagesEndpoint + "/activate/{id}";
+            public const string ServicePackageDetailEndpoint = ServicePackagesEndpoint + "/detail";
+            public const string DisableServicePackageEndpoint = ServicePackagesEndpoint + "/disable";
+            public const string ActivateServicePackageEndpoint = ServicePackagesEndpoint + "/activate";
         }
 
         public static class SubscriptionContract
