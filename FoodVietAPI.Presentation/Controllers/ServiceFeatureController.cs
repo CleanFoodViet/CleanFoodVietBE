@@ -1,4 +1,5 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
+using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;
@@ -64,22 +65,35 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         // GET: api/v1/admin/service-features/{id}
         // Returns detailed information about a specific service feature by ID.
-        [HttpGet(ApiEndpointConstant.ServiceFeature.ServiceFeatureEndpoint)]
+        [HttpGet(ApiEndpointConstant.ServiceFeature.ServiceFeatureDetailEndpoint)]
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Returns detailed information about a specific service feature by ID.")]
-        public async Task<IActionResult> GetServiceFeatureDetail([FromRoute] Ulid id)
+        public async Task<IActionResult> GetServiceFeatureDetail([FromQuery] Ulid id)
         {
-            var featureDetail = await _serviceFeatureService.GetServiceFeatureDetailAsync(id);
-            return Ok(featureDetail);
+            try
+            {
+                var dto = await _serviceFeatureService.GetServiceFeatureDetailAsync(id);
+                return Ok(dto);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = 404,
+                    Title = "Feature not found",
+                    Detail = ex.Message
+                });
+            }
         }   
 
         // PATCH: api/v1/admin/service-features/{id}
         // Update service feature information (including soft-delete by setting status to INACTIVE)
-        [HttpPatch(ApiEndpointConstant.ServiceFeature.ServiceFeatureEndpoint)]
+        [HttpPatch(ApiEndpointConstant.ServiceFeature.UpdateServiceFeatureEndpoint)]
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update service feature information (including soft-delete by setting status to INACTIVE)")]
         public async Task<IActionResult> UpdateServiceFeature(
-            [FromRoute] Ulid id,
+            [FromQuery] Ulid id,
             [FromBody] UpdateServiceFeatureDTO updateDto)
         {
             var updatedFeature = await _serviceFeatureService.UpdateServiceFeature(id, updateDto);
@@ -100,11 +114,26 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // Soft Delete endpoint: changes status to INACTIVE after checking for active usage.
         [HttpPatch(ApiEndpointConstant.ServiceFeature.DisableServiceFeatureEndpoint)]
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
         [SwaggerOperation(Summary = "Soft Delete Service Feature: changes status to INACTIVE after checking for active usage.")]
-        public async Task<IActionResult> SoftDeleteServiceFeature([FromRoute] Ulid id)
+        public async Task<IActionResult> SoftDeleteServiceFeature([FromQuery] Ulid id)
         {
-            var result = await _serviceFeatureService.SoftDeleteServiceFeature(id);
-            return Ok(result);
+            try
+            {
+                var result = await _serviceFeatureService.SoftDeleteServiceFeature(id);
+                return Ok(result);
+            }
+            catch (DomainValidationException ex)
+            {
+                // Return a JSON error response
+                return BadRequest(new ProblemDetails
+                {
+                    Status = 400,
+                    Title = "Feature cannot be disabled",
+                    Detail = ex.Message,
+                    Extensions = { ["errorCode"] = "FeatureInActivePackage" }
+                });
+            }
         }
     }
 }

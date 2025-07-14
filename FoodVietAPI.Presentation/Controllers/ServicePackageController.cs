@@ -1,4 +1,5 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ServicePackageDTOs;
+using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Threading.Tasks;
-using static CleanFoodVietAPI.Presentation.Constants.ApiEndpointConstant;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -72,7 +72,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.ServicePackageEndpoint.ServicePackageDetailEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Returns detailed information about a specific service package by ID, including its features.")]
-        public async Task<IActionResult> GetServicePackageDetail([FromRoute] Ulid id)
+        public async Task<IActionResult> GetServicePackageDetail([FromQuery] Ulid id)
         {
             var packageDetail = await _servicePackageService.GetServicePackageDetailAsync(id);
             return Ok(packageDetail);
@@ -91,7 +91,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         // PATCH endpoint for updating allowed fields (basic info)
         // of the service package, excluding features, which are managed separately.
-        [HttpPatch(ServicePackageEndpoint.ServicePackageDetailEndpoint)]
+        [HttpPatch(ApiEndpointConstant.ServicePackageEndpoint.ServicePackageDetailEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Updating allowed fields (basic info) of the service package, excluding features, which are managed separately.")]
         public async Task<IActionResult> UpdateServicePackage(
@@ -104,21 +104,44 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         // PATCH endpoint for soft-deleting (disabling) the package.
         // This endpoint sets the status of the package to INACTIVE.
-        [HttpPatch(ServicePackageEndpoint.DisableServicePackageEndpoint)]
+        [HttpPatch(ApiEndpointConstant.ServicePackageEndpoint.DisableServicePackageEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Soft-deleting (disabling) the package (ets the status of the package to INACTIVE).")]
-        public async Task<IActionResult> DisableServicePackage([FromRoute] Ulid id)
+        public async Task<IActionResult> DisableServicePackage([FromQuery] Ulid id)
         {
-            var packageDto = await _servicePackageService.DisableServicePackageAsync(id);
-            return Ok(packageDto);
+            try
+            {
+                var dto = await _servicePackageService.DisableServicePackageAsync(id);
+                return Ok(dto);
+            }
+            catch (NotFoundException nf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Package not found",
+                    Detail = nf.Message
+                });
+            }
+            catch (DomainValidationException dv)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Cannot disable package",
+                    Detail = dv.Message,
+                    Extensions = { ["errorCode"] = "PackageDisableFailed" }
+                });
+            }
         }
 
         // PATCH endpoint for activating the package.
         // This endpoint sets the status of the package to ACTIVE.
-        [HttpPatch(ServicePackageEndpoint.ActivateServicePackageEndpoint)]
+        [HttpPatch(ApiEndpointConstant.ServicePackageEndpoint.ActivateServicePackageEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Activating the package (sets the status of the package to ACTIVE)")]
-        public async Task<IActionResult> ActivateServicePackage([FromRoute] Ulid id)
+        public async Task<IActionResult> ActivateServicePackage([FromQuery] Ulid id)
         {
             var packageDto = await _servicePackageService.ActivateServicePackageAsync(id);
             return Ok(packageDto);
