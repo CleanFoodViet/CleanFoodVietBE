@@ -53,23 +53,23 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return featuresPage;
         }
 
-        public async Task<ServiceFeatureDTO> GetServiceFeatureDetailAsync(Ulid id)
+        public async Task<ServiceFeatureDTO> GetServiceFeatureDetailAsync(string id)
         {
-            var repository = _unitOfWork.GetRepository<ServiceFeature>();
+            // 0) Validate & parse the incoming id
+            if (string.IsNullOrWhiteSpace(id) || !Ulid.TryParse(id, out var featureId))
+                throw new DomainValidationException($"Invalid ServiceFeature id: '{id}'.");
 
-            // Retrieve the service feature entity by ID.
-            var featureEntity = await repository.GetAsync(
-                selector: sf => sf,
-                predicate: sf => sf.ServiceFeatureId == id);
+            // 1) Load the feature
+            var repo = _unitOfWork.GetRepository<ServiceFeature>();
+            var entity = await repo.GetAsync(
+                predicate: sf => sf.ServiceFeatureId == featureId);
 
-            if (featureEntity == null)
-            {
-                throw new Exception("Service feature not found.");
-            }
+            // 2) Not found?
+            if (entity == null)
+                throw new NotFoundException($"Service feature '{id}' not found.");
 
-            // Map the entity to a DTO.
-            var featureDto = _mapper.Map<ServiceFeatureDTO>(featureEntity);
-            return featureDto;
+            // 3) Map & return
+            return _mapper.Map<ServiceFeatureDTO>(entity);
         }
 
         public async Task<ServiceFeatureDTO> CreateServiceFeature(CreateServiceFeatureDTO createDto)
@@ -154,20 +154,23 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         /// Soft-deletes (disables) a service feature after checking that no active subscription
         /// (i.e. ServicePackage subscription record) is currently using it.
         /// </summary>
-        public async Task<ServiceFeatureDTO> SoftDeleteServiceFeature(Ulid id)
+        public async Task<ServiceFeatureDTO> SoftDeleteServiceFeature(string id)        
         {
+            // 0) Validate & parse the incoming string into a Ulid
+            if (string.IsNullOrWhiteSpace(id) || !Ulid.TryParse(id, out var featureId))
+                throw new DomainValidationException($"Invalid ServiceFeature id: '{id}'.");
+
             // 1) Load the feature
             var featureRepo = _unitOfWork.GetRepository<ServiceFeature>();
-            var feature = await featureRepo.GetAsync(
-                predicate: f => f.ServiceFeatureId == id);
+            var feature = await featureRepo.GetAsync(predicate: f => f.ServiceFeatureId == featureId);
 
             if (feature == null)
-                throw new NotFoundException("Service feature not found.");
+                throw new NotFoundException($"Service feature '{id}' not found.");
 
             // 2) Find all package–feature links for this feature
             var psfRepo = _unitOfWork.GetRepository<PackageServiceFeature>();
             var packageFeatures = await psfRepo.GetListAsync(
-                predicate: psf => psf.ServiceFeatureId == id);
+                predicate: psf => psf.ServiceFeatureId == featureId);
 
             var packageIds = packageFeatures
                 .Select(x => x.ServicePackageId)
@@ -180,8 +183,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 var pkgRepo = _unitOfWork.GetRepository<ServicePackage>();
                 var activePkgs = await pkgRepo.GetListAsync(
                     predicate: sp =>
-                    packageIds.Contains(sp.ServicePackageId)
-                             && sp.Status == ServicePackageStatusEnums.ACTIVE.ToString());
+                        packageIds.Contains(sp.ServicePackageId)
+                        && sp.Status == ServicePackageStatusEnums.ACTIVE.ToString());
 
                 if (activePkgs.Any())
                     throw new DomainValidationException(
@@ -190,8 +193,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             // 4) Soft-delete: flip status → INACTIVE, schedule update, commit
             feature.Status = ServiceFeatureStatusEnum.INACTIVE.ToString();
-            featureRepo.UpdateAsync(feature);    // void call
-            await _unitOfWork.CommitAsync();     // commit changes
+            featureRepo.UpdateAsync(feature);    // void
+            await _unitOfWork.CommitAsync();     // commit
 
             // 5) Return the updated DTO
             return _mapper.Map<ServiceFeatureDTO>(feature);

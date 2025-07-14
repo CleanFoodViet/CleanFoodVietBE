@@ -15,15 +15,15 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? sortOrder = "asc",
             string? search = null);
 
-        Task<ServicePackageDTO> GetServicePackageDetailAsync(Ulid packageId);
+        Task<ServicePackageDTO> GetServicePackageDetailAsync(string packageId);
 
         Task<ServicePackageDTO> CreateServicePackageAsync(CreateServicePackageDTO createDto);
 
         Task<ServicePackageDTO> UpdateServicePackageAsync(Ulid packageId, UpdateServicePackageDTO updateDto);
 
-        Task<ServicePackageDTO> DisableServicePackageAsync(Ulid packageId);
+        Task<ServicePackageDTO> DisableServicePackageAsync(string packageId);
 
-        Task<ServicePackageDTO> ActivateServicePackageAsync(Ulid packageId);
+        Task<ServicePackageDTO> ActivateServicePackageAsync(string packageId);
     }
 
 }
