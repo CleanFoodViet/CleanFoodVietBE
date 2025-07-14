@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
+using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
@@ -8,6 +9,7 @@ using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -154,51 +156,45 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         /// </summary>
         public async Task<ServiceFeatureDTO> SoftDeleteServiceFeature(Ulid id)
         {
-            // Retrieve the service feature by its ID.
-            var repository = _unitOfWork.GetRepository<ServiceFeature>();
-            var existingFeature = await repository.GetAsync<ServiceFeature>(
-                selector: x => x,
-                predicate: x => x.ServiceFeatureId == id);
+            // 1) Load the feature
+            var featureRepo = _unitOfWork.GetRepository<ServiceFeature>();
+            var feature = await featureRepo.GetAsync(
+                predicate: f => f.ServiceFeatureId == id);
 
-            if (existingFeature == null)
+            if (feature == null)
+                throw new NotFoundException("Service feature not found.");
+
+            // 2) Find all package–feature links for this feature
+            var psfRepo = _unitOfWork.GetRepository<PackageServiceFeature>();
+            var packageFeatures = await psfRepo.GetListAsync(
+                predicate: psf => psf.ServiceFeatureId == id);
+
+            var packageIds = packageFeatures
+                .Select(x => x.ServicePackageId)
+                .Distinct()
+                .ToList();
+
+            // 3) If that feature is part of any package, ensure none are ACTIVE
+            if (packageIds.Any())
             {
-                throw new Exception("Service feature not found.");
+                var pkgRepo = _unitOfWork.GetRepository<ServicePackage>();
+                var activePkgs = await pkgRepo.GetListAsync(
+                    predicate: sp =>
+                    packageIds.Contains(sp.ServicePackageId)
+                             && sp.Status == ServicePackageStatusEnums.ACTIVE.ToString());
+
+                if (activePkgs.Any())
+                    throw new DomainValidationException(
+                        "Cannot disable feature; it’s part of an active service package.");
             }
 
-            // Check whether this service feature is used by any active "subscriptions" 
-            // (which are actually ServicePackage records linked via SubscriptionContract).
-            var psfRepository = _unitOfWork.GetRepository<PackageServiceFeature>();
-            var packageFeatures = await psfRepository.GetListAsync(predicate: x => x.ServiceFeatureId == id);
+            // 4) Soft-delete: flip status → INACTIVE, schedule update, commit
+            feature.Status = ServiceFeatureStatusEnum.INACTIVE.ToString();
+            featureRepo.UpdateAsync(feature);    // void call
+            await _unitOfWork.CommitAsync();     // commit changes
 
-            if (packageFeatures.Any())
-            {
-                // Extract the distinct ServicePackageIds associated with this feature.
-                var packageIds = packageFeatures.Select(x => x.ServicePackageId).Distinct().ToList();
-
-                // Query SubscriptionContract for any active subscription using these ServicePackages.
-                var subscriptionRepository = _unitOfWork.GetRepository<SubscriptionContract>();
-                var activeSubscriptions = await subscriptionRepository.GetListAsync(
-                    predicate: sc => packageIds.Contains(sc.ServicePackageId)
-                                      && sc.Status.Equals(ServicePackageStatusEnums.ACTIVE.ToString(), System.StringComparison.OrdinalIgnoreCase));
-
-                if (activeSubscriptions.Any())
-                {
-                    throw new Exception("Cannot disable service feature because it is currently used by active subscriptions.");
-                }
-            }
-
-            // No active usage was found – perform soft-delete by updating the status.
-            existingFeature.Status = ServiceFeatureStatusEnum.INACTIVE.ToString();
-            repository.UpdateAsync(existingFeature);
-
-            var isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess)
-            {
-                throw new Exception("Error occurred while disabling the service feature.");
-            }
-
-            var updatedDto = _mapper.Map<ServiceFeatureDTO>(existingFeature);
-            return updatedDto;
+            // 5) Return the updated DTO
+            return _mapper.Map<ServiceFeatureDTO>(feature);
         }
     }
 }

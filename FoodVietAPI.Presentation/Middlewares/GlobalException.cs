@@ -1,6 +1,12 @@
-﻿using CleanFoodVietAPI.Application.DTOs;
-using CleanFoodVietAPI.Data.Exceptions;
+﻿using System;
 using System.Net;
+using System.Text.Json;
+using System.Threading.Tasks;
+using CleanFoodVietAPI.Application.DTOs;
+using CleanFoodVietAPI.Application.Exceptions;
+using CleanFoodVietAPI.Data.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace CleanFoodVietAPI.Presentation.Middlewares
 {
@@ -8,6 +14,7 @@ namespace CleanFoodVietAPI.Presentation.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<GlobalException> _logger;
+
         public GlobalException(RequestDelegate next, ILogger<GlobalException> logger)
         {
             _next = next;
@@ -28,39 +35,59 @@ namespace CleanFoodVietAPI.Presentation.Middlewares
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            context.Response.ContentType = "application/json";
             var response = context.Response;
+            response.ContentType = "application/json";
 
-            var errorResponse = new ErrorDTO() { TimeStamp = DateTime.UtcNow, Error = exception.Message }; ;
+            var errorDto = new ErrorDTO
+            {
+                TimeStamp = DateTime.UtcNow,
+                Error = exception.Message
+            };
+
             switch (exception)
             {
-                case BadHttpRequestException:
+                case BadHttpRequestException badReq:
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    errorResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                    errorDto.StatusCode = response.StatusCode;
                     break;
-                case UnauthorizedAccessException:
+
+                case DomainValidationException domEx:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    errorDto.StatusCode = response.StatusCode;
+                    break;
+
+                case NotFoundException notFound:
+                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                    errorDto.StatusCode = response.StatusCode;
+                    break;
+
+                case UnauthorizedAccessException _:
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    errorResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    errorDto.StatusCode = response.StatusCode;
                     break;
-                case DeletionRestrictedException:
-                case UpdateRestrictedException:
+
+                case DeletionRestrictedException _:
+                case UpdateRestrictedException _:
                     response.StatusCode = (int)HttpStatusCode.Conflict;
-                    errorResponse.StatusCode = (int)HttpStatusCode.Conflict;
+                    errorDto.StatusCode = response.StatusCode;
                     break;
-                case ForbiddenException:
+
+                case ForbiddenException _:
                     response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    errorResponse.StatusCode = (int)HttpStatusCode.Forbidden;
+                    errorDto.StatusCode = response.StatusCode;
                     break;
+
                 default:
-                    //Unhandle Error/Exception
+                    // Unhandled exception
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    errorResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    errorDto.StatusCode = response.StatusCode;
+                    errorDto.Error = "An unexpected error occurred.";
+                    _logger.LogError(exception, "Unhandled exception");
                     break;
             }
 
-            _logger.LogError($"Error at {DateTime.UtcNow} - {exception}");
-            var result = errorResponse.ToString();
-            await context.Response.WriteAsync(result);
+            var json = JsonSerializer.Serialize(errorDto);
+            await response.WriteAsync(json);
         }
     }
 }
