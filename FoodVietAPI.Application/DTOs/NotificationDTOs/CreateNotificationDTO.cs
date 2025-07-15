@@ -6,5 +6,6 @@
         public string Message { get; set; } = null!;
         public string? Link { get; set; }
         public bool IsRead { get; set; }
+        public string Sender { get; set; } = null!;
     }
 }
