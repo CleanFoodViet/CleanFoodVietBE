@@ -5,6 +5,7 @@ using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -63,13 +64,39 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         // GET /api/v1/admin/subscription-contracts/{id}
-        [HttpGet(ApiEndpointConstant.SubscriptionContract.SubscriptionContractEndpoint)]
+        [HttpGet(ApiEndpointConstant.SubscriptionContract.SubscriptionContractDetailEndpoint)]
         [ProducesResponseType(typeof(SubscriptionContractDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Get Subscription Contract Detail")]
-        public async Task<IActionResult> GetContractDetail([FromRoute] Ulid id)
+        public async Task<IActionResult> GetContractDetail(
+        [FromQuery, Required] string id)
         {
-            var dto = await _svc.GetContractDetailAsync(id);
-            return Ok(dto);
+            if (!Ulid.TryParse(id, out var subscriptionId))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid subscription id",
+                    Detail = $"'{id}' is not a valid Ulid.",
+                    Extensions = { ["errorCode"] = "InvalidSubscriptionId" }
+                });
+            }
+
+            try
+            {
+                var dto = await _svc.GetContractDetailAsync(subscriptionId);
+                return Ok(dto);
+            }
+            catch (KeyNotFoundException knf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Contract not found",
+                    Detail = knf.Message
+                });
+            }
         }
     }
 
