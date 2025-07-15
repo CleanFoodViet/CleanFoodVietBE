@@ -105,23 +105,64 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         // Creates a new service package with the provided details.
         [HttpPost(ApiEndpointConstant.ServicePackageEndpoint.ServicePackagesEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [SwaggerOperation(Summary = "Creates a new service package with the provided details.")]
         public async Task<IActionResult> CreateServicePackage([FromBody] CreateServicePackageDTO createDto)
         {
-            var packageDto = await _servicePackageService.CreateServicePackageAsync(createDto);
-            return StatusCode(StatusCodes.Status201Created, packageDto);
+            try
+            {
+                var dto = await _servicePackageService.CreateServicePackageAsync(createDto);
+                // return 201 + the created object
+                return CreatedAtAction(
+                    nameof(GetServicePackageDetail),
+                    new { id = dto.ServicePackageId },
+                    dto);
+            }
+            catch (DomainValidationException dv)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid service package",
+                    Detail = dv.Message,
+                    Extensions = { ["errorCode"] = "PackageCreateFailed" }
+                });
+            }
         }
 
         // PATCH endpoint for updating allowed fields (basic info)
         // of the service package, excluding features, which are managed separately.
         [HttpPatch(ApiEndpointConstant.ServicePackageEndpoint.ServicePackageDetailEndpoint)]
         [ProducesResponseType(typeof(ServicePackageDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [SwaggerOperation(Summary = "Updating allowed fields (basic info) of the service package, excluding features, which are managed separately.")]
         public async Task<IActionResult> UpdateServicePackage(
             [FromBody] UpdateServicePackageDTO updateDto)
         {
-            var packageDto = await _servicePackageService.UpdateServicePackageAsync(updateDto);
-            return Ok(packageDto);
+            try
+            {
+                var dto = await _servicePackageService.UpdateServicePackageAsync(updateDto);
+                return Ok(dto);
+            }
+            catch (DomainValidationException dv)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid input",
+                    Detail = dv.Message,
+                    Extensions = { ["errorCode"] = "PackageUpdateFailed" }
+                });
+            }
+            catch (NotFoundException nf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Package not found",
+                    Detail = nf.Message
+                });
+            }
         }
 
         // PATCH endpoint for soft-deleting (disabling) the package.
