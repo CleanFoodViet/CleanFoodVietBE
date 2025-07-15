@@ -86,7 +86,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok("Create Product Price Successfully");
         }
 
-        [HttpPatch(ApiEndpointConstant.Product.ProductReviewsEndpoint)]
+        [HttpPatch(ApiEndpointConstant.Product.ProductPriceEndpoint)]
         [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Set product current price")]
         public async Task<IActionResult> SetProductCurrentPrice([FromRoute] string id, [FromRoute]string priceId)
