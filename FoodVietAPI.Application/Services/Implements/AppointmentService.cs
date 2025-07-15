@@ -2,6 +2,7 @@
 using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.AppointmentEnums;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -88,6 +89,44 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             _unitOfWork.GetRepository<Appointment>().UpdateAsync(appointment);
             bool isSucces = await _unitOfWork.CommitAsync() > 0;
             if (!isSucces) throw new Exception("Error occur when update appointment (DB query error)");
+        }
+
+        public async Task UpdateAppointmentStatus(string appointmentId, string status)
+        {
+            Ulid appointmentID = Ulid.Parse(appointmentId);
+
+            Appointment appointment = await _unitOfWork.GetRepository<Appointment>()
+                .GetAsync(predicate: app => app.AppointmentId == appointmentID);
+            if (appointment == null) throw new BadHttpRequestException("Appointment is not found");
+
+            if (Enum.TryParse<AppointmentStatusEnum>(status.ToUpper(), out var result))
+            {
+                appointment.Status = result.ToString();
+            }
+            else
+            {
+                throw new BadHttpRequestException("Invalid appointment status");
+            }
+
+            _unitOfWork.GetRepository<Appointment>().UpdateAsync(appointment);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update appointment status (DB query error)");
+        }
+
+        public async Task CancelAppointment(string appointmentId, CancelAppointmentDTO cancelData)
+        {
+            Ulid appointmentID = Ulid.Parse(appointmentId);
+
+            Appointment appointment = await _unitOfWork.GetRepository<Appointment>()
+                .GetAsync(predicate: app => app.AppointmentId == appointmentID);
+            if (appointment == null) throw new BadHttpRequestException("Appointment is not found");
+
+            appointment.CancellationReason = cancelData.CancellationReason;
+            appointment.CancelledBy = cancelData.CancelledBy;
+
+            _unitOfWork.GetRepository<Appointment>().UpdateAsync(appointment);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update appointment status (DB query error)");
         }
     }
 }

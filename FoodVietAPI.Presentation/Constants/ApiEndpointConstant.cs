@@ -56,6 +56,8 @@ namespace CleanFoodVietAPI.Presentation.Constants
         {
             public const string AppointmentsEndpoint = ApiEndpoint + "/appointments";
             public const string AppointmentEndpoint = AppointmentsEndpoint + "/{id}";
+            public const string StatusAppointmentEndpoint = AppointmentEndpoint + "/status";
+            public const string CancelAppointmentEndpoint = AppointmentEndpoint + "/cancel";
         }
 
         public static class RetailerCart
@@ -83,7 +85,8 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
         public static class Notification
         {
-            public const string NotificationEndpoint = ApiEndpoint + "/notifications";
+            public const string NotificationsEndpoint = ApiEndpoint + "/notifications";
+            public const string NotificationEndpoint = NotificationsEndpoint + "/{id}";
         }
 
         public static class Order

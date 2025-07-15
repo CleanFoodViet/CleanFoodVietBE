@@ -17,7 +17,10 @@ namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
         public int Priority { get; set; }
 
         // Post Media Data Field
-        public List<PostMediaDTO>? PostMedias { get; set; }
+        //public List<PostMediaDTO>? PostMedias { get; set; 
+        public string? Video { get; set; }
+        public string? ThumbNail { get; set; }
+        public List<string> Images { get; set; } = null!;
 
         // Gardener Data Field
         public Ulid GardenerId { get; set; }

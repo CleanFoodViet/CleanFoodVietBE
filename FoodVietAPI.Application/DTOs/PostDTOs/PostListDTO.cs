@@ -8,6 +8,11 @@
         string Currency,
         string ThumbNail,
         string GardenerName,
-        string GardenerAvatar
+        string GardenerAvatar,
+        DateTime CreatedAt,
+        string Content,
+        string Status,
+        decimal Rating,
+        string WeightUnit
     );
 }

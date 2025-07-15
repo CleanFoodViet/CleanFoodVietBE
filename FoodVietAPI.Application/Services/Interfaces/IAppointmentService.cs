@@ -9,5 +9,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task<AppointmentDTO> GetAppointmentDetail(string appointmentId);
         Task CreateAppointment(CreateAppointmentDTO createData);
         Task UpdateAppointment(string appointmentId, UpdateAppointmentDTO updateData);
+        Task UpdateAppointmentStatus(string appointmentId, string status);
+        Task CancelAppointment(string appointmentId, CancelAppointmentDTO cancelData);
     }
 }
