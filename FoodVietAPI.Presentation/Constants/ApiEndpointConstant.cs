@@ -143,14 +143,14 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
         public static class SubscriptionContract
         {
-            public const string SubscriptionContractsEndpoint = ApiEndpoint + "/subscription-contracts";
-            public const string SubscriptionContractEndpoint = SubscriptionContractsEndpoint + "/{id}";
+            public const string SubscriptionContractsEndpoint = AdminApiEndpoint + "/subscription-contracts";
+            public const string SubscriptionContractDetailEndpoint = SubscriptionContractsEndpoint + "/detail";
         }
 
         public static class ServicePackageOrder
         {
             public const string ServicePackageOrdersEndpoint = AdminApiEndpoint + "/service-package-orders";
-            public const string ServicePackageOrderEndpoint = ServicePackageOrdersEndpoint + "/{id}";
+            public const string ServicePackageOrderDetailEndpoint = ServicePackageOrdersEndpoint + "/detail";
         }
 
         public static class Payment
