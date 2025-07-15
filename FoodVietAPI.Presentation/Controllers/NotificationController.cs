@@ -40,7 +40,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         public async Task<IActionResult> UpdateNotificationToRead([FromRoute] string id)
         {
             await _notificationService.ReadNotification(id);
-            return Ok("Create Notification Successfully");
+            return Ok("Notification is read");
         }
     }
 }
