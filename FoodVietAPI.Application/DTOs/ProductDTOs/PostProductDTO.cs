@@ -9,5 +9,6 @@
 
         // Product Price Data Field
         decimal Price,
-        string Currency);
+        string Currency,
+        string WeightUnit);
 }

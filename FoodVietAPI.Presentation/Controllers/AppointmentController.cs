@@ -45,11 +45,29 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Appointment.AppointmentEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Update appointment information of account (Inclue basic information update, or cancel appointment)")]
+        [SwaggerOperation(Summary = "Update appointment information of account (Inclue basic information update)")]
         public async Task<IActionResult> UpdateAppointment([FromRoute]string id, [FromBody]UpdateAppointmentDTO request)
         {
             await _appointmentService.UpdateAppointment(id, request);
             return Ok("Update Appointment successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Appointment.AppointmentEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update appointment information status)")]
+        public async Task<IActionResult> UpdateAppointmentStatus([FromRoute] string id, [FromQuery] string status)
+        {
+            await _appointmentService.UpdateAppointmentStatus(id, status);
+            return Ok("Update Appointment status successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Appointment.AppointmentEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update appointment information status)")]
+        public async Task<IActionResult> CancelAppointment([FromRoute] string id, [FromBody] CancelAppointmentDTO request)
+        {
+            await _appointmentService.CancelAppointment(id, request);
+            return Ok("Cancel Appointment successfully");
         }
     }
 }

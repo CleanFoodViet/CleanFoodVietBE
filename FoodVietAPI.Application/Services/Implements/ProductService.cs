@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
+using CleanFoodVietAPI.Application.DTOs.ReviewDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
@@ -11,12 +12,8 @@ using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.Drawing;
-using System.Runtime.CompilerServices;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -222,6 +219,35 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Erorr occur when change product price (DB query Error)");
+        }
+
+        public async Task<List<ProductReviewDTO>> GetProductReviews(string productId)
+        {
+            Ulid productID = Ulid.Parse(productId);
+            var product = await _unitOfWork.GetRepository<Product>()
+                .GetAsync(predicate: p => p.ProductId == productID);
+            if(product == null) throw new BadHttpRequestException($"Product is not found");
+
+            var reviews = await _unitOfWork.GetRepository<OrderDetail>()
+                .GetListAsync(
+                    include: odt => odt.Include(x => x.Reviews).ThenInclude(x => x.Account),
+                    predicate: odt => odt.ProductId == productID,
+                    selector: odt => odt.Reviews
+                );
+
+            var reviewDTOs = reviews
+                .SelectMany(r => r) 
+                .Select(r => new ProductReviewDTO
+                {
+                    Name = r.Account.Name,
+                    Avatar = r.Account.Avatar,
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt
+                })
+                .ToList();
+
+            return reviewDTOs;
         }
     }
 }
