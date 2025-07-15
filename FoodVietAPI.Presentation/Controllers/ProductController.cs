@@ -94,5 +94,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             await _productService.SetProductCurrentPrice(id, priceId);
             return Ok("Product price change successfully");
         }
+
+        [HttpGet(ApiEndpointConstant.Product.ProductReviewsEndpoint)]
+        [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Set product reviews")]
+        public async Task<IActionResult> GetProductRevies([FromRoute] string id)
+        {
+            var res = await _productService.GetProductReviews(id);
+            return Ok(res);
+        }
     }
 }

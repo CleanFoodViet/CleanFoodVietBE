@@ -1,5 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
+using CleanFoodVietAPI.Application.DTOs.ReviewDTOs;
 using CleanFoodVietAPI.Data.Paginate;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces
@@ -20,5 +21,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task<List<ProductPriceDTO>> GetProductPrices(string productId);
         Task CreateProductPrice(string productId, CreateProductPriceDTO request);
         Task SetProductCurrentPrice(string productId, string priceId);
+        Task<List<ProductReviewDTO>> GetProductReviews(string productId);
     }
 }
