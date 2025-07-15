@@ -5,6 +5,7 @@ using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -63,13 +64,41 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         // GET /api/v1/admin/service-package-orders/{id}
-        [HttpGet(ApiEndpointConstant.ServicePackageOrder.ServicePackageOrderEndpoint)]
+        [HttpGet(ApiEndpointConstant.ServicePackageOrder.ServicePackageOrderDetailEndpoint)]
         [ProducesResponseType(typeof(ServicePackageOrderDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Get Subscription Order Detail")]
-        public async Task<IActionResult> GetOrderDetail([FromRoute] Ulid id)
+        public async Task<IActionResult> GetOrderDetail(
+        [FromQuery, Required] string id)
         {
-            var dto = await _svc.GetOrderDetailAsync(id);
-            return Ok(dto);
+            // 1) Validate & parse
+            if (!Ulid.TryParse(id, out var orderId))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid order id",
+                    Detail = $"'{id}' is not a valid Ulid.",
+                    Extensions = { ["errorCode"] = "InvalidOrderId" }
+                });
+            }
+
+            // 2) Fetch & catch not-found
+            try
+            {
+                var dto = await _svc.GetOrderDetailAsync(orderId);
+                return Ok(dto);
+            }
+            catch (KeyNotFoundException knf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Order not found",
+                    Detail = knf.Message
+                });
+            }
         }
     }
 

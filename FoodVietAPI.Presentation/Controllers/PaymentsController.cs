@@ -1,11 +1,13 @@
-﻿using CleanFoodVietAPI.Application.Services.Interfaces;
+﻿using CleanFoodVietAPI.Application.DTOs.Payment;
+using CleanFoodVietAPI.Application.Exceptions;
+using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
-using CleanFoodVietAPI.Application.DTOs.Payment;
 using Microsoft.Extensions.Options;
 using Stripe.Checkout;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -39,6 +41,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         /// Creates a Stripe Checkout Session and returns its URL. TEST ONLY.
         /// </summary>
         [HttpPost(ApiEndpointConstant.Payment.GardenerTestPaymentsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Creates a Stripe Checkout Session and returns its URL. TEST ONLY.")]
         public async Task<IActionResult> TestCreateCheckoutSession()
         {
@@ -94,67 +97,107 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         /// </summary>
         [HttpPost(ApiEndpointConstant.Payment.GardenerPaymentsEndpoint)]
         [SwaggerOperation(Summary = "Creates a real Checkout Session for the specified service package.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateCheckoutSession(
-            [FromBody] CreateCheckoutRequest req)
+        [FromBody, Required] CreateCheckoutRequest req)
         {
-            // 1) load gardener & package
-            var gardenerDto = await _accountSvc.GetAccountInformation(req.GardenerId.ToString());
-            var packageDto = await _packageSvc.GetServicePackageDetailAsync(req.ServicePackageId);
-            // 2) insert PENDING order+payment
-            var orderId = _orderSvc.CreatePendingOrder(
-                gardenerDto.AccountId,
-                packageDto.ServicePackageId,
-                packageDto.Price
-            );
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            // 3) build test email suffix (dev only)
-            var email = gardenerDto.Email;
-            if (_env.IsDevelopment() && !string.IsNullOrWhiteSpace(req.Location))
+            // 1) Validate/parse the incoming packageId (string → Ulid)
+            if (!Ulid.TryParse(req.ServicePackageId, out var pkgId))
             {
-                var at = email.IndexOf('@');
-                if (at > 0)
-                    email = $"{email[..at]}+{req.Location}{email[at..]}";
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid package id",
+                    Detail = $"'{req.ServicePackageId}' is not a valid Ulid.",
+                    Extensions = { ["errorCode"] = "InvalidPackageId" }
+                });
             }
 
-            // 4) create Stripe session
-            var session = await _stripeSession.CreateAsync(new SessionCreateOptions
+            try
             {
-                PaymentMethodTypes = new List<string> { "card" },
-                Mode = "payment",
-                CustomerEmail = email,
-                ClientReferenceId = orderId.ToString(),
-                LineItems = new List<SessionLineItemOptions>
-            {
-                new()
-                {
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                        Currency   = "usd",
-                        UnitAmount = (long)(packageDto.Price * 100m),
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                        {
-                            Name        = packageDto.PackageName,
-                            Description =
-                              $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)"
-                        }
-                    },
-                    Quantity = req.Quantity // default to 1 if not specified
-                }
-            },
-                SuccessUrl =
-                  $"{_config["App:FrontendDomain"]}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{_config["App:FrontendDomain"]}/payment-cancelled"
-            });
+                // 2) load gardener & package (service still expects Ulid)
+                var gardenerDto = await _accountSvc.GetAccountInformation(req.GardenerId.ToString());
+                var packageDto = await _packageSvc.GetServicePackageDetailAsync(req.ServicePackageId);
 
-            // 5) return session URL + gardener info
-            return Ok(new
+                // 3) insert PENDING order+payment (still sync method)
+                var orderId = _orderSvc.CreatePendingOrder(
+                    gardenerDto.AccountId,
+                    packageDto.ServicePackageId,
+                    packageDto.Price
+                );
+
+                // 4) build test email suffix (dev only)
+                var email = gardenerDto.Email;
+                if (_env.IsDevelopment() && !string.IsNullOrWhiteSpace(req.Location))
+                {
+                    var at = email.IndexOf('@');
+                    if (at > 0)
+                        email = $"{email[..at]}+{req.Location}{email[at..]}";
+                }
+
+                // 5) create Stripe session
+                var session = await _stripeSession.CreateAsync(new SessionCreateOptions
+                {
+                    PaymentMethodTypes = new List<string> { "card" },
+                    Mode = "payment",
+                    CustomerEmail = email,
+                    ClientReferenceId = orderId.ToString(),
+                    LineItems = new List<SessionLineItemOptions>
+                {
+                    new()
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            Currency   = "usd",
+                            UnitAmount = (long)(packageDto.Price * 100m),
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name        = packageDto.PackageName,
+                                Description =
+                                  $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)"
+                            }
+                        },
+                        Quantity = req.Quantity
+                    }
+                },
+                    SuccessUrl = $"{_config["App:FrontendDomain"]}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
+                    CancelUrl = $"{_config["App:FrontendDomain"]}/payment-cancelled"
+                });
+
+                // 6) return session URL + gardener info
+                return Ok(new
+                {
+                    sessionUrl = session.Url,
+                    gardenerId = gardenerDto.AccountId,
+                    gardenerName = gardenerDto.Name,
+                    gardenerEmail = gardenerDto.Email,
+                    gardenerPhone = gardenerDto.PhoneNumber
+                });
+            }
+            catch (DomainValidationException dv)
             {
-                sessionUrl = session.Url,
-                gardenerId = gardenerDto.AccountId,
-                gardenerName = gardenerDto.Name,
-                gardenerEmail = gardenerDto.Email,
-                gardenerPhone = gardenerDto.PhoneNumber
-            });
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid payment request",
+                    Detail = dv.Message,
+                    Extensions = { ["errorCode"] = "PaymentRequestInvalid" }
+                });
+            }
+            catch (NotFoundException nf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Resource not found",
+                    Detail = nf.Message
+                });
+            }
         }
     }
 }
