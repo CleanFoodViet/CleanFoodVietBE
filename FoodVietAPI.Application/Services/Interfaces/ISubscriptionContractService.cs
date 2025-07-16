@@ -1,4 +1,5 @@
-﻿using CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs;
+﻿using CleanFoodVietAPI.Application.DTOs.PaymentHistoryDTOs;
+using CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs;
 using CleanFoodVietAPI.Data.Paginate;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? search = null);
 
         Task<SubscriptionContractDTO> GetContractDetailAsync(Ulid subscriptionId);
+
+        Task<IReadOnlyList<ContractHistoryDTO>> GetContractHistoryAsync(string gardenerId);
     }
 }

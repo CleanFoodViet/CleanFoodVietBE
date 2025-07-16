@@ -1,13 +1,14 @@
-﻿using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderDTOs;
+﻿using CleanFoodVietAPI.Application.DTOs.PaymentHistoryDTOs;
+using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderDTOs;
 using CleanFoodVietAPI.Data.Paginate;
 using MySqlX.XDevAPI;
+using Stripe;
+using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Stripe.Checkout;
-using Stripe;
 using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces
@@ -26,6 +27,8 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             Ulid gardenerId,
             Ulid servicePackageId,
             decimal totalAmount);
+
+        Task<IReadOnlyList<PaymentHistoryDTO>> GetPaymentHistoryAsync(string gardenerId);
 
         // Called when Stripe fires checkout.session.completed
         Task HandleCheckoutSessionCompletedAsync(Stripe.Checkout.Session session);
