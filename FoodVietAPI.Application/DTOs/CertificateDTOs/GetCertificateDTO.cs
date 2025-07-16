@@ -1,6 +1,6 @@
 ﻿namespace CleanFoodVietAPI.Application.DTOs.CertificateDTOs
 {
-    public record GetCertificateDTO
+    public class GetCertificateDTO
     {
         public Ulid CertificateId { get; set; }
         public string Name { get; set; } = null!;
