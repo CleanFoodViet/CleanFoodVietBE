@@ -69,7 +69,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return certificate;
         }
 
-        public async Task CreateCertificate(CertificateDTO createData, string gardenerId)
+        public async Task CreateCertificate(CreateCertificateDTO createData, string gardenerId)
         {
             Ulid accountId = Ulid.Parse(gardenerId);
             var account = await _unitOfWork.GetRepository<Account>()

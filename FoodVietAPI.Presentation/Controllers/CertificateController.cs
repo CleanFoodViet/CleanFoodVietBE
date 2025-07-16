@@ -38,7 +38,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpPost(ApiEndpointConstant.Certificate.GardenerCertificatesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create a Certificate for Gardener")]
-        public async Task<IActionResult> CreateCertificate([FromRoute] string id, [FromBody] CertificateDTO request)
+        public async Task<IActionResult> CreateCertificate([FromRoute] string id, [FromBody] CreateCertificateDTO request)
         {
             await _certificateService.CreateCertificate(request, id);
             return StatusCode(StatusCodes.Status201Created, "Create address successfully");

@@ -18,6 +18,10 @@ namespace CleanFoodVietAPI.Application.Mappers
             CreateMap<CertificateDTO, Certificate>()
                 .ForMember(des => des.CertificateId, opt => opt.MapFrom(src => Ulid.NewUlid()))
                 .ForMember(des => des.GardenerId, opt => opt.Ignore());
+
+            CreateMap<CreateCertificateDTO, Certificate>()
+               .ForMember(des => des.CertificateId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+               .ForMember(des => des.GardenerId, opt => opt.Ignore());
         }
     }
 }
