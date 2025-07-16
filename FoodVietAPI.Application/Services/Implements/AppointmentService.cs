@@ -163,7 +163,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var appointmentList = await _unitOfWork.GetRepository<Appointment>()
                 .GetListAsync(
                     include: ap => ap.Include(x => x.Retailer),
-                    predicate: ap => ap.GardenerId == accountId && ap.Status != AppointmentStatusEnum.PENDING.ToString(),
+                    predicate: ap => ap.GardenerId == accountId &&
+                                     ap.Status != AppointmentStatusEnum.PENDING.ToString() &&
+                                     ap.Status != AppointmentStatusEnum.REJECTED.ToString(),
                     selector: ap => new ScheduleAppointmentDTO
                     {
                         Status = ap.Status,
