@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
+using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
+using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
@@ -36,6 +38,9 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForAllMembers(opt => opt.Condition((src, des, srcMember) => srcMember != null));
 
             CreateMap<Account, RegisterResponse>();
+            CreateMap<Account, AccountDTO>();
+            CreateMap<Certificate, CertificateDTO>();
+            CreateMap<Address, GetAddressDTO>();
         }
     }
 }

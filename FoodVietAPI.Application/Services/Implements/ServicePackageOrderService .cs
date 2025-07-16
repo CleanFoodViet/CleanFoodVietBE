@@ -1,5 +1,7 @@
-﻿using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderDTOs;
+﻿using CleanFoodVietAPI.Application.DTOs.PaymentHistoryDTOs;
+using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderPaymentDTOs;
+using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
@@ -117,6 +119,40 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new KeyNotFoundException("Service package order not found.");
 
             return dto;
+        }
+        #endregion
+
+        // Get the payment history for a specific gardener
+        #region GetPaymentHistoryAsync
+        public async Task<IReadOnlyList<PaymentHistoryDTO>> GetPaymentHistoryAsync(string gardenerId)
+        {
+            // 0) Validate & parse
+            if (!Ulid.TryParse(gardenerId, out var gId))
+                throw new DomainValidationException($"Invalid Gardener id: '{gardenerId}'.");
+
+            // 1) Query payments joined to orders & package
+            var payments = await _uow.GetRepository<ServicePackageOrderPayment>()
+                .GetListAsync(
+                    predicate: p => p.ServicePackageOrder.GardenerId == gId,
+                    include: q => q
+                        .Include(p => p.ServicePackageOrder)
+                         .ThenInclude(o => o.ServicePackage)
+                );
+
+            // 2) Map to DTO
+            return payments.Select(p => new PaymentHistoryDTO
+            {
+                OrderId = p.ServicePackageOrderId.ToString(),
+                PaymentId = p.ServicePackageOrderPaymentId.ToString(),
+                PaymentAmount = p.PaymentAmount,
+                Currency = p.Currency,
+                Status = p.Status,
+                PaymentDate = p.PaymentDate,
+                PaymentMethod = p.PaymentMethod,
+                OrderTotalAmount = p.ServicePackageOrder.TotalAmount,
+                OrderStatus = p.ServicePackageOrder.Status,
+                PackageName = p.ServicePackageOrder.ServicePackage.PackageName
+            }).ToList();
         }
         #endregion
 
