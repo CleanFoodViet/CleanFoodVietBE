@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
-using CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionContractBenefitDTOs;
+using CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs;
+using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -104,6 +106,32 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new KeyNotFoundException("Subscription contract not found.");
 
             return dto;
+        }
+
+        public async Task<IReadOnlyList<ContractHistoryDTO>> GetContractHistoryAsync(string gardenerId)
+        {
+            if (!Ulid.TryParse(gardenerId, out var gId))
+                throw new DomainValidationException($"Invalid Gardener id: '{gardenerId}'.");
+
+            var contracts = await _uow.GetRepository<SubscriptionContract>()
+                .GetListAsync(
+                    predicate: c => c.GardenerId == gId,
+                    include: q => q
+                        .Include(c => c.Account)
+                        .Include(c => c.ServicePackage)
+                );
+
+            return contracts
+                .OrderByDescending(c => c.StartDate)
+                .Select(c => new ContractHistoryDTO(
+                    c.SubscriptionId,
+                    c.Status,
+                    c.SubscriptionType,
+                    c.Account.PhoneNumber,
+                    c.ServicePackage.PackageName,
+                    c.ServicePackage.Price
+                ))
+                .ToList();
         }
 
     }
