@@ -69,5 +69,23 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             await _appointmentService.CancelAppointment(id, request);
             return Ok("Cancel Appointment successfully");
         }
+
+        [HttpGet(ApiEndpointConstant.Account.RequestAppointmentEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Cancel appointment)")]
+        public async Task<IActionResult> GetRequestAppointment([FromRoute] string id)
+        {
+            var res = await _appointmentService.GetRequestAppointment(id);
+            return Ok("Cancel Appointment successfully");
+        }
+
+        [HttpGet(ApiEndpointConstant.Account.ScheduledAppointmentEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Cancel appointment)")]
+        public async Task<IActionResult> GetScheduledAppointment([FromRoute] string id)
+        {
+            var res = await _appointmentService.GetScheduleAppointments(id);
+            return Ok("Cancel Appointment successfully");
+        }
     }
 }

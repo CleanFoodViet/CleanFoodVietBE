@@ -1,5 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Paginate;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces
 {
@@ -11,5 +12,8 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task UpdateAppointment(string appointmentId, UpdateAppointmentDTO updateData);
         Task UpdateAppointmentStatus(string appointmentId, string status);
         Task CancelAppointment(string appointmentId, CancelAppointmentDTO cancelData);
+
+        Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId);
+        Task<List<ScheduleAppointmentDTO>> GetScheduleAppointments(string gardenerId);
     }
 }

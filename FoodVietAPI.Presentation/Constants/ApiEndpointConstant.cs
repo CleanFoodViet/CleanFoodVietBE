@@ -37,6 +37,8 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
             //Appointment endpoints
             public const string AccountAppointmentEndpoint = AccountEndpoint + "/appointments";
+            public const string ScheduledAppointmentEndpoint = AccountAppointmentEndpoint + "/scheduled";
+            public const string RequestAppointmentEndpoint = AccountAppointmentEndpoint + "/requested";
 
             //Notification endpoints
             public const string AccountNotificationEndpoint = AccountEndpoint + "/notifications";
