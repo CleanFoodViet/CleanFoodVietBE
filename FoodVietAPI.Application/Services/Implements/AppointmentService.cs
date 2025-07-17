@@ -174,6 +174,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         AppointmentId = ap.AppointmentId,
                         AppointmentType = ap.AppointmentType,
                         Description = ap.Description,
+                        AccountName = ap.Retailer.Name,
+                        AccountAvatar = ap.Retailer.Avatar,
+                        AccountPhoneNumber = ap.Retailer.PhoneNumber
                     }
                 );
 

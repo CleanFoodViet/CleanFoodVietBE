@@ -50,6 +50,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         selector: p => new ProductListDTO(
                             p.ProductId,
                             p.ProductName,
+                            p.CreatedAt,
                             p.UpdatedAt,
                             p.Status,
                             p.ProductCategory.Name,

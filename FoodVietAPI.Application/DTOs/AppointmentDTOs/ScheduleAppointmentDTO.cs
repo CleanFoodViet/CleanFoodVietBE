@@ -14,5 +14,8 @@ namespace CleanFoodVietAPI.Application.DTOs.AppointmentDTOs
         public string AppointmentType { get; set; } = null!;
         public string Status { get; set; } = null!;
         public DateTime AppointmentDate { get; set; }
+        public string AccountName { get; set; } = null!;
+        public string AccountAvatar { get; set; } = null!;
+        public string AccountPhoneNumber{ get; set; } = null!;
     }
 }
