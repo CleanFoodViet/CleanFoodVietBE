@@ -35,7 +35,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual DbSet<PackageServiceFeature> PackageServiceFeatures { get; set; } = null!;
         public virtual DbSet<ServicePackageOrder> ServicePackageOrders { get; set; } = null!;
         public virtual DbSet<ServicePackageOrderPayment> ServicePackageOrderPayments { get; set; } = null!;
-        public virtual DbSet<GardenerIncome> GardenerIncomes { get; set; } = null!;
+        //public virtual DbSet<GardenerIncome> GardenerIncomes { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductPrice> ProductPrices { get; set; } = null!;
         public virtual DbSet<OrderDelivery> OrderDeliveries { get; set; } = null!;
@@ -439,6 +439,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.DeliveredAt).HasColumnType("datetime");
                 entity.Property(e => e.Price).HasColumnType("decimal(14,2)");
                 entity.Property(e => e.ProductUnit).IsRequired().HasMaxLength(10);
+                entity.Property(e => e.Currency).IsRequired().HasMaxLength(15);
 
                 entity.HasIndex(e => e.OrderDeliveryId).HasDatabaseName("IX_OrderDeliveryDetail_OrderDeliveryId");
                 entity.HasIndex(e => e.ProductId).HasDatabaseName("IX_OrderDeliveryDetail_ProductId");
@@ -798,29 +799,29 @@ namespace CleanFoodVietAPI.Data.Entities
                       .HasConstraintName("FK_ServicePackageOrderPayment_ServicePackageOrder");
             });
 
-            modelBuilder.Entity<GardenerIncome>(entity =>
-            {
-                entity.ToTable("GardenerIncome");
-                entity.HasKey(e => e.GardenerIncomeId).HasName("PK_GardenerIncome");
+            //modelBuilder.Entity<GardenerIncome>(entity =>
+            //{
+            //    entity.ToTable("GardenerIncome");
+            //    entity.HasKey(e => e.GardenerIncomeId).HasName("PK_GardenerIncome");
 
-                entity.Property(e => e.GardenerIncomeId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
-                entity.Property(e => e.TotalAmount).HasColumnType("decimal(14,2)");
-                entity.Property(e => e.Currency).IsRequired().HasMaxLength(10);
-                entity.Property(e => e.TransactionDate).HasColumnType("datetime");
-                entity.Property(e => e.GardenerId).HasColumnType("char(26)")
-                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                    .IsFixedLength();
+            //    entity.Property(e => e.GardenerIncomeId).HasColumnType("char(26)")
+            //        .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+            //        .IsFixedLength();
+            //    entity.Property(e => e.TotalAmount).HasColumnType("decimal(14,2)");
+            //    entity.Property(e => e.Currency).IsRequired().HasMaxLength(10);
+            //    entity.Property(e => e.TransactionDate).HasColumnType("datetime");
+            //    entity.Property(e => e.GardenerId).HasColumnType("char(26)")
+            //        .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+            //        .IsFixedLength();
 
-                entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_GardenerIncome_GardenerId");
+            //    entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_GardenerIncome_GardenerId");
 
-                entity.HasOne(e => e.Account)
-                      .WithMany(e => e.GardenerIncomes)
-                      .HasForeignKey(e => e.GardenerId)
-                      .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("FK_GardenerIncome_Account");
-            });
+            //    entity.HasOne(e => e.Account)
+            //          .WithMany(e => e.GardenerIncomes)
+            //          .HasForeignKey(e => e.GardenerId)
+            //          .OnDelete(DeleteBehavior.Restrict)
+            //          .HasConstraintName("FK_GardenerIncome_Account");
+            //});
 
             modelBuilder.Entity<ProductPrice>(entity =>
             {

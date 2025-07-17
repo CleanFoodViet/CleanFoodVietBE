@@ -76,6 +76,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(predicate: acc => acc.AccountId == accountId);
             if (account == null) throw new BadHttpRequestException("Gardener is not found");
 
+            if (createData.IssueDate >= createData.ExpiryDate) throw new BadHttpRequestException("Invalid date range: IssueDate cannot be equal or latter than ExpiredDate");
+
             Certificate newCertificate = _mapper.Map<Certificate>(createData);
             newCertificate.GardenerId = accountId;
 

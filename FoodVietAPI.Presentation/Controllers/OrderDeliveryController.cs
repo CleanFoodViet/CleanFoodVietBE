@@ -27,7 +27,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpPost(ApiEndpointConstant.Order.OrderDeliveriesEndpoint)]
-        [ProducesResponseType(typeof(List<OrderDeliveryDTO>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [SwaggerOperation(Summary = "Create a order delivery for a specific order")]
         public async Task<IActionResult> CreateOrderDelivery([FromRoute] string id, [FromBody] CreateOrderDelieryDTO request)
         {

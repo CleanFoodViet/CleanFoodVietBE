@@ -73,7 +73,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var orderDetails = await _unitOfWork.GetRepository<OrderDetail>()
                 .GetListAsync(
                     include: od => od.Include(x => x.Product)
-                                     .ThenInclude(x => x.OrderDeliveryDetails.Where(odd => odd.ProductId == x.ProductId)),
+                                     .ThenInclude(x => x.OrderDeliveryDetails.Where(odd => odd.ProductId == x.ProductId))
+                                     .Include(x => x.Product.ProductPrices.Where(pp => pp.IsCurrent)),
                     predicate: od => od.OrderId == orderID,
                     selector: od => new OrderDetailDTO
                     {
@@ -84,6 +85,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                          DeliveryStatus = od.DeliveryStatus,
                          ProductId = od.ProductId,
                          ProductName = od.Product.ProductName,
+                         WeightUnit = od.Product.ProductPrices.First().WeightUnit,
+                         Currency = od.Product.ProductPrices.First().Currency,
                          RemainDeliveredQuantity = od.Product.OrderDeliveryDetails.Sum(x => x.Quantity)
                     }
                 );
