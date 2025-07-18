@@ -28,7 +28,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             Ulid servicePackageId,
             decimal totalAmount);
 
-        Task<IReadOnlyList<PaymentHistoryDTO>> GetPaymentHistoryAsync(string gardenerId);
+        Task<IPaginate<PaymentHistoryDTO>> GetPaymentHistoryAsync(string gardenerId, int page, int size);
 
         // Called when Stripe fires checkout.session.completed
         Task HandleCheckoutSessionCompletedAsync(Stripe.Checkout.Session session);

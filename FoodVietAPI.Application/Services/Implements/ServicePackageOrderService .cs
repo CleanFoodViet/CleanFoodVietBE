@@ -124,7 +124,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         // Get the payment history for a specific gardener
         #region GetPaymentHistoryAsync
-        public async Task<IReadOnlyList<PaymentHistoryDTO>> GetPaymentHistoryAsync(string gardenerId)
+        public async Task<IPaginate<PaymentHistoryDTO>> GetPaymentHistoryAsync(string gardenerId, int page, int size)
         {
             // 0) Validate & parse
             if (!Ulid.TryParse(gardenerId, out var gId))
@@ -132,27 +132,29 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             // 1) Query payments joined to orders & package
             var payments = await _uow.GetRepository<ServicePackageOrderPayment>()
-                .GetListAsync(
+                .GetPagingListAsync(
                     predicate: p => p.ServicePackageOrder.GardenerId == gId,
                     include: q => q
                         .Include(p => p.ServicePackageOrder)
-                         .ThenInclude(o => o.ServicePackage)
+                         .ThenInclude(o => o.ServicePackage),
+                    selector: p => new PaymentHistoryDTO
+                    {
+                        OrderId = p.ServicePackageOrderId.ToString(),
+                        PaymentId = p.ServicePackageOrderPaymentId.ToString(),
+                        PaymentAmount = p.PaymentAmount,
+                        Currency = p.Currency,
+                        Status = p.Status,
+                        PaymentDate = p.PaymentDate,
+                        PaymentMethod = p.PaymentMethod,
+                        OrderTotalAmount = p.ServicePackageOrder.TotalAmount,
+                        OrderStatus = p.ServicePackageOrder.Status,
+                        PackageName = p.ServicePackageOrder.ServicePackage.PackageName
+                    },
+                    page: page, size: size
                 );
 
-            // 2) Map to DTO
-            return payments.Select(p => new PaymentHistoryDTO
-            {
-                OrderId = p.ServicePackageOrderId.ToString(),
-                PaymentId = p.ServicePackageOrderPaymentId.ToString(),
-                PaymentAmount = p.PaymentAmount,
-                Currency = p.Currency,
-                Status = p.Status,
-                PaymentDate = p.PaymentDate,
-                PaymentMethod = p.PaymentMethod,
-                OrderTotalAmount = p.ServicePackageOrder.TotalAmount,
-                OrderStatus = p.ServicePackageOrder.Status,
-                PackageName = p.ServicePackageOrder.ServicePackage.PackageName
-            }).ToList();
+
+            return payments;
         }
         #endregion
 
