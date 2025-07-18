@@ -34,14 +34,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(GardenerEndpoint.PaymentsHistoryEndpoint)]
         [ProducesResponseType(typeof(IReadOnlyList<PaymentHistoryDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetPaymentHistory([FromQuery, Required] string gardenerId)
+        public async Task<IActionResult> GetPaymentHistory([FromQuery, Required] string gardenerId, [FromQuery]int page = 1, [FromQuery]int size = 10)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                var list = await _orderSvc.GetPaymentHistoryAsync(gardenerId);
+                var list = await _orderSvc.GetPaymentHistoryAsync(gardenerId, page, size);
                 return Ok(list);
             }
             catch (DomainValidationException dv)
@@ -60,14 +60,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(GardenerEndpoint.ContractsHistoryEndpoint)]
         [ProducesResponseType(typeof(IReadOnlyList<ContractHistoryDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetContractHistory([FromQuery, Required] string gardenerId)
+        public async Task<IActionResult> GetContractHistory([FromQuery, Required] string gardenerId, [FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                var list = await _contractSvc.GetContractHistoryAsync(gardenerId);
+                var list = await _contractSvc.GetContractHistoryAsync(gardenerId, page, size);
                 return Ok(list);
             }
             catch (DomainValidationException dv)

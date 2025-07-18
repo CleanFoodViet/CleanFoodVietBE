@@ -1,6 +1,7 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
 using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -45,11 +46,47 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Appointment.AppointmentEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Update appointment information of account (Inclue basic information update, or cancel appointment)")]
+        [SwaggerOperation(Summary = "Update appointment information of account (Inclue basic information update)")]
         public async Task<IActionResult> UpdateAppointment([FromRoute]string id, [FromBody]UpdateAppointmentDTO request)
         {
             await _appointmentService.UpdateAppointment(id, request);
             return Ok("Update Appointment successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Appointment.StatusAppointmentEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update appointment information status)")]
+        public async Task<IActionResult> UpdateAppointmentStatus([FromRoute] string id, [FromQuery] string status)
+        {
+            await _appointmentService.UpdateAppointmentStatus(id, status);
+            return Ok("Update Appointment status successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Appointment.CancelAppointmentEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Cancel appointment)")]
+        public async Task<IActionResult> CancelAppointment([FromRoute] string id, [FromBody] CancelAppointmentDTO request)
+        {
+            await _appointmentService.CancelAppointment(id, request);
+            return Ok("Cancel Appointment successfully");
+        }
+
+        [HttpGet(ApiEndpointConstant.Account.RequestAppointmentEndpoint)]
+        [ProducesResponseType(typeof(IPaginate<GetRequestAppointmentDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get requested appointments")]
+        public async Task<IActionResult> GetRequestAppointment([FromRoute] string id)
+        {
+            var res = await _appointmentService.GetRequestAppointment(id);
+            return Ok(res);
+        }
+
+        [HttpGet(ApiEndpointConstant.Account.ScheduledAppointmentEndpoint)]
+        [ProducesResponseType(typeof(List<ScheduleAppointmentDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get scheduled/accepted appointment)")]
+        public async Task<IActionResult> GetScheduledAppointment([FromRoute] string id)
+        {
+            var res = await _appointmentService.GetScheduleAppointments(id);
+            return Ok(res);
         }
     }
 }

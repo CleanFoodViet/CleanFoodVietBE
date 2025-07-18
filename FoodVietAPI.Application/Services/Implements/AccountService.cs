@@ -98,7 +98,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid accountId = Ulid.Parse(id);
             var account = await _unitOfWork.GetRepository<Account>()
                 .GetAsync(predicate: acc => acc.AccountId == accountId,
-                          include: acc => acc.Include(x => x.Role),
+                          include: acc => acc.Include(x => x.Role).Include(x => x.Addresses).Include(x => x.Certificates),
                           selector: acc => new AccountDTO(
                                 acc.AccountId,
                                 acc.Name,
@@ -111,8 +111,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                 acc.CreatedAt,
                                 acc.UpdatedAt,
                                 acc.Role.Name,
-                                _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
-                                _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())));
+                                _mapper.Map<List<CertificateDTO>?>(acc.Certificates.ToList()),
+                                _mapper.Map<List<GetAddressDTO>?>(acc.Addresses.ToList())));
 
             if (account == null) throw new BadHttpRequestException("Account is not found");
 

@@ -75,7 +75,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         //Update Status
         [HttpPatch(ApiEndpointConstant.Post.PostStatusEndpoint)]
-        [ProducesResponseType(typeof(PostDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Update Post Status (Post Status: ACTIVE, INACTIVE, BANNED)")]
         public async Task<IActionResult> UpdatePostStatus([FromRoute] string id, [FromQuery]string status)
         {

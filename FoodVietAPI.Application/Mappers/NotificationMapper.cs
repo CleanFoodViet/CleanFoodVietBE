@@ -10,7 +10,8 @@ namespace CleanFoodVietAPI.Application.Mappers
         {
             CreateMap<CreateNotificationDTO, Notification>()
                 .ForMember(des => des.NotificationId, opt => opt.MapFrom(src => Ulid.NewUlid()))
-                .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+                .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(des => des.IsRead, opt => opt.MapFrom(src => false));
         }
     }
 }

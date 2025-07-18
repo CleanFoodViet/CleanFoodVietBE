@@ -1,5 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
+using CleanFoodVietAPI.Application.DTOs.ReviewDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
@@ -78,7 +79,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpPost(ApiEndpointConstant.Product.ProductPricesEndpoint)]
-        [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create Gardener Products' Price")]
         public async Task<IActionResult> CreateProductPrice([FromRoute] string id, [FromQuery] CreateProductPriceDTO request)
         {
@@ -87,12 +88,21 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpPatch(ApiEndpointConstant.Product.ProductPriceEndpoint)]
-        [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Set product current price")]
         public async Task<IActionResult> SetProductCurrentPrice([FromRoute] string id, [FromRoute]string priceId)
         {
             await _productService.SetProductCurrentPrice(id, priceId);
             return Ok("Product price change successfully");
+        }
+
+        [HttpGet(ApiEndpointConstant.Product.ProductReviewsEndpoint)]
+        [ProducesResponseType(typeof(List<ProductReviewDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Set product reviews")]
+        public async Task<IActionResult> GetProductRevies([FromRoute] string id)
+        {
+            var res = await _productService.GetProductReviews(id);
+            return Ok(res);
         }
     }
 }

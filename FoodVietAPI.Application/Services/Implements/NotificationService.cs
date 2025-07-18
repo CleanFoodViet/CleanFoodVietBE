@@ -23,6 +23,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     predicate: n => n.AccountId == accId,
                     selector: n => new NotificationDTO
                     {
+                        NotificationId = n.NotificationId,
+                        Sender = n.Sender,
                         CreatedAt = n.CreatedAt,
                         IsRead = n.IsRead,
                         Link = n.Link,
@@ -39,6 +41,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             await _unitOfWork.GetRepository<Notification>().InsertAsync(newNoti);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when create notification (DB query error)");
+        }
+
+        public async Task ReadNotification(string notificationId)
+        {
+            Ulid notiId = Ulid.Parse(notificationId);
+            Notification unreadNotification = await _unitOfWork.GetRepository<Notification>()
+                .GetAsync(predicate: n => n.NotificationId == notiId);
+
+            if (unreadNotification == null) throw new BadHttpRequestException("Notification is not found");
+
+            unreadNotification.IsRead = true;
+            _unitOfWork.GetRepository<Notification>().UpdateAsync(unreadNotification);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update notification to read (DB query error)");
         }
     }
 }

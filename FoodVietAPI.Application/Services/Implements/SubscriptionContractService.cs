@@ -7,23 +7,19 @@ using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
-    public class SubscriptionContractService : ISubscriptionContractService
+    public class SubscriptionContractService : BaseService<SubscriptionContractService>, ISubscriptionContractService
     {
-        private readonly IUnitOfWork<CleanFoodVietDbContext> _uow;
-        private readonly IMapper _mapper;
-
-        public SubscriptionContractService(
-            IUnitOfWork<CleanFoodVietDbContext> uow,
-            IMapper mapper)
+        public SubscriptionContractService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<SubscriptionContractService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
-            _uow = uow;
-            _mapper = mapper;
         }
 
         public async Task<IPaginate<SubscriptionContractDTO>> GetContractsAsync(
@@ -35,7 +31,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var spec = new SubscriptionContractSpecification(
                 filterField, filterValue, sortField, sortOrder, search);
 
-            var repo = _uow.GetRepository<SubscriptionContract>();
+            var repo = _unitOfWork.GetRepository<SubscriptionContract>();
             return await repo.GetPagingListAsync(
                 spec: spec,
                 selector: sc => new SubscriptionContractDTO
@@ -73,7 +69,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         public async Task<SubscriptionContractDTO> GetContractDetailAsync(Ulid subscriptionId)
         {
-            var repo = _uow.GetRepository<SubscriptionContract>();
+            var repo = _unitOfWork.GetRepository<SubscriptionContract>();
             var dto = await repo.GetAsync(
                 selector: sc => new SubscriptionContractDTO
                 {
@@ -108,31 +104,28 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return dto;
         }
 
-        public async Task<IReadOnlyList<ContractHistoryDTO>> GetContractHistoryAsync(string gardenerId)
+        public async Task<IPaginate<ContractHistoryDTO>> GetContractHistoryAsync(string gardenerId, int page, int size)
         {
             if (!Ulid.TryParse(gardenerId, out var gId))
                 throw new DomainValidationException($"Invalid Gardener id: '{gardenerId}'.");
 
-            var contracts = await _uow.GetRepository<SubscriptionContract>()
-                .GetListAsync(
+            var contracts = await _unitOfWork.GetRepository<SubscriptionContract>()
+                .GetPagingListAsync(
                     predicate: c => c.GardenerId == gId,
                     include: q => q
                         .Include(c => c.Account)
-                        .Include(c => c.ServicePackage)
+                        .Include(c => c.ServicePackage),
+                    selector: c => new ContractHistoryDTO(
+                        c.SubscriptionId,
+                        c.Status,
+                        c.SubscriptionType,
+                        c.Account.PhoneNumber,
+                        c.ServicePackage.PackageName,
+                        c.ServicePackage.Price),
+                    page: page, size: size
                 );
 
-            return contracts
-                .OrderByDescending(c => c.StartDate)
-                .Select(c => new ContractHistoryDTO(
-                    c.SubscriptionId,
-                    c.Status,
-                    c.SubscriptionType,
-                    c.Account.PhoneNumber,
-                    c.ServicePackage.PackageName,
-                    c.ServicePackage.Price
-                ))
-                .ToList();
+            return contracts;
         }
-
     }
 }

@@ -19,6 +19,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 
         Task<SubscriptionContractDTO> GetContractDetailAsync(Ulid subscriptionId);
 
-        Task<IReadOnlyList<ContractHistoryDTO>> GetContractHistoryAsync(string gardenerId);
+        Task<IPaginate<ContractHistoryDTO>> GetContractHistoryAsync(string gardenerId, int page, int size);
     }
 }

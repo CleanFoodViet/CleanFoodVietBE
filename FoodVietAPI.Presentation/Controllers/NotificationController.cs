@@ -25,13 +25,22 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok(res);
         }
 
-        [HttpPost(ApiEndpointConstant.Notification.NotificationEndpoint)]
+        [HttpPost(ApiEndpointConstant.Notification.NotificationsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create a Notification")]
         public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationDTO request)
         {
             await _notificationService.CreateNotification(request);
             return Ok("Create Notification Successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Notification.NotificationEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Mark a Notification to read")]
+        public async Task<IActionResult> UpdateNotificationToRead([FromRoute] string id)
+        {
+            await _notificationService.ReadNotification(id);
+            return Ok("Notification is read");
         }
     }
 }

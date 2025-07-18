@@ -4,6 +4,7 @@
     (
         Ulid ProductId,
         string ProductName,
+        DateTime CreatedAt,
         DateTime UpdatedAt,
         string Status,
         string ProductCategory,
