@@ -264,6 +264,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 GardenerId = order.GardenerId,
                 ServicePackageId = order.ServicePackageId,
                 DurationInDays = pkg.Duration,
+                SubscriptionType = "CUSTOM",
                 StartDate = startDate,
                 EndDate = endDate,
                 Status = newStatus,
