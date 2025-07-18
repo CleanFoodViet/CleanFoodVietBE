@@ -155,9 +155,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             }
 
             product.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.GetRepository<Product>().UpdateAsync(product);
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Erorr occur when change product status (DB query Error)");
+            if (!isSuccess) throw new Exception("Erorr occur when change product status (DB query Error: Product not updated)");
         }
 
         public async Task<List<ProductPriceDTO>> GetProductPrices(string productId)

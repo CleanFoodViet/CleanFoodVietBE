@@ -81,7 +81,7 @@ namespace CleanFoodVietAPI.Presentation.Middlewares
                     // Unhandled exception
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     errorDto.StatusCode = response.StatusCode;
-                    errorDto.Error = "An unexpected error occurred.";
+                    errorDto.Error = exception.Message;
                     _logger.LogError(exception, "Unhandled exception");
                     break;
             }
