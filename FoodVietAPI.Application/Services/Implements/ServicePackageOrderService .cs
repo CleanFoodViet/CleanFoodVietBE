@@ -184,10 +184,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 ServicePackageOrderPaymentId = paymentId,
                 ServicePackageOrderId = orderId,
                 PaymentAmount = totalAmount,
-                Currency = "usd",
+                Currency = "USD",
                 Status = "PENDING",
                 PaymentDate = now,
-                PaymentMethod = "card"
+                PaymentMethod = "CARD"
             };
 
             // 3) Insert both in your UoW
