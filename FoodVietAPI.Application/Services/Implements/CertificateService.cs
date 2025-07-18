@@ -69,12 +69,14 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return certificate;
         }
 
-        public async Task CreateCertificate(CertificateDTO createData, string gardenerId)
+        public async Task CreateCertificate(CreateCertificateDTO createData, string gardenerId)
         {
             Ulid accountId = Ulid.Parse(gardenerId);
             var account = await _unitOfWork.GetRepository<Account>()
                 .GetAsync(predicate: acc => acc.AccountId == accountId);
             if (account == null) throw new BadHttpRequestException("Gardener is not found");
+
+            if (createData.IssueDate >= createData.ExpiryDate) throw new BadHttpRequestException("Invalid date range: IssueDate cannot be equal or latter than ExpiredDate");
 
             Certificate newCertificate = _mapper.Map<Certificate>(createData);
             newCertificate.GardenerId = accountId;

@@ -6,6 +6,7 @@ using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.OrdeDeliveryEnums;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid orderID = Ulid.Parse(orderId);
             var orderDelivery = await _unitOfWork.GetRepository<OrderDelivery>()
                 .GetListAsync(
+                    include: odv => odv.Include(x => x.OrderDeliveryDetails).ThenInclude(x => x.Product)
+                        .ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
                     predicate: odv => odv.OrderId == orderID,
                     selector: odv => new OrderDeliveryDTO
                     {
@@ -48,6 +51,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
             Ulid orderID = Ulid.Parse(orderId);
             var orderDelivery = _mapper.Map<OrderDelivery>(request);
+            orderDelivery.OrderId = orderID;
+
             var orderDeliveryDetails = _mapper.Map<List<OrderDeliveryDetail>>(
                     request.delieryDetailsDTOs,
                     opt => opt.Items["OrderDeliveryId"] = orderDelivery.OrderDeliveryId

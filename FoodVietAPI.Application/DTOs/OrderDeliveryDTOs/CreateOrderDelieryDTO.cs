@@ -3,7 +3,7 @@
     public record CreateOrderDelieryDTO
     {
         //public Ulid OrderDeliveryId { get; set; }
-        public Ulid OrderId { get; set; }
+        //public Ulid OrderId { get; set; }
         public DateTime DeliveryDate { get; set; }
         //public string DeliveryStatus { get; set; } = null!;
         //public DateTime CreatedAt { get; set; }

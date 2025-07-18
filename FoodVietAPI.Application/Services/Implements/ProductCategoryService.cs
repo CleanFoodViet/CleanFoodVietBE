@@ -94,7 +94,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             var products = await _unitOfWork.GetRepository<Product>()
                 .GetListAsync(predicate: p => p.ProductCategoryId == categoryId);
-            if (products != null) throw new DeletionRestrictedException($"Deletion Restricted: Product Category {category.Name} is currently having Product related to.");
+            if (products !=  null && products.Count > 0) throw new DeletionRestrictedException($"Deletion Restricted: Product Category {category.Name} is currently having Product related to.");
 
             _unitOfWork.GetRepository<ProductCategory>().DeleteAsync(category);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;

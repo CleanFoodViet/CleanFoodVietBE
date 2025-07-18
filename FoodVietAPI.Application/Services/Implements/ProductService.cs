@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
+using CleanFoodVietAPI.Application.DTOs.ReviewDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
@@ -11,12 +12,8 @@ using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.Drawing;
-using System.Runtime.CompilerServices;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -53,6 +50,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         selector: p => new ProductListDTO(
                             p.ProductId,
                             p.ProductName,
+                            p.CreatedAt,
                             p.UpdatedAt,
                             p.Status,
                             p.ProductCategory.Name,
@@ -138,7 +136,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     var activePost = await _unitOfWork.GetRepository<Post>()
                         .GetListAsync(predicate: po => po.ProductId == productID && (po.PostEndDate < today || po.Status != PostStatusEnum.ACTIVE.ToString()));
 
-                    if (activePost != null) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some active/available post");
+                    if (activePost != null && activePost?.Count() > 0) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some active/available post");
 
                     var inProgressOrder = await _unitOfWork.GetRepository<Order>()
                         .GetListAsync(
@@ -146,7 +144,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                             predicate: o => o.OrderDetails.Any(od => od.ProductId == productID) &&
                             (o.Status != OrderStatusEnum.COMPLETED.ToString() || o.Status != OrderStatusEnum.CANCELLED.ToString())
                         );
-                    if(inProgressOrder != null) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
+                    if(inProgressOrder != null && inProgressOrder?.Count() > 0) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
                 }
 
                 product.Status = result.ToString();
@@ -157,9 +155,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             }
 
             product.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.GetRepository<Product>().UpdateAsync(product);
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Erorr occur when change product status (DB query Error)");
+            if (!isSuccess) throw new Exception("Erorr occur when change product status (DB query Error: Product not updated)");
         }
 
         public async Task<List<ProductPriceDTO>> GetProductPrices(string productId)
@@ -222,6 +221,35 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Erorr occur when change product price (DB query Error)");
+        }
+
+        public async Task<List<ProductReviewDTO>> GetProductReviews(string productId)
+        {
+            Ulid productID = Ulid.Parse(productId);
+            var product = await _unitOfWork.GetRepository<Product>()
+                .GetAsync(predicate: p => p.ProductId == productID);
+            if(product == null) throw new BadHttpRequestException($"Product is not found");
+
+            var reviews = await _unitOfWork.GetRepository<OrderDetail>()
+                .GetListAsync(
+                    include: odt => odt.Include(x => x.Reviews).ThenInclude(x => x.Account),
+                    predicate: odt => odt.ProductId == productID,
+                    selector: odt => odt.Reviews
+                );
+
+            var reviewDTOs = reviews
+                .SelectMany(r => r) 
+                .Select(r => new ProductReviewDTO
+                {
+                    Name = r.Account.Name,
+                    Avatar = r.Account.Avatar,
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    CreatedAt = r.CreatedAt
+                })
+                .ToList();
+
+            return reviewDTOs;
         }
     }
 }

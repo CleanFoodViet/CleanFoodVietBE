@@ -53,7 +53,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Product.ProductPrices.First().Currency,
                     po.PostMedias.First().MediumUrl,
                     po.Account.Name,
-                    po.Account.Avatar),
+                    po.Account.Avatar,
+                    po.CreatedAt,
+                    po.Content,
+                    po.Status,
+                    po.Rating,
+                    po.Product.ProductPrices.First().WeightUnit),
                 page: page, size: size);
 
             return postList;
@@ -99,7 +104,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Product.ProductPrices.First().Currency,
                     po.PostMedias.First().MediumUrl,
                     po.Account.Name,
-                    po.Account.Avatar),
+                    po.Account.Avatar,
+                    po.CreatedAt,
+                    po.Content,
+                    po.Status,
+                    po.Rating,
+                    po.Product.ProductPrices.First().WeightUnit),
                 page: page, size: size);
 
             return postList;
@@ -205,20 +215,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         p.Status,
                         p.ProductCategory.Name,
                         p.ProductPrices.First().Price,
-                        p.ProductPrices.First().Currency)
+                        p.ProductPrices.First().Currency,
+                        p.ProductPrices.First().WeightUnit)
                 );
 
             var postMedias = await _unitOfWork.GetRepository<PostMedia>()
-                .GetListAsync(predicate: pm => pm.PostId == postID,
-                              selector: pm => new PostMediaDTO
-                              (
-                                  pm.PostMediaId,
-                                  pm.MediumUrl,
-                                  pm.MediumType,
-                                  pm.UploadedAt
-                              ));
+                .GetListAsync(predicate: pm => pm.PostId == postID);
 
-            post.PostMedias = postMedias.ToList();
+            var images = postMedias.Where(pm => pm.MediumType == PostMediaTypeEnum.IMAGE.ToString()).Select(pm => pm.MediumUrl).ToList();
+            var video = postMedias.Where(pm => pm.MediumType == PostMediaTypeEnum.VIDEO.ToString()).FirstOrDefault()?.MediumUrl;
+            var thumbnail = postMedias.Where(pm => pm.MediumType == PostMediaTypeEnum.THUMBNAIL.ToString()).FirstOrDefault()?.MediumUrl;
+
+            post.ThumbNail = thumbnail;
+            post.Video = video;
+            post.Images = images;
             post.ProductData = postProduct;
 
             return post;
@@ -264,7 +274,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     fav.Post.Product.ProductPrices.First().Currency,
                     fav.Post.PostMedias.First().MediumUrl,
                     fav.Post.Account.Name,
-                    fav.Post.Account.Avatar)
+                    fav.Post.Account.Avatar,
+                    fav.Post.CreatedAt,
+                    fav.Post.Content,
+                    fav.Post.Status,
+                    fav.Post.Rating,
+                    fav.Post.Product.ProductPrices.First().WeightUnit)
             );
 
             return favoritePosts.ToList();

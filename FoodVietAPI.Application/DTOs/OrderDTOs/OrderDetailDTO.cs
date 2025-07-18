@@ -9,6 +9,8 @@
         public string DeliveryStatus { get; set; } = null!;
         public Ulid ProductId { get; set; }
         public string ProductName { get; set; } = null!;
+        public string WeightUnit { get; set; } = null!;
+        public string Currency { get; set; } = null!;
         public int RemainDeliveredQuantity { get; set; }
     }
 }
