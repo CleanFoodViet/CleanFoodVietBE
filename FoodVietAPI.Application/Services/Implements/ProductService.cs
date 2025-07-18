@@ -136,7 +136,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     var activePost = await _unitOfWork.GetRepository<Post>()
                         .GetListAsync(predicate: po => po.ProductId == productID && (po.PostEndDate < today || po.Status != PostStatusEnum.ACTIVE.ToString()));
 
-                    if (activePost != null) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some active/available post");
+                    if (activePost != null && activePost?.Count() > 0) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some active/available post");
 
                     var inProgressOrder = await _unitOfWork.GetRepository<Order>()
                         .GetListAsync(
@@ -144,7 +144,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                             predicate: o => o.OrderDetails.Any(od => od.ProductId == productID) &&
                             (o.Status != OrderStatusEnum.COMPLETED.ToString() || o.Status != OrderStatusEnum.CANCELLED.ToString())
                         );
-                    if(inProgressOrder != null) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
+                    if(inProgressOrder != null && inProgressOrder?.Count() > 0) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
                 }
 
                 product.Status = result.ToString();
