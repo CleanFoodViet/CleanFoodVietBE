@@ -131,7 +131,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new DomainValidationException($"Invalid Gardener id: '{gardenerId}'.");
 
             // 1) Query payments joined to orders & package
-            var payments = await _unitOfWork.GetRepository<ServicePackageOrderPayment>()
+            var payments = await _uow.GetRepository<ServicePackageOrderPayment>()
                 .GetPagingListAsync(
                     predicate: p => p.ServicePackageOrder.GardenerId == gId,
                     include: q => q
