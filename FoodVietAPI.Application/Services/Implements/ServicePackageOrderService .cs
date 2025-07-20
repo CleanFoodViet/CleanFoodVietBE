@@ -1,4 +1,3 @@
-﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs.PaymentHistoryDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderPaymentDTOs;
@@ -10,7 +9,6 @@ using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Implements;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Stripe;
@@ -20,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
-    public class ServicePackageOrderService : BaseService<ServicePackageOrderService>, IServicePackageOrderService
+    public class ServicePackageOrderService : IServicePackageOrderService
     {
 
         private static readonly IReadOnlyDictionary<ServiceFeatureActionEnum, int> _coreDefaults
@@ -31,9 +29,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 [ServiceFeatureActionEnum.IMAGE_LIMIT] = 5
             };
 
-        public ServicePackageOrderService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<ServicePackageOrderService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) 
-            : base(unitOfWork, logger, mapper, httpContextAccessor)
+        private readonly IUnitOfWork<CleanFoodVietDbContext> _uow;
+        private readonly ILogger<ServicePackageOrderService> _logger;
+
+        public ServicePackageOrderService(
+            IUnitOfWork<CleanFoodVietDbContext> uow,
+            ILogger<ServicePackageOrderService> logger)
         {
+            _uow = uow;
+            _logger = logger;
         }
 
         // Get a paginated list of service package orders with filtering, sorting, and searching
@@ -47,7 +51,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var spec = new ServicePackageOrderSpecification(
                 filterField, filterValue, sortField, sortOrder, search);
 
-            var repo = _unitOfWork.GetRepository<ServicePackageOrder>();
+            var repo = _uow.GetRepository<ServicePackageOrder>();
             return await repo.GetPagingListAsync(
                 spec: spec,
                 selector: so => new ServicePackageOrderDTO
@@ -85,7 +89,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         #region GetOrderDetailAsync
         public async Task<ServicePackageOrderDTO> GetOrderDetailAsync(Ulid orderId)
         {
-            var repo = _unitOfWork.GetRepository<ServicePackageOrder>();
+            var repo = _uow.GetRepository<ServicePackageOrder>();
             var dto = await repo.GetAsync(
                 selector: so => new ServicePackageOrderDTO
                 {
@@ -127,7 +131,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 throw new DomainValidationException($"Invalid Gardener id: '{gardenerId}'.");
 
             // 1) Query payments joined to orders & package
-            var payments = await _unitOfWork.GetRepository<ServicePackageOrderPayment>()
+            var payments = await _uow.GetRepository<ServicePackageOrderPayment>()
                 .GetPagingListAsync(
                     predicate: p => p.ServicePackageOrder.GardenerId == gId,
                     include: q => q
@@ -182,18 +186,18 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 ServicePackageOrderPaymentId = paymentId,
                 ServicePackageOrderId = orderId,
                 PaymentAmount = totalAmount,
-                Currency = "usd",
+                Currency = "USD",
                 Status = "PENDING",
                 PaymentDate = now,
-                PaymentMethod = "card"
+                PaymentMethod = "CARD"
             };
 
             // 3) Insert both in your UoW
-            _unitOfWork.GetRepository<ServicePackageOrder>().InsertAsync(order);
-            _unitOfWork.GetRepository<ServicePackageOrderPayment>().InsertAsync(payment);
+            _uow.GetRepository<ServicePackageOrder>().InsertAsync(order);
+            _uow.GetRepository<ServicePackageOrderPayment>().InsertAsync(payment);
 
             // 4) Commit transaction
-            _unitOfWork.Commit();
+            _uow.Commit();
 
             return orderId;
         }
@@ -204,48 +208,62 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         #region HandleCheckoutSessionCompletedAsync
         public async Task HandleCheckoutSessionCompletedAsync(Session session)
         {
-            // 1) Parse OrderId
+            // 1) Parse the OrderId
             if (!Ulid.TryParse(session.ClientReferenceId, out var orderId))
                 return;
 
-            // ← Only one "now" in the whole method
             var now = DateTime.UtcNow;
+            var orderRepo = _uow.GetRepository<ServicePackageOrder>();
+            var paymentRepo = _uow.GetRepository<ServicePackageOrderPayment>();
 
-            // 2) Load & update Order + Payment → SUCCESS
-            var orderRepo = _unitOfWork.GetRepository<ServicePackageOrder>();
-            var paymentRepo = _unitOfWork.GetRepository<ServicePackageOrderPayment>();
+            // 2) Load Order & Payment (default tracking or not, we'll still call UpdateAsync)
+            var order = await orderRepo.GetAsync(
+                selector: o => o,
+                predicate: o => o.ServicePackageOrderId == orderId);
 
-            var order = await orderRepo.GetAsync(o => o, o => o.ServicePackageOrderId == orderId);
-            var payment = await paymentRepo.GetAsync(p => p, p => p.ServicePackageOrderId == orderId);
+            var payment = await paymentRepo.GetAsync(
+                selector: p => p,
+                predicate: p => p.ServicePackageOrderId == orderId);
+
             if (order == null || payment == null)
                 return;
 
+            // 2a) Idempotency check
+            if (order.Status == "SUCCESS")
+                return;
+
+            // 3) Mutate both entities
             order.Status = "SUCCESS";
             payment.Status = "SUCCESS";
             payment.PaymentDate = now;
             payment.PaymentMethod = "CARD";
-            _unitOfWork.Commit();
 
-            // 3) Load ServicePackage + Features
-            var pkg = await _unitOfWork.GetRepository<ServicePackage>()
+            // 4) Tell the repos to update
+            orderRepo.UpdateAsync(order);
+            paymentRepo.UpdateAsync(payment);
+
+            // 5) Commit asynchronously so the UPDATE statements run
+            await _uow.CommitAsync();
+
+            // 6) Now continue with contract creation…
+            var pkg = await _uow.GetRepository<ServicePackage>()
                 .GetAsync(
                     selector: sp => sp,
                     predicate: sp => sp.ServicePackageId == order.ServicePackageId,
-                    include: sp => sp
-                       .Include(x => x.ServicePackageFeatures)
-                       .ThenInclude(psf => psf.ServiceFeature)
+                    include: q => q
+                        .Include(sp => sp.ServicePackageFeatures)
+                         .ThenInclude(psf => psf.ServiceFeature)
                 );
+
             if (pkg == null)
                 return;
 
-            // 4) Load & sort existing contracts
-            var contractRepo = _unitOfWork.GetRepository<SubscriptionContract>();
+            var contractRepo = _uow.GetRepository<SubscriptionContract>();
             var existing = (await contractRepo.GetListAsync(
-                                predicate: c => c.GardenerId == order.GardenerId))
-                           .OrderBy(c => c.StartDate)
-                           .ToList();
+                                   predicate: c => c.GardenerId == order.GardenerId))
+                              .OrderBy(c => c.StartDate)
+                              .ToList();
 
-            // 5) Compute start/end and status
             var lastEnd = existing.Select(c => c.EndDate).DefaultIfEmpty(now).Max();
             var hasActive = existing.Any(c =>
                 c.Status == "ACTIVE" &&
@@ -256,7 +274,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var startDate = hasActive ? lastEnd : now;
             var endDate = startDate.AddDays(pkg.Duration);
 
-            // 6) Insert the new contract
             var subId = Ulid.NewUlid();
             var contract = new SubscriptionContract
             {
@@ -264,6 +281,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 GardenerId = order.GardenerId,
                 ServicePackageId = order.ServicePackageId,
                 DurationInDays = pkg.Duration,
+                SubscriptionType = "CUSTOM",
                 StartDate = startDate,
                 EndDate = endDate,
                 Status = newStatus,
@@ -271,33 +289,31 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             };
 
             await contractRepo.InsertAsync(contract);
-            await _unitOfWork.CommitAsync();
+            await _uow.CommitAsync();
 
-            // 7) Insert benefits only if ACTIVE
             if (newStatus == "ACTIVE")
             {
-                // build a lookup of package-specific feature values
                 var pkgFeatures = pkg.ServicePackageFeatures
                     .ToDictionary(
-                       psf => Enum.Parse<ServiceFeatureActionEnum>(psf.ServiceFeature.Action),
-                       psf => psf.ServiceFeature.DefaultValue);
+                        psf => Enum.Parse<ServiceFeatureActionEnum>(psf.ServiceFeature.Action),
+                        psf => psf.ServiceFeature.DefaultValue
+                    );
 
-                var benRepo = _unitOfWork.GetRepository<SubscriptionContractBenefit>();
+                var benRepo = _uow.GetRepository<SubscriptionContractBenefit>();
 
                 foreach (ServiceFeatureActionEnum action in Enum.GetValues<ServiceFeatureActionEnum>())
                 {
-                    // choose package override or core default
-                    var defaultValue = pkgFeatures.TryGetValue(action, out var pkgVal)
-                        ? pkgVal
-                        : _coreDefaults[action];
+                    var defaultVal = pkgFeatures.TryGetValue(action, out var val)
+                                     ? val
+                                     : _coreDefaults[action];
 
                     var ben = new SubscriptionContractBenefit
                     {
                         SubscriptionContractBenefitId = Ulid.NewUlid(),
                         SubscriptionContractId = subId,
                         BenefitType = action.ToString(),
-                        DefaultValue = defaultValue,
-                        RemainingValue = defaultValue,
+                        DefaultValue = defaultVal,
+                        RemainingValue = defaultVal,
                         CreatedAt = now,
                         UpdatedAt = now
                     };
@@ -305,7 +321,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     await benRepo.InsertAsync(ben);
                 }
 
-                await _unitOfWork.CommitAsync();
+                await _uow.CommitAsync();
             }
         }
         #endregion
@@ -325,8 +341,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             }
 
             // 2) Load Order + Payment
-            var orderRepo = _unitOfWork.GetRepository<ServicePackageOrder>();
-            var paymentRepo = _unitOfWork.GetRepository<ServicePackageOrderPayment>();
+            var orderRepo = _uow.GetRepository<ServicePackageOrder>();
+            var paymentRepo = _uow.GetRepository<ServicePackageOrderPayment>();
 
             var order = await orderRepo.GetAsync(o => o,
                 o => o.ServicePackageOrderId == orderId);
@@ -345,7 +361,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             payment.PaymentDate = DateTime.UtcNow;
 
             // 4) Optionally clean up any queued (PENDING) contracts for this order
-            var contractRepo = _unitOfWork.GetRepository<SubscriptionContract>();
+            var contractRepo = _uow.GetRepository<SubscriptionContract>();
             var pendingContracts = (await contractRepo.GetListAsync(
                 predicate: c =>
                     c.GardenerId == order.GardenerId
@@ -357,7 +373,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 contractRepo.DeleteAsync(c);
 
             // 5) Commit everything
-            await _unitOfWork.CommitAsync();
+            await _uow.CommitAsync();
 
             _logger.LogWarning(
                 "Payment FAILED for order {OrderId}. Cleared {Count} pending contracts.",

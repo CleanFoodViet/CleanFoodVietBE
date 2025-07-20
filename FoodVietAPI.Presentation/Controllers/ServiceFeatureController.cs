@@ -2,10 +2,12 @@
 using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
@@ -95,19 +97,86 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                     Detail = nf.Message
                 });
             }
-        }   
+        }
 
         // PATCH: api/v1/admin/service-features/{id}
         // Update service feature information (including soft-delete by setting status to INACTIVE)
         [HttpPatch(ApiEndpointConstant.ServiceFeature.UpdateServiceFeatureEndpoint)]
         [ProducesResponseType(typeof(ServiceFeatureDTO), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Update service feature information (including soft-delete by setting status to INACTIVE)")]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateServiceFeature(
-            [FromQuery] Ulid id,
-            [FromBody] UpdateServiceFeatureDTO updateDto)
+            [FromQuery, Required] string id,
+            [FromBody] UpdateServiceFeatureDTO dto)
         {
-            var updatedFeature = await _serviceFeatureService.UpdateServiceFeature(id, updateDto);
-            return Ok(updatedFeature);
+            // 1) Parse the ULID
+            if (!Ulid.TryParse(id, out var featureId))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid feature id",
+                    Detail = $"'{id}' is not a valid ULID.",
+                    Extensions = { ["errorCode"] = "InvalidFeatureId" }
+                });
+            }
+
+            try
+            {
+                // 2) Delegate to service
+                var updated = await _serviceFeatureService.UpdateServiceFeature(featureId, dto);
+                return Ok(updated);
+            }
+            catch (DeletionRestrictedException ex)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Feature cannot be disabled",
+                    Detail = ex.Message,
+                    Extensions = { ["errorCode"] = "FeatureInActivePackage" }
+                });
+            }
+            catch (UpdateRestrictedException ex)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid status value",
+                    Detail = ex.Message,
+                    Extensions = { ["errorCode"] = "InvalidFeatureStatus" }
+                });
+            }
+            catch (ForbiddenException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
+                {
+                    Status = StatusCodes.Status403Forbidden,
+                    Title = "Operation forbidden",
+                    Detail = ex.Message,
+                    Extensions = { ["errorCode"] = "Forbidden" }
+                });
+            }
+            catch (KeyNotFoundException knf)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Feature not found",
+                    Detail = knf.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error updating feature {Id}", id);
+                return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Title = "Unexpected error",
+                    Detail = ex.Message
+                });
+            }
         }
 
         // POST: api/v1/admin/service-features

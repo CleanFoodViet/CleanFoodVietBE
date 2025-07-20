@@ -5,6 +5,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
 using CleanFoodVietAPI.Data.Enums.ServicePackageEnums;
+using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -87,68 +88,68 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         }
 
         // New update method using PATCH
-        public async Task<ServiceFeatureDTO> UpdateServiceFeature(Ulid id, UpdateServiceFeatureDTO updateDto)
+        public async Task<ServiceFeatureDTO> UpdateServiceFeature(
+    Ulid id,
+    UpdateServiceFeatureDTO dto)
         {
-            // Retrieve the existing ServiceFeature entity by id.
-            var repository = _unitOfWork.GetRepository<ServiceFeature>();
-            var existingFeature = await repository.GetAsync<ServiceFeature>(
+            // 1) load the feature
+            var repo = _unitOfWork.GetRepository<ServiceFeature>();
+            var existing = await repo.GetAsync(
                 selector: x => x,
                 predicate: x => x.ServiceFeatureId == id);
 
-            if (existingFeature == null)
+            if (existing == null)
+                throw new KeyNotFoundException($"Feature '{id}' not found.");
+
+            // 2) forbid disabling if used in any active package
+            if (!string.IsNullOrWhiteSpace(dto.Status) &&
+                dto.Status.Equals("INACTIVE", StringComparison.OrdinalIgnoreCase))
             {
-                throw new Exception("Service Feature not found.");
+                var inUse = (await _unitOfWork
+                    .GetRepository<PackageServiceFeature>()
+                    .GetListAsync(
+                        predicate: psf =>
+                            psf.ServiceFeatureId == id &&
+                            psf.ServicePackage.Status == "ACTIVE"))
+                    .Any();
+
+                if (inUse)
+                    throw new DeletionRestrictedException(
+                        "Cannot disable a feature that is in an active package.");
             }
 
-            // Validate: ensure the Action value remains unchanged.
-            if (updateDto.Action.ToString() != existingFeature.Action)
-            {
-                throw new Exception("Action cannot be updated after creation.");
-            }
+            // 3) apply allowed updates
+            if (!string.IsNullOrWhiteSpace(dto.ServiceFeatureName))
+                existing.ServiceFeatureName = dto.ServiceFeatureName;
 
-            // Update allowed fields
-            if (!string.IsNullOrEmpty(updateDto.ServiceFeatureName))
-            {
-                existingFeature.ServiceFeatureName = updateDto.ServiceFeatureName;
-            }
+            if (!string.IsNullOrWhiteSpace(dto.Description))
+                existing.Description = dto.Description;
 
-            if (!string.IsNullOrEmpty(updateDto.Description))
+            if (!string.IsNullOrWhiteSpace(dto.Status))
             {
-                existingFeature.Description = updateDto.Description;
-            }
-
-            if (!string.IsNullOrEmpty(updateDto.Status))
-            {
-                // If a soft-delete is desired, we expect "DISABLE" (case-insensitive).
-                if (updateDto.Status.Equals("DISABLE", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    existingFeature.Status = ServiceFeatureStatusEnum.INACTIVE.ToString();
+                    var statusEnum = Enum.Parse<ServiceFeatureStatusEnum>(
+                        dto.Status, ignoreCase: true);
+                    existing.Status = statusEnum.ToString();
                 }
-                else
+                catch
                 {
-                    try
-                    {
-                        existingFeature.Status = Enum.Parse<ServiceFeatureStatusEnum>(updateDto.Status, true).ToString();
-                    }
-                    catch
-                    {
-                        throw new Exception("Invalid status value provided.");
-                    }
+                    throw new UpdateRestrictedException(
+                        $"'{dto.Status}' is not a valid status.");
                 }
             }
 
-            // Save the updates (remove await if UpdateAsync returns void)
-            repository.UpdateAsync(existingFeature);
+            // 4) tell EF to track the change
+            repo.UpdateAsync(existing);
 
-            var isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess)
-            {
-                throw new Exception("Error occurred while updating the Service Feature.");
-            }
+            // 5) commit the transaction
+            await _unitOfWork.CommitAsync();
 
-            var updatedDto = _mapper.Map<ServiceFeatureDTO>(existingFeature);
-            return updatedDto;
+            // 6) return the updated DTO
+            return _mapper.Map<ServiceFeatureDTO>(existing);
         }
+
 
         /// <summary>
         /// Soft-deletes (disables) a service feature after checking that no active subscription
