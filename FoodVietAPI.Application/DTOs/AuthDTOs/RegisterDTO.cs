@@ -10,7 +10,7 @@ namespace CleanFoodVietAPI.Application.DTOs.AuthDTOs
         [Required]
         public string Password { get; set; } = null!;
         [Required] 
-        public string Email { get; set; } = null!;
+        public string? Email { get; set; }
         public string? Gender { get; set; }
         public string? Avatar { get; set; }
     };
