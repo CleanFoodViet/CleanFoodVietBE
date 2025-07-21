@@ -81,7 +81,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpPost(ApiEndpointConstant.Product.ProductPricesEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create Gardener Products' Price")]
-        public async Task<IActionResult> CreateProductPrice([FromRoute] string id, [FromQuery] CreateProductPriceDTO request)
+        public async Task<IActionResult> CreateProductPrice([FromRoute] string id, [FromBody] CreateProductPriceDTO request)
         {
             await _productService.CreateProductPrice(id, request);
             return Ok("Create Product Price Successfully");
