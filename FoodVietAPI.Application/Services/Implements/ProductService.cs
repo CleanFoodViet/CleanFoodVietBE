@@ -92,6 +92,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         public async Task CreateProduct(string gardenerId, CreateProductDTO createProductData)
         {
+            ProductCategory category = await _unitOfWork.GetRepository<ProductCategory>()
+                   .GetAsync(predicate: pc => pc.ProductCategoryId == createProductData.ProductCategoryId);
+            if (category == null) throw new BadHttpRequestException("Invalid input: product category is not found");
+
             Ulid gardenerID = Ulid.Parse(gardenerId);
             Product newProduct = _mapper.Map<Product>(createProductData);
             ProductPrice newPrice = _mapper.Map<ProductPrice>(createProductData);
@@ -99,17 +103,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             newProduct.GardenerId = gardenerID;
             newPrice.Productd = newProduct.ProductId;
 
-            ProductCategory category = await _unitOfWork.GetRepository<ProductCategory>()
-                   .GetAsync(predicate: pc => pc.ProductCategoryId == createProductData.ProductCategoryId);
 
-            if (category == null)
-            {
-                category = _mapper.Map<ProductCategory>(createProductData);
-                category.GardenerId = gardenerID;
-                newProduct.ProductCategoryId = category.ProductCategoryId;
+            //if (category == null)
+            //{
+            //    category = _mapper.Map<ProductCategory>(createProductData);
+            //    category.GardenerId = gardenerID;
+            //    newProduct.ProductCategoryId = category.ProductCategoryId;
 
-                await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(category);
-            }
+            //    await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(category);
+            //}
 
             await _unitOfWork.GetRepository<Product>().InsertAsync(newProduct);
             await _unitOfWork.GetRepository<ProductPrice>().InsertAsync(newPrice);

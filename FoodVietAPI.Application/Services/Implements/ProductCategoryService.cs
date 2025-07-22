@@ -24,7 +24,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             var categories = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetPagingListAsync(
-                predicate: pc => pc.GardenerId == gardenerID,
+                //predicate: pc => pc.GardenerId == gardenerID,
                 selector: pc => new GetProductCategoryDTO(
                     pc.ProductCategoryId,
                     pc.Name,
@@ -51,12 +51,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         public async Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category, string gardenerId)
         {
-            Ulid gardenerID = Ulid.Parse(gardenerId);
-            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
-            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
+            //Ulid gardenerID = Ulid.Parse(gardenerId);
+            //var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            //if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
 
             ProductCategory newCategory = _mapper.Map<ProductCategory>(category);
-            newCategory.GardenerId = gardenerID;
+            //newCategory.GardenerId = gardenerID;
 
             await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(newCategory);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
