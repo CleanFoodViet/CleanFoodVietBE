@@ -123,6 +123,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(predicate: app => app.AppointmentId == appointmentID);
             if (appointment == null) throw new BadHttpRequestException("Appointment is not found");
 
+            DateTime today = new DateTime();
+            TimeSpan difference = appointment.AppointmentDate - today;
+
+            if (difference.TotalHours < 6) throw new BadHttpRequestException("The limit of timeto cancel appointment is before appointment at least 6 hours");
+
             appointment.CancellationReason = cancelData.CancellationReason;
             appointment.CancelledBy = cancelData.CancelledBy;
 

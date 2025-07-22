@@ -38,7 +38,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpPost(ApiEndpointConstant.Appointment.AppointmentsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Create appointment for account")]
-        public async Task<IActionResult> CreateAppointment([FromBody]CreateAppointmentDTO request)
+        public async Task<IActionResult> CreateAppointment([FromBody] CreateAppointmentDTO request)
         {
             await _appointmentService.CreateAppointment(request);
             return StatusCode(StatusCodes.Status201Created, "Create Appointment successfully");
