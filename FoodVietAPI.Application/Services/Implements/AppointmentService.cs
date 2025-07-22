@@ -181,7 +181,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Description = ap.Description,
                         AccountName = ap.Retailer.Name,
                         AccountAvatar = ap.Retailer.Avatar,
-                        AccountPhoneNumber = ap.Retailer.PhoneNumber
+                        AccountPhoneNumber = ap.Retailer.PhoneNumber,
+                        StartTime = ap.AppointmentDate.ToString("HH:mm"),
+                        EndTime = ap.AppointmentDate.AddMinutes(ap.Duration).ToString("HH:mm")
                     }
                 );
 
