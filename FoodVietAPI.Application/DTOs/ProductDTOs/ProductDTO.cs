@@ -10,6 +10,8 @@
         string Status,
         string ProductCategory,
 
+        List<string> ProductTags,
+
         //Product Price Data Field
         Ulid ProductPriceId,
         decimal Price,  

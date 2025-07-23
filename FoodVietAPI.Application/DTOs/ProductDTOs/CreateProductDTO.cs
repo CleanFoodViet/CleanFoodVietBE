@@ -1,4 +1,6 @@
-﻿namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
+﻿using CleanFoodVietAPI.Application.DTOs.ProductCaertificateDTOs;
+
+namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
 {
     public record CreateProductDTO
     {
@@ -8,8 +10,12 @@
 
         //Product Category Data Field
         public Ulid? ProductCategoryId { get; set; }
-        //public string Name { get; set; } = null!;
-        //public string? Description { get; set; }
+
+        //Product Tag Data Field
+        public List<string> TagNames { get; set; } = null!;
+
+        //Product Certificate Data Field
+        public List<ProductCertificateDTO> Certificates { get; set; } = null!;
 
         //Product Price Data Field
         public decimal Price { get; set; }

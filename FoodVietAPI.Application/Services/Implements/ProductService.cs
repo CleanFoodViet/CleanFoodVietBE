@@ -43,7 +43,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var products = await _unitOfWork.GetRepository<Product>()
                 .GetPagingListAsync(
                         include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
-                                        .Include(x => x.ProductCategory),
+                                        .Include(x => x.ProductCategory)
+                                        .Include(x => x.ProductTags),
                         predicate: p => category == null ? 
                                 p.GardenerId == gardenerID :
                                 p.GardenerId == gardenerID && p.ProductCategory.Name.ToUpper() == category.ToUpper(),
@@ -56,7 +57,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                             p.ProductCategory.Name,
                             p.ProductPrices.First().Price,
                             p.ProductPrices.First().Currency,
-                            p.ProductPrices.First().WeightUnit),
+                            p.ProductPrices.First().WeightUnit,
+                            p.ProductTags.Select(pt => pt.TagName).ToList()),
                         page: page, size: size,
                         spec: productSpecification);
 
@@ -71,7 +73,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var product = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(predicate: p => p.GardenerId == id,
                           include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
-                                         .Include(x => x.ProductCategory),
+                                         .Include(x => x.ProductCategory)
+                                         .Include(x => x.ProductTags),
                           selector: p => new ProductDTO(
                               p.ProductId,
                               p.ProductName,
@@ -79,6 +82,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.UpdatedAt,
                               p.Status,
                               p.ProductCategory.Name,
+                              p.ProductTags.Select(pt => pt.TagName).ToList(),
                               p.ProductPrices.First().ProductPriceId,
                               p.ProductPrices.First().Price,
                               p.ProductPrices.First().Currency,
@@ -103,21 +107,56 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             newProduct.GardenerId = gardenerID;
             newPrice.Productd = newProduct.ProductId;
 
+            List<ProductTag> tags = _mapper.Map<List<ProductTag>>(
+                createProductData.TagNames,
+                 opt => { 
+                     opt.Items["GardenerId"] = gardenerID;
+                     opt.Items["ProductId"] = newProduct.ProductId;
+                 });
 
-            //if (category == null)
-            //{
-            //    category = _mapper.Map<ProductCategory>(createProductData);
-            //    category.GardenerId = gardenerID;
-            //    newProduct.ProductCategoryId = category.ProductCategoryId;
+            List<ProductCertificate> certificates = _mapper.Map<List<ProductCertificate>>(
+                    createProductData.Certificates,
+                    opt => opt.Items["ProductId"] = newProduct.ProductId
+                );
 
-            //    await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(category);
-            //}
+            await _unitOfWork.GetRepository<ProductCertificate>().InsertRangeAsync(certificates);
+            await _unitOfWork.GetRepository<ProductTag>().InsertRangeAsync(tags);
 
             await _unitOfWork.GetRepository<Product>().InsertAsync(newProduct);
             await _unitOfWork.GetRepository<ProductPrice>().InsertAsync(newPrice);
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when create product (DB query error)");
+        }
+
+        public async Task UpdateProductBasicInformation(string gardenerId, string productId, UpdateProductDTO updateData)
+        {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            Ulid productID = Ulid.Parse(productId);
+            var product = await _unitOfWork.GetRepository<Product>()
+                .GetAsync(predicate: p => p.ProductId == productID);
+            if (product == null) throw new BadHttpRequestException("Product is not found");
+
+            product.ProductName = string.IsNullOrEmpty(updateData.ProductName) ? product.ProductName : updateData.ProductName;
+
+            var currentTags = await _unitOfWork.GetRepository<ProductTag>()
+                .GetListAsync(predicate: pt => pt.ProductId == productID);
+
+            var newTags = _mapper.Map<List<ProductTag>>(
+                updateData.Tags,
+                opt =>
+                {
+                    opt.Items["GardenerId"] = gardenerID;
+                    opt.Items["ProductId"] = productID;
+                });
+
+            _unitOfWork.GetRepository<Product>().UpdateAsync(product);
+            //Modify the product's tags
+            _unitOfWork.GetRepository<ProductTag>().DeleteRangeAsync(currentTags);
+            await _unitOfWork.GetRepository<ProductTag>().InsertRangeAsync(newTags);
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when modify the product informations (name + tags) (DB query error)");
         }
 
         public async Task ChangeProductStatus(string productId, string status)
@@ -127,8 +166,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(
                     predicate: p => p.ProductId == productID);
             if (product == null) throw new BadHttpRequestException("Product is not found");
-
-
 
             if (Enum.TryParse<ProductStatusEnum>(status.ToUpper(), out var result))
             {
@@ -163,6 +200,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!isSuccess) throw new Exception("Erorr occur when change product status (DB query Error: Product not updated)");
         }
 
+        //Product Price
         public async Task<List<ProductPriceDTO>> GetProductPrices(string productId)
         {
             Ulid productID = Ulid.Parse(productId);
@@ -225,6 +263,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!isSuccess) throw new Exception("Erorr occur when change product price (DB query Error)");
         }
 
+        //Product Views
         public async Task<List<ProductReviewDTO>> GetProductReviews(string productId)
         {
             Ulid productID = Ulid.Parse(productId);

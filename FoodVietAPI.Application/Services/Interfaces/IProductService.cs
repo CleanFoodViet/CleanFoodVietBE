@@ -17,10 +17,15 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? category = null);
         Task<ProductDTO> GetProductInformation(string productId);
         Task CreateProduct(string gardenerId, CreateProductDTO createProductData);
+        Task UpdateProductBasicInformation(string gardenerId, string productId, UpdateProductDTO updateData);
         Task ChangeProductStatus(string productId, string status);
+
+        //Product Prices
         Task<List<ProductPriceDTO>> GetProductPrices(string productId);
         Task CreateProductPrice(string productId, CreateProductPriceDTO request);
         Task SetProductCurrentPrice(string productId, string priceId);
+
+        //Product Reviews
         Task<List<ProductReviewDTO>> GetProductReviews(string productId);
     }
 }

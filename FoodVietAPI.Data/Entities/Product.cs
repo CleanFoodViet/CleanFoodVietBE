@@ -21,5 +21,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual ICollection<CartItem> CartItems { get; set; } = new HashSet<CartItem>();
         public virtual ICollection<OrderDeliveryDetail> OrderDeliveryDetails { get; set; } = new HashSet<OrderDeliveryDetail>();
         public virtual ICollection<ProductCertificate> ProductCertificates { get; set; } = new HashSet<ProductCertificate>();
+        public virtual ICollection<ProductTag> ProductTags { get; set; } = new HashSet<ProductTag>();
     }
 }

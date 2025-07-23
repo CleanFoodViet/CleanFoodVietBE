@@ -46,7 +46,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Certificate.CertificateEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Update the Certificate's information")]
+        [SwaggerOperation(Summary = "Update the Certificate's information (Not using this api - Policy rules violated)")]
         public async Task<IActionResult> UpdateCertificate([FromRoute] string id, [FromBody] UpdateCertificateDTO request)
         {
             await _certificateService.UpdateCertificate(request, id);

@@ -111,11 +111,14 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class Product
         {
             public const string GardenerProductsEndpoint = GardenerApiEndpoint + "/{gardenerId}/products";
+            public const string GardenerProductEndpoint = GardenerProductsEndpoint + "/{id}";
             public const string ProductsEndpoint = ApiEndpoint + "/products";
             public const string ProductEndpoint = ProductsEndpoint + "/{id}";
+            public const string ProductStatusEndpoint = ProductEndpoint + "/status";
             public const string ProductReviewsEndpoint = ProductEndpoint + "/reviews";
             public const string ProductPricesEndpoint = ProductEndpoint + "/prices";
             public const string ProductPriceEndpoint = ProductPricesEndpoint + "/{priceId}";
+            public const string ProductCertificatesEndpoint = ProductEndpoint + "/product-certificates";
         }
 
         public static class ProductCategory

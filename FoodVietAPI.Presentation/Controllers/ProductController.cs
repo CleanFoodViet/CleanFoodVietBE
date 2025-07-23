@@ -1,4 +1,5 @@
-﻿using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
+﻿using CleanFoodVietAPI.Application.DTOs.ProductCaertificateDTOs;
+using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
 using CleanFoodVietAPI.Application.DTOs.ReviewDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
@@ -15,9 +16,11 @@ namespace CleanFoodVietAPI.Presentation.Controllers
     public class ProductController : BaseController<ProductController>
     {
         private readonly IProductService _productService;
-        public ProductController(ILogger<ProductController> logger, IProductService productService) : base(logger)
+        private readonly IProductCertificateServcie _productCertificateServcie;
+        public ProductController(ILogger<ProductController> logger, IProductService productService, IProductCertificateServcie productCertificateServcie) : base(logger)
         {
             _productService = productService;
+            _productCertificateServcie = productCertificateServcie;
         }
 
         [HttpGet(ApiEndpointConstant.Product.GardenerProductsEndpoint)]
@@ -59,7 +62,16 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok("Create Successfully");
         }
 
-        [HttpPatch(ApiEndpointConstant.Product.ProductEndpoint)]
+        [HttpPatch(ApiEndpointConstant.Product.GardenerProductEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Change a Product Status (Product Status: ACTIVE, INACTIVE (possible when no active/available post contain this product))")]
+        public async Task<IActionResult> UpdateProductBasicInformation([FromRoute]string gardenerId, [FromRoute] string id, [FromBody] UpdateProductDTO request)
+        {
+            await _productService.UpdateProductBasicInformation(gardenerId, id, request);
+            return Ok("Update product basic information successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Product.ProductStatusEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Change a Product Status (Product Status: ACTIVE, INACTIVE (possible when no active/available post contain this product))")]
         public async Task<IActionResult> ChangeProductStatus([FromRoute] string id, [FromQuery] string status)
@@ -103,6 +115,25 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         {
             var res = await _productService.GetProductReviews(id);
             return Ok(res);
+        }
+
+        //Product Certificates
+        [HttpGet(ApiEndpointConstant.Product.ProductCertificatesEndpoint)]
+        [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get Gardener Products' Certificates")]
+        public async Task<IActionResult> GetProductCertificateList([FromRoute] string id)
+        {
+            var res = await _productCertificateServcie.GetProductCertificate(id);
+            return Ok(res);
+        }
+
+        [HttpPost(ApiEndpointConstant.Product.ProductCertificatesEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Create Products' Certificate")]
+        public async Task<IActionResult> CreateProductCertificate([FromRoute] string id, [FromBody] ProductCertificateDTO request)
+        {
+            await _productCertificateServcie.CreateProductCertificate(id, request);
+            return Ok("Create Product Price Successfully");
         }
     }
 }
