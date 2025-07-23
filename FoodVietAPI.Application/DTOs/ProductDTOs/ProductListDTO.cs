@@ -10,6 +10,7 @@
         string ProductCategory,
         decimal Price,
         string Currency,
-        string WeightUnit
+        string WeightUnit,
+        List<string> ProductTags
     );
 }

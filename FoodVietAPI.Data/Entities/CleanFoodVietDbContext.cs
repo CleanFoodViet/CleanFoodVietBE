@@ -37,6 +37,8 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual DbSet<ServicePackageOrderPayment> ServicePackageOrderPayments { get; set; } = null!;
         //public virtual DbSet<GardenerIncome> GardenerIncomes { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
+        public virtual DbSet<ProductTag> ProductTags { get; set; } = null!;
+        public virtual DbSet<ProductCertificate> ProductCertificates { get; set; } = null!;
         public virtual DbSet<ProductPrice> ProductPrices { get; set; } = null!;
         public virtual DbSet<OrderDelivery> OrderDeliveries { get; set; } = null!;
         public virtual DbSet<OrderDeliveryDetail> OrderDeliveryDetails { get; set; } = null!;
@@ -288,19 +290,8 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ProductCategoryId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
-                entity.Property(e => e.GardenerId).HasColumnType("char(26)")
-                   .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-                   .IsFixedLength();
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Description).HasColumnType("text");
-
-                entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_ProductCategory_GardenderId");
-
-                entity.HasOne(e => e.Gardener)
-                      .WithMany(e => e.ProductCategories)
-                      .HasForeignKey(e => e.GardenerId)
-                      .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("FK_ProductCategory_Gardener");
             });
 
             modelBuilder.Entity<Favorite>(entity =>
@@ -799,30 +790,6 @@ namespace CleanFoodVietAPI.Data.Entities
                       .HasConstraintName("FK_ServicePackageOrderPayment_ServicePackageOrder");
             });
 
-            //modelBuilder.Entity<GardenerIncome>(entity =>
-            //{
-            //    entity.ToTable("GardenerIncome");
-            //    entity.HasKey(e => e.GardenerIncomeId).HasName("PK_GardenerIncome");
-
-            //    entity.Property(e => e.GardenerIncomeId).HasColumnType("char(26)")
-            //        .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-            //        .IsFixedLength();
-            //    entity.Property(e => e.TotalAmount).HasColumnType("decimal(14,2)");
-            //    entity.Property(e => e.Currency).IsRequired().HasMaxLength(10);
-            //    entity.Property(e => e.TransactionDate).HasColumnType("datetime");
-            //    entity.Property(e => e.GardenerId).HasColumnType("char(26)")
-            //        .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
-            //        .IsFixedLength();
-
-            //    entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_GardenerIncome_GardenerId");
-
-            //    entity.HasOne(e => e.Account)
-            //          .WithMany(e => e.GardenerIncomes)
-            //          .HasForeignKey(e => e.GardenerId)
-            //          .OnDelete(DeleteBehavior.Restrict)
-            //          .HasConstraintName("FK_GardenerIncome_Account");
-            //});
-
             modelBuilder.Entity<ProductPrice>(entity =>
             {
                 entity.ToTable("ProductPrice");
@@ -908,6 +875,67 @@ namespace CleanFoodVietAPI.Data.Entities
                      .HasForeignKey(e => e.SubscriptionContractId)
                      .OnDelete(DeleteBehavior.Restrict)
                      .HasConstraintName("FK_SubscriptionContractBenefit_SubscriptionContract");
+            });
+
+            modelBuilder.Entity<ProductTag>(entity =>
+            {
+                entity.ToTable("ProductTag");
+                entity.HasKey(e => e.ProductTagId).HasName("PK_ProductTag");
+
+                entity.Property(e => e.ProductTagId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.ProductId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.GardenerId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.TagName).IsRequired().HasMaxLength(50);
+
+                entity.HasIndex(e => e.ProductId).HasDatabaseName("IX_ProductTag_ProductId");
+                entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_ProductTag_GardenerId");
+
+                entity.HasOne(e => e.Product)
+                    .WithMany(e => e.ProductTags)
+                    .HasForeignKey(e => e.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProductTag_Product");
+
+                entity.HasOne(e => e.Gardener)
+                    .WithMany(e => e.ProductTags)
+                    .HasForeignKey(e => e.GardenerId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProductTag_Gardener");
+            });
+
+            modelBuilder.Entity<ProductCertificate>(entity =>
+            {
+                entity.ToTable("ProductCertificate");
+                entity.HasKey(e => e.ProductCertificateId).HasName("PK_ProductCertificate");
+
+                entity.Property(e => e.ProductCertificateId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.ProductId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.CertificateName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.IssuingOrganization).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.CertificateNumber).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.ImageUrl).IsRequired();
+                entity.Property(e => e.IssuedDate).HasColumnType("datetime");
+                entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasIndex(e => e.ProductId).HasDatabaseName("IX_SubscriptionContractBenefit_SubscriptionContractId");
+
+                entity.HasOne(e => e.Product)
+                    .WithMany(e => e.ProductCertificates)
+                    .HasForeignKey(e => e.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProductCertificate_Product");
             });
         }
     }
