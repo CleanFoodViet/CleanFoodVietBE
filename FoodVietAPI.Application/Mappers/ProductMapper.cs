@@ -21,6 +21,7 @@ namespace CleanFoodVietAPI.Application.Mappers
 
             CreateMap<string, ProductTag>()
                 .ForMember(des => des.ProductTagId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+                .ForMember(des => des.TagName, opt => opt.MapFrom(src => src))
                 .ForMember(des => des.GardenerId, opt => opt.MapFrom(
                         (src, des, member, context) => context.Items["GardenerId"]
                     ))
