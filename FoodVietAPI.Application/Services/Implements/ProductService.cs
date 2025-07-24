@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.ProductCaertificateDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductPriceDTOs;
 using CleanFoodVietAPI.Application.DTOs.ReviewDTOs;
@@ -19,7 +20,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 {
     public class ProductService : BaseService<ProductService>, IProductService
     {
-        public ProductService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) 
+        public ProductService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<ProductService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
@@ -44,8 +45,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetPagingListAsync(
                         include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                         .Include(x => x.ProductCategory)
-                                        .Include(x => x.ProductTags),
-                        predicate: p => category == null ? 
+                                        .Include(x => x.ProductTags)
+                                        .Include(x => x.ProductCertificates),
+                        predicate: p => category == null ?
                                 p.GardenerId == gardenerID :
                                 p.GardenerId == gardenerID && p.ProductCategory.Name.ToUpper() == category.ToUpper(),
                         selector: p => new ProductListDTO(
@@ -58,7 +60,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                             p.ProductPrices.First().Price,
                             p.ProductPrices.First().Currency,
                             p.ProductPrices.First().WeightUnit,
-                            p.ProductTags.Select(pt => pt.TagName).ToList()),
+                            p.ProductTags.Select(pt => pt.TagName).ToList(),
+                            _mapper.Map<List<GetProductCertificateDTO>>(p.ProductCertificates)),
                         page: page, size: size,
                         spec: productSpecification);
 
@@ -109,7 +112,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             List<ProductTag> tags = _mapper.Map<List<ProductTag>>(
                 createProductData.TagNames,
-                 opt => { 
+                 opt =>
+                 {
                      opt.Items["GardenerId"] = gardenerID;
                      opt.Items["ProductId"] = newProduct.ProductId;
                  });
@@ -183,7 +187,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                             predicate: o => o.OrderDetails.Any(od => od.ProductId == productID) &&
                             (o.Status != OrderStatusEnum.COMPLETED.ToString() || o.Status != OrderStatusEnum.CANCELLED.ToString())
                         );
-                    if(inProgressOrder != null && inProgressOrder?.Count() > 0) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
+                    if (inProgressOrder != null && inProgressOrder?.Count() > 0) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
                 }
 
                 product.Status = result.ToString();
@@ -269,7 +273,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid productID = Ulid.Parse(productId);
             var product = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(predicate: p => p.ProductId == productID);
-            if(product == null) throw new BadHttpRequestException($"Product is not found");
+            if (product == null) throw new BadHttpRequestException($"Product is not found");
 
             var reviews = await _unitOfWork.GetRepository<OrderDetail>()
                 .GetListAsync(
@@ -279,7 +283,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 );
 
             var reviewDTOs = reviews
-                .SelectMany(r => r) 
+                .SelectMany(r => r)
                 .Select(r => new ProductReviewDTO
                 {
                     Name = r.Account.Name,

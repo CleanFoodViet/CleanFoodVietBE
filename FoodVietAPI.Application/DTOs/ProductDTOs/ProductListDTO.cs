@@ -1,4 +1,6 @@
-﻿namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
+﻿using CleanFoodVietAPI.Application.DTOs.ProductCaertificateDTOs;
+
+namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
 {
     public record ProductListDTO
     (
@@ -11,6 +13,7 @@
         decimal Price,
         string Currency,
         string WeightUnit,
-        List<string> ProductTags
+        List<string> ProductTags,
+        List<GetProductCertificateDTO> certificates
     );
 }

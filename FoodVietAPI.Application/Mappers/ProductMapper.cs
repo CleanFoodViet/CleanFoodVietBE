@@ -19,6 +19,7 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
+            //Product Tags
             CreateMap<string, ProductTag>()
                 .ForMember(des => des.ProductTagId, opt => opt.MapFrom(src => Ulid.NewUlid()))
                 .ForMember(des => des.TagName, opt => opt.MapFrom(src => src))
@@ -29,6 +30,7 @@ namespace CleanFoodVietAPI.Application.Mappers
                         (src, des, member, context) => context.Items["ProductId"]
                     ));
 
+            //Product Certificate
             CreateMap<ProductCertificateDTO, ProductCertificate>()
                 .ForMember(des => des.ProductCertificateId, opt => opt.MapFrom(src => Ulid.NewUlid()))
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
@@ -36,6 +38,8 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForMember(des => des.ProductId, opt => opt.MapFrom(
                         (src, des, member, context) => context.Items["ProductId"]
                     ));
+
+            CreateMap<ProductCertificate, GetProductCertificateDTO>();
         }
     }
 }

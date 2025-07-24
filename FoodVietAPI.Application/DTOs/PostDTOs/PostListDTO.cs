@@ -13,6 +13,7 @@
         string Content,
         string Status,
         decimal Rating,
-        string WeightUnit
+        string WeightUnit,
+        bool hasProductCertificate
     );
 }
