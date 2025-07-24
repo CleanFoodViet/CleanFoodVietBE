@@ -18,7 +18,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryList(int page, int size)
+        public async Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryPaginateList(int page, int size)
         {
             var categories = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetPagingListAsync(
@@ -29,6 +29,18 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 page: page, size: size);
 
             return categories;
+        }
+
+        public async Task<List<GetProductCategoryDTO>> GetProductCategoryList()
+        {
+            var categories = await _unitOfWork.GetRepository<ProductCategory>()
+                .GetListAsync(
+                selector: pc => new GetProductCategoryDTO(
+                    pc.ProductCategoryId,
+                    pc.Name,
+                    pc.Description));
+
+            return categories.ToList();
         }
 
         public async Task<GetProductCategoryDTO> GetProductCategoryInformation(string id)

@@ -20,10 +20,19 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.ProductCategory.ProductCategoriesEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetProductCategoryDTO>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get all Gardener Product Categories")]
-        public async Task<IActionResult> GetProductCategoryList([FromQuery] int page = 1, [FromQuery] int size = 10)
+        [ProducesResponseType(typeof(List<GetProductCategoryDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary =@"Get all Gardener Product Categories:
+                                      - If the fetchAll is true: return the List Format
+                                      - If the fetchAll is true: return the PaginateList Format")]
+        public async Task<IActionResult> GetProductCategoryList([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] bool fetchAll = false)
         {
-            var res = await _productCategoryService.GetProductCategoryList(page, size);
+            if (fetchAll)
+            {
+                var cateList = await _productCategoryService.GetProductCategoryList();
+                return Ok(cateList);
+            }
+
+            var res = await _productCategoryService.GetProductCategoryPaginateList(page, size);
             return Ok(res);
         }
 
