@@ -1,4 +1,9 @@
-﻿using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
+﻿using CleanFoodVietAPI.Data.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
 
 namespace CleanFoodVietAPI.Application.DTOs.ServicePackageDTOs
 {
@@ -36,7 +41,30 @@ namespace CleanFoodVietAPI.Application.DTOs.ServicePackageDTOs
             Features = features;
         }
 
-        // Parameterless constructor can be included if needed for mapping
         public ServicePackageDTO() { }
+
+        /// <summary>
+        /// EF-Core can translate this into SQL whenever you do
+        /// .Select(ServicePackageDTO.Projection)
+        /// </summary>
+        public static Expression<Func<ServicePackage, ServicePackageDTO>> Projection =>
+            sp => new ServicePackageDTO(
+                sp.ServicePackageId,
+                sp.PackageName!,
+                sp.Description,
+                sp.Price,
+                sp.Duration,
+                sp.Status!,
+                sp.CreatedAt,
+                sp.UpdatedAt,
+                sp.ServicePackageFeatures
+                  .Select(psf => new ServiceFeatureDTO(
+                      psf.ServiceFeature.ServiceFeatureId,
+                      psf.ServiceFeature.ServiceFeatureName!,
+                      psf.ServiceFeature.Description,
+                      psf.ServiceFeature.DefaultValue,
+                      psf.ServiceFeature.Action!,
+                      psf.ServiceFeature.Status!))
+                  .ToList());
     }
 }

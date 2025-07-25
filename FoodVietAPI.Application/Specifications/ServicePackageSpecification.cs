@@ -15,58 +15,59 @@ namespace CleanFoodVietAPI.Data.Specifications
             string? search)
             : base(BuildCriteria(filterField, filterValue, search))
         {
-            // Apply sorting if a sortField is provided; otherwise, use a default sort.
+            // 1) Eager-load the features
+            AddInclude(sp => sp.ServicePackageFeatures);
+
+            // 2) Sorting logic (unchanged)
             if (!string.IsNullOrEmpty(sortField))
             {
-                if (sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase))
-                {
+                if (sortOrder?.Equals("asc", StringComparison.OrdinalIgnoreCase) == true)
                     ApplyOrderBy(GetSortExpression(sortField));
-                }
                 else
-                {
                     ApplyOrderByDescending(GetSortExpression(sortField));
-                }
             }
             else
             {
-                // Default sort by CreatedAt.
                 ApplyOrderBy(x => x.CreatedAt);
             }
         }
 
         // Builds the filtering/search criteria based on incoming parameters.
-        private static Expression<Func<ServicePackage, bool>> BuildCriteria(string? filterField, string? filterValue, string? search)
+        private static Expression<Func<ServicePackage, bool>> BuildCriteria(
+            string? filterField,
+            string? filterValue,
+            string? search)
         {
-            // Start with an "always true" predicate.
             Expression<Func<ServicePackage, bool>> criteria = sp => true;
 
-            // Apply filtering using filterField and filterValue.
-            if (!string.IsNullOrEmpty(filterField) && !string.IsNullOrEmpty(filterValue))
+            if (!string.IsNullOrEmpty(filterField)
+             && !string.IsNullOrEmpty(filterValue))
             {
-                // For example, if filtering by PackageName.
-                if (filterField.Equals("PackageName", StringComparison.OrdinalIgnoreCase))
+                if (filterField.Equals("Status", StringComparison.OrdinalIgnoreCase))
                 {
-                    criteria = sp => sp.PackageName.Contains(filterValue);
+                    // EF-friendly, case-insensitive
+                    criteria = sp =>
+                        sp.Status != null
+                        && sp.Status.ToLower() == filterValue.ToLower();
                 }
-                else if (filterField.Equals("Status", StringComparison.OrdinalIgnoreCase))
+                else if (filterField.Equals("PackageName", StringComparison.OrdinalIgnoreCase))
                 {
-                    criteria = sp => sp.Status.Equals(filterValue, StringComparison.OrdinalIgnoreCase);
+                    criteria = sp =>
+                        sp.PackageName != null
+                        && sp.PackageName.Contains(filterValue);
                 }
-                // Add additional filtering criteria if necessary.
             }
 
-            // Apply a general search across PackageName and Description.
             if (!string.IsNullOrEmpty(search))
             {
-                Expression<Func<ServicePackage, bool>> searchCriteria = sp =>
+                criteria = criteria.And(sp =>
                     (sp.PackageName != null && sp.PackageName.Contains(search)) ||
-                    (sp.Description != null && sp.Description.Contains(search));
-
-                criteria = criteria.And(searchCriteria); // Combine the criteria.
+                    (sp.Description != null && sp.Description.Contains(search)));
             }
 
             return criteria;
         }
+
 
         // Returns a sorting expression based on the sortField value.
         private Expression<Func<ServicePackage, object>> GetSortExpression(string sortField)
