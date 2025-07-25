@@ -28,44 +28,31 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         }
 
         public async Task<IPaginate<ServicePackageDTO>> GetServicePackagesWithFeaturesAsync(
-            int page,
-            int size,
-            string? filterField = null,
-            string? filterValue = null,
-            string? sortField = null,
-            string? sortOrder = "asc",
-            string? search = null)
+                int page,
+                int size,
+                string? filterField = null,
+                string? filterValue = null,
+                string? sortField = null,
+                string? sortOrder = "asc",
+                string? search = null)
         {
-            // Create a specification that supports filtering, search, and sorting.
-            var specification = new ServicePackageSpecification(filterField, filterValue, sortField, sortOrder, search);
+            // 1) Build your spec (including any Includes you need)
+            var spec = new ServicePackageSpecification(
+                filterField, filterValue, sortField, sortOrder, search);
 
-            var repository = _unitOfWork.GetRepository<ServicePackage>();
-
-            var packagesPage = await repository.GetPagingListAsync(
-                spec: specification,
-                selector: sp => new ServicePackageDTO(
-                    sp.ServicePackageId,
-                    sp.PackageName,
-                    sp.Description,
-                    sp.Price,
-                    sp.Duration,
-                    sp.Status,
-                    sp.CreatedAt,
-                    sp.UpdatedAt,
-                    sp.ServicePackageFeatures
-                      .Select(psf => new ServiceFeatureDTO(
-                          psf.ServiceFeature.ServiceFeatureId,
-                          psf.ServiceFeature.ServiceFeatureName,
-                          psf.ServiceFeature.Description,
-                          psf.ServiceFeature.DefaultValue,
-                          psf.ServiceFeature.Action,
-                          psf.ServiceFeature.Status))
-                      .ToList()),
-                page: page,
-                size: size);
-
-            return packagesPage;
+            return await _unitOfWork
+                .GetRepository<ServicePackage>()
+                .GetPagingListAsync(
+                    spec: spec,
+                    selector: ServicePackageDTO.Projection,
+                    page: page,
+                    size: size,
+                    include: query => query
+                        .Include(sp => sp.ServicePackageFeatures)
+                          .ThenInclude(psf => psf.ServiceFeature)
+                );
         }
+
 
         // View package details with features
         public async Task<ServicePackageDTO> GetServicePackageDetailAsync(string id)
