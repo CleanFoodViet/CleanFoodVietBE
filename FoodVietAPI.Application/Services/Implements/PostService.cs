@@ -95,7 +95,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             var postList = await _unitOfWork.GetRepository<Post>()
                 .GetPagingListAsync(
-                include: po => po.Include(x => x.PostMedias.Where(pm => pm.MediumType.Equals(PostMediaTypeEnum.THUMBNAIL.ToString())))
+                include: po => po.Include(x => x.PostMedias)
                                  .Include(x => x.Account)
                                  .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                  .Include(x => x.Product.ProductCertificates),
@@ -106,7 +106,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Title,
                     po.Product.ProductPrices.First().Price,
                     po.Product.ProductPrices.First().Currency,
-                    po.PostMedias.First().MediumUrl,
+                    po.PostMedias.Where(pm => pm.MediumType == PostMediaTypeEnum.THUMBNAIL.ToString() && pm.PostId == po.PostId).First().MediumUrl,
                     po.Account.Name,
                     po.Account.Avatar,
                     po.CreatedAt,
