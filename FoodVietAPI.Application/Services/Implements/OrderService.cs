@@ -61,7 +61,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         RetailerId = o.RetailerId,
                         GardenerId = o.GardenerId,
                         AccountName = account.Role.Name == AccountRoleEnum.RETAILER.ToString() ?
-                                        o.Retailer.Name : o.Gardener.Name,
+                                        o.Gardener.Name : o.Retailer.Name,
                         Status = o.Status,
                         TotalAmount = o.TotalAmount,
                         PaymentMethod = o.PaymentMethod,
@@ -87,7 +87,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                          ProductName = od.Product.ProductName,
                          WeightUnit = od.Product.ProductPrices.First().WeightUnit,
                          Currency = od.Product.ProductPrices.First().Currency,
-                         RemainDeliveredQuantity = od.Product.OrderDeliveryDetails.Sum(x => x.Quantity)
+                         DeliveredQuantity = od.Product.OrderDeliveryDetails.Sum(x => x.Quantity)
                     }
                 );
 
