@@ -22,5 +22,6 @@
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         public string ProductUnit { get; set; } = null!;
+        public string Currency { get; set; } = null!;
     }
 }
