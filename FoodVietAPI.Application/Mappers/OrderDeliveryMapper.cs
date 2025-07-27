@@ -26,7 +26,7 @@ namespace CleanFoodVietAPI.Application.Mappers
 
             CreateMap<CreateOrderDelieryDetailsDTO, OrderDeliveryDetail>()
                 .ForMember(des => des.OrderDeliveryDetailId, opt => opt.MapFrom(src => Ulid.NewUlid()))
-                .ForMember(des => des.OrderDelivery, opt => opt.MapFrom(
+                .ForMember(des => des.OrderDeliveryId, opt => opt.MapFrom(
                         (src, des, member, context) => context.Items["OrderDeliveryId"]
                     ));
 
