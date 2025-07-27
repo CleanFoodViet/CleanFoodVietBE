@@ -18,11 +18,18 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
+            CreateMap<CreateOrderDelieryDTO, OrderDelivery>()
+                .ForMember(des => des.OrderDeliveryId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+                .ForMember(des => des.DeliveryStatus, opt => opt.MapFrom(src => OrderDeliveryStatusEnum.DELIVERING.ToString()))
+                .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
             CreateMap<CreateOrderDelieryDetailsDTO, OrderDeliveryDetail>()
                 .ForMember(des => des.OrderDeliveryDetailId, opt => opt.MapFrom(src => Ulid.NewUlid()))
                 .ForMember(des => des.OrderDelivery, opt => opt.MapFrom(
                         (src, des, member, context) => context.Items["OrderDeliveryId"]
                     ));
+
         }
     }
 }
