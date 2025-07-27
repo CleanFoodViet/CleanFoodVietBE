@@ -179,5 +179,13 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string PaymentsHistoryEndpoint = GardenerApiEndpoint + "/payments-history";
             public const string ContractsHistoryEndpoint = GardenerApiEndpoint + "/contracts-history";
         }
+
+        public static class Statistic
+        {
+            public const string GardenerStatisticEndpoint = GardenerApiEndpoint + "/{id}/statistic";
+            public const string GardenerGeneralStatisticEndpoint = GardenerStatisticEndpoint + "/general";
+            public const string GardenerYearOrderStatisticEndpoint = GardenerStatisticEndpoint + "/year-orders";
+            public const string GardenerUpcommingAppointmentEndpoint = GardenerStatisticEndpoint + "/upcomming-appointment";
+        }
     }
 }
