@@ -41,6 +41,9 @@ namespace CleanFoodVietAPI.Application.Mappers
             CreateMap<Account, AccountDTO>();
             CreateMap<Certificate, CertificateDTO>();
             CreateMap<Address, GetAddressDTO>();
+
+            CreateMap<GardenerRegisterDTO, Address>()
+                .ForMember(des => des.AddressId, opt => opt.MapFrom(src => Ulid.NewUlid()));
         }
     }
 }

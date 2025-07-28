@@ -87,7 +87,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Role.Name,
                     _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
                     _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())),
-        page: page, size: size, 
+        page: page, size: size,
                 spec: accountSpecification);
 
             return accountList;
@@ -244,20 +244,18 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Certificate certificate = _mapper.Map<Certificate>(registerData);
             certificate.GardenerId = newAccount.AccountId;
 
-            List<Address> addresses = _mapper.Map<List<Address>>(registerData);
-            foreach(var address in addresses)
-            {
-                address.AccountId = newAccount.AccountId;
-                //Get longitude and latitude
-                LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
-                if (location == null) throw new BadHttpRequestException("Cannot found the location");
-                address.Longitude = location.Lon;
-                address.Latitude = location.Lat;
-            }
+            Address address = _mapper.Map<Address>(registerData);
+            address.AccountId = newAccount.AccountId;
+            //Get longitude and latitude
+            LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
+            if (location == null) throw new BadHttpRequestException("Cannot found the location");
+            address.Longitude = location.Lon;
+            address.Latitude = location.Lat;
+
 
             await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
             await _unitOfWork.GetRepository<Certificate>().InsertAsync(certificate);
-            await _unitOfWork.GetRepository<Address>().InsertRangeAsync(addresses);
+            await _unitOfWork.GetRepository<Address>().InsertAsync(address);
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");
