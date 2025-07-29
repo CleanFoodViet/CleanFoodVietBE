@@ -232,9 +232,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task<RegisterResponse> GardenerRegister(GardenerRegisterDTO registerData)
         {
             Account account = await _unitOfWork.GetRepository<Account>()
-                                       .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
-                                                                 a.Email == registerData.Email);
-            if (account != null) throw new BadHttpRequestException("Phone Number or Email have already been used");
+                                       .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber);
+            if (account != null) throw new BadHttpRequestException("Phone Number has already been used");
 
             Role role = await _unitOfWork.GetRepository<Role>().GetAsync(predicate: r => r.Name == AccountRoleEnum.GARDENER.ToString());
 

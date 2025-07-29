@@ -13,7 +13,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task UpdateAppointmentStatus(string appointmentId, string status);
         Task CancelAppointment(string appointmentId, CancelAppointmentDTO cancelData);
 
-        Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId);
+        Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId, int page, int size);
         Task<List<ScheduleAppointmentDTO>> GetScheduleAppointments(string gardenerId);
     }
 }

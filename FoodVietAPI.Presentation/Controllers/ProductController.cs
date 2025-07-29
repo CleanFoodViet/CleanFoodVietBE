@@ -25,6 +25,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpGet(ApiEndpointConstant.Product.GardenerProductsEndpoint)]
         [ProducesResponseType(typeof(IPaginate<ProductListDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<ProductListDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get all Gardener Products")]
         public async Task<IActionResult> GetProductsList(
             [FromRoute] string gardenerId,
@@ -35,11 +36,18 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             [FromQuery] string? sortField = null,
             [FromQuery] string? sortOrder = "asc",
             [FromQuery] string? search = null,
-            [FromQuery] string? category = null)
+            [FromQuery] string? category = null,
+            [FromQuery] bool getAll = false)
         {
+            if (getAll)
+            {
+                var listRes = _productService.GetGardenerAllProductList(
+                    gardenerId, filterField, filterValue, sortField, sortOrder, search, category);
+                return Ok(listRes);
+            }
+
             var res = await _productService.GetGardenerProductList(
                 gardenerId, page, size, filterField, filterValue, sortField, sortOrder, search, category);
-
             return Ok(res);
         }
 

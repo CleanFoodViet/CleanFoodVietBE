@@ -74,9 +74,9 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.Account.RequestAppointmentEndpoint)]
         [ProducesResponseType(typeof(IPaginate<GetRequestAppointmentDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get requested appointments")]
-        public async Task<IActionResult> GetRequestAppointment([FromRoute] string id)
+        public async Task<IActionResult> GetRequestAppointment([FromRoute] string id, [FromQuery] int page = 1, [FromQuery] int size = 10)
         {
-            var res = await _appointmentService.GetRequestAppointment(id);
+            var res = await _appointmentService.GetRequestAppointment(id, page, size);
             return Ok(res);
         }
 

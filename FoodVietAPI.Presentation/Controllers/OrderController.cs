@@ -20,9 +20,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.Account.AccountOrdersEndpoint)]
         [ProducesResponseType(typeof(IPaginate<OrderListDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get Account's Order List (Include Retailer and Gardener base on account id input)")]
-        public async Task<IActionResult> GetAccountOrderList([FromRoute]string id, [FromQuery]int page = 1, [FromQuery]int size = 10)
+        public async Task<IActionResult> GetAccountOrderList(
+            [FromRoute]string id, 
+            [FromQuery]int page = 1, 
+            [FromQuery]int size = 10, 
+            [FromQuery] string? filterField = null,
+            [FromQuery] string? filterValue = null)
         {
-            var res = await _orderService.GetAccountOrderList(id, page, size);
+            var res = await _orderService.GetAccountOrderList(id, page, size, filterField, filterValue);
             return Ok(res);
         }
 
