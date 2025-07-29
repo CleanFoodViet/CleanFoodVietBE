@@ -15,6 +15,12 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
+            CreateMap<CreateUserReportDTO, Report>()
+               .ForMember(des => des.ReportId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+               .ForMember(des => des.Status, opt => opt.MapFrom(src => ReportStatusEnum.PENDING.ToString()))
+               .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+               .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
             CreateMap<Report, ReportDTO>();
         }
     }
