@@ -1,4 +1,10 @@
 ﻿using AutoMapper;
+using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
+using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
+using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
+using CleanFoodVietAPI.Application.DTOs.Gardener;
+using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
+using CleanFoodVietAPI.Application.DTOs.ServicePackageDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionContractBenefitDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs;
 using CleanFoodVietAPI.Application.Exceptions;
@@ -126,6 +132,32 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 );
 
             return contracts;
+        }
+
+        public async Task<SubscriptionContractDetailDTO?> GetActiveContractAsync(string gardenerId)
+        {
+            if (!Ulid.TryParse(gardenerId, out var gId))
+                throw new DomainValidationException($"Invalid gardener id: '{gardenerId}'.");
+
+            var now = DateTime.UtcNow;
+            var repo = _unitOfWork.GetRepository<SubscriptionContract>();
+
+            var list = await repo.GetListAsync(
+                predicate: sc =>
+                    sc.GardenerId == gId &&
+                    sc.Status == "ACTIVE" &&
+                    sc.StartDate <= now &&
+                    sc.EndDate > now,
+
+                // <-- Eager-load the package → features → feature
+                include: q => q
+                    .Include(sc => sc.ServicePackage)
+                        .ThenInclude(sp => sp.ServicePackageFeatures)
+                            .ThenInclude(psf => psf.ServiceFeature),
+
+                selector: SubscriptionContractDetailDTO.Projection);
+
+            return list.SingleOrDefault();
         }
     }
 }
