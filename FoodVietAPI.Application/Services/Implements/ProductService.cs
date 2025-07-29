@@ -68,18 +68,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return products;
         }
 
-        public async Task<List<ProductListDTO>> GetGardenerAllProductList(
-            string gardenerId,
-            string? filterField = null,
-            string? filterValue = null,
-            string? sortField = null,
-            string? sortOrder = "asc",
-            string? search = null,
-            string? category = null)
+        public async Task<List<ProductListDTO>> GetGardenerAllProductList(string gardenerId)
         {
             Ulid gardenerID = Ulid.Parse(gardenerId);
-            ProductSpecification productSpecification = new ProductSpecification(filterField, filterValue, sortField, sortOrder, search);
-
             var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: g => g.AccountId == gardenerID);
             if (gardener == null) throw new BadHttpRequestException("Gardener is not found!");
 
@@ -90,9 +81,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                         .Include(x => x.ProductCategory)
                                         .Include(x => x.ProductTags)
                                         .Include(x => x.ProductCertificates),
-                        predicate: p => category == null ?
-                                p.GardenerId == gardenerID :
-                                p.GardenerId == gardenerID && p.ProductCategory.Name.ToUpper() == category.ToUpper(),
+                        predicate: p => p.Status == ProductStatusEnum.ACTIVE.ToString(),
                         selector: p => new ProductListDTO(
                             p.ProductId,
                             p.ProductName,
@@ -104,8 +93,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                             p.ProductPrices.First().Currency,
                             p.ProductPrices.First().WeightUnit,
                             p.ProductTags.Select(pt => pt.TagName).ToList(),
-                            _mapper.Map<List<GetProductCertificateDTO>>(p.ProductCertificates)),
-                        spec: productSpecification);
+                            _mapper.Map<List<GetProductCertificateDTO>>(p.ProductCertificates)));
 
             return products.ToList();
         }

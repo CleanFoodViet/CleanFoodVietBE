@@ -41,8 +41,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         {
             if (getAll)
             {
-                var listRes = _productService.GetGardenerAllProductList(
-                    gardenerId, filterField, filterValue, sortField, sortOrder, search, category);
+                var listRes = await _productService.GetGardenerAllProductList(gardenerId);
                 return Ok(listRes);
             }
 
