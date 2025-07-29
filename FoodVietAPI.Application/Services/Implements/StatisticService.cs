@@ -34,14 +34,17 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     predicate: os => os.GardenerId == gardenerID && os.CreatedAt.Month == currentMonth
                 );
 
+            DateTime now = DateTime.UtcNow;
+            DateTime endDate = now.AddDays(30);
+
             var appointmentStatisic = await _unitOfWork.GetRepository<Appointment>()
-                .GetListAsync(predicate: aps => aps.GardenerId == gardenerID && aps.AppointmentDate.Month == currentMonth);
+                .GetListAsync(predicate: aps => aps.GardenerId == gardenerID && aps.AppointmentDate >= now && aps.AppointmentDate <= endDate);
 
             var productStatistic = await _unitOfWork.GetRepository<Product>()
-                .GetListAsync(predicate: pds => pds.GardenerId == gardenerID && pds.CreatedAt.Month == currentMonth);
+                .GetListAsync(predicate: pds => pds.GardenerId == gardenerID);
 
             var postStatistic = await _unitOfWork.GetRepository<Post>()
-                .GetListAsync(predicate: ps => ps.GardenerId == gardenerID && ps.CreatedAt.Month == currentMonth);
+                .GetListAsync(predicate: ps => ps.GardenerId == gardenerID);
 
             GardenerStatisticDTO monthlyStatistic = new GardenerStatisticDTO
             {

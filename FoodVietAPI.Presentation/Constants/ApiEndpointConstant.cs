@@ -131,6 +131,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class Report
         {
             public const string ReportsEndpoint = ApiEndpoint + "/reports";
+            public const string UserReportsEndpoint = ApiEndpoint + "/user-reports";
             public const string ReportEndpoint = ReportsEndpoint + "/{id}";
         }
 
