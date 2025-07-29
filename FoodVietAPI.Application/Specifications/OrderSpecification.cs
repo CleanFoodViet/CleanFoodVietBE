@@ -38,7 +38,10 @@ namespace CleanFoodVietAPI.Application.Specifications
                 if (propertyInfo.PropertyType == typeof(string))
                 {
                     var constant = Expression.Constant(filterValue);
-                    lambdaBody = Expression.Call(propertyExp, "Equals", Type.EmptyTypes, constant);
+                    lambdaBody = Expression.Call(
+                                    propertyExp,
+                                    typeof(string).GetMethod("Equals", new[] { typeof(string) })!,
+                                    Expression.Constant(filterValue));
                 }
                 else if (propertyInfo.PropertyType.IsEnum)
                 {
