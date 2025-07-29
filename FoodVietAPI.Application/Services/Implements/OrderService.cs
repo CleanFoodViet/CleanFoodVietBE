@@ -2,6 +2,7 @@
 using CleanFoodVietAPI.Application.DTOs.CartDTOs;
 using CleanFoodVietAPI.Application.DTOs.OrderDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.OrderEnums;
@@ -21,8 +22,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<OrderListDTO>> GetAccountOrderList(string accountId, int page, int size)
+        public async Task<IPaginate<OrderListDTO>> GetAccountOrderList(string accountId, int page, int size, string? filterField, string? filterValue)
         {
+            OrderSpecification spec = new OrderSpecification(filterField, filterValue, "CreatedAt", "desc");
+
             Ulid accId = Ulid.Parse(accountId);
             var orders = await _unitOfWork.GetRepository<Order>()
                 .GetPagingListAsync(
@@ -36,6 +39,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         o.TotalAmount,
                         o.CreatedAt,
                         o.OrderDetails.Count()),
+                    spec: spec,
                     page: page, size: size
                 );
 

@@ -136,7 +136,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!isSuccess) throw new Exception("Error occur when update appointment status (DB query error)");
         }
 
-        public async Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId)
+        public async Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId, int page, int size)
         {
             Ulid accountId = Ulid.Parse(gardenerId);
             var appointmentList = await _unitOfWork.GetRepository<Appointment>()
@@ -156,7 +156,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Subject = ap.Subject,
                         PhoneNumber = ap.Retailer.PhoneNumber,
                         RetailerName = ap.Retailer.Name
-                    }
+                    },
+                    page: page, size: size
                 );
 
             return appointmentList;
