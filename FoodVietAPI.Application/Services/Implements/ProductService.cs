@@ -81,7 +81,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                         .Include(x => x.ProductCategory)
                                         .Include(x => x.ProductTags)
                                         .Include(x => x.ProductCertificates),
-                        predicate: p => p.Status == ProductStatusEnum.ACTIVE.ToString(),
+                        predicate: p => p.Status == ProductStatusEnum.ACTIVE.ToString() && p.GardenerId == gardenerID,
                         selector: p => new ProductListDTO(
                             p.ProductId,
                             p.ProductName,
