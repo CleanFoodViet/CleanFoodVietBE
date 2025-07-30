@@ -4,6 +4,7 @@
     (
         Ulid OrderId,
         Ulid RetailerId,
+        string RetailerName,
         Ulid GardenerId,
         string Status,
         decimal TotalAmount,

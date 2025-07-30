@@ -29,11 +29,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid accId = Ulid.Parse(accountId);
             var orders = await _unitOfWork.GetRepository<Order>()
                 .GetPagingListAsync(
-                    include: o => o.Include(x => x.OrderDetails),
+                    include: o => o.Include(x => x.OrderDetails).Include(x => x.Retailer),
                     predicate: o => o.GardenerId == accId || o.RetailerId == accId,
                     selector: o => new OrderListDTO(
                         o.OrderId,
                         o.RetailerId,
+                        o.Retailer.Name,
                         o.GardenerId,
                         o.Status,
                         o.TotalAmount,
