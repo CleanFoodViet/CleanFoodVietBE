@@ -2,6 +2,7 @@
 {
     public enum AccountStatusEnum
     {
+        PENDING,
         ACTIVE,
         INACTIVE,
         BANNED
