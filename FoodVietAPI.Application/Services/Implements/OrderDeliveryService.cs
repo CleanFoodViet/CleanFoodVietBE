@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.OrdeDeliveryEnums;
+using CleanFoodVietAPI.Data.Enums.OrderEnums;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task CreateOrderDelivery(string orderId, CreateOrderDelieryDTO request)
         {
             Ulid orderID = Ulid.Parse(orderId);
+            var order = await _unitOfWork.GetRepository<Order>().GetAsync(predicate: o => o.OrderId == orderID);
+            if (order == null) throw new BadHttpRequestException("Order is not found");
+
+            order.Status = OrderStatusEnum.DELIVERING.ToString();
+            _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+
             var orderDelivery = _mapper.Map<OrderDelivery>(request);
             orderDelivery.OrderId = orderID;
 
