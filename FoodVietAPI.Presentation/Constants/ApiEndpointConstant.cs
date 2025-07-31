@@ -95,6 +95,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
         {
             public const string OrdersEndpoint = ApiEndpoint + "/orders";
             public const string OrderEndpoint = OrdersEndpoint + "/{id}";
+            public const string OrderDeatilCheckEndpoint = OrderEndpoint + "/order-details";
             public const string OrderDeliveriesEndpoint = OrderEndpoint + "/order-deliveries";
             public const string OrderDeliveryEndpoint = OrderDeliveriesEndpoint + "/{orderDeliveryId}";
         }

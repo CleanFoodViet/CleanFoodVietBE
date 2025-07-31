@@ -65,5 +65,15 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
             return Ok("Update order status successfully");
         }
+
+        [HttpPatch(ApiEndpointConstant.Order.OrderDeatilCheckEndpoint)]
+        [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = @"Check and update the Order detail and Order Status")]
+        public async Task<IActionResult> CheckAndUpdateOrderDetailStatus([FromRoute] string id, [FromBody] List<CheckOrderDetailDeliveryDTO> request)
+        {
+            await _orderService.UpdateOrderDetailDeliveryStatus(id, request);
+
+            return Ok("Update order detail status successfully");
+        }
     }
 }

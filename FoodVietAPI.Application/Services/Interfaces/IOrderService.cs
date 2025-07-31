@@ -11,5 +11,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task<OrderDTO> GetOrderInformation(string orderId, string accountId);
         Task CreateOrder(List<CartDTO> carts, string paymentMethod);
         Task UpdateOrderStatus(string orderId, string status);
+        Task UpdateOrderDetailDeliveryStatus(string orderId, List<CheckOrderDetailDeliveryDTO> checkOrderDetails);
     }
 }
