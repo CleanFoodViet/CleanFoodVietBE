@@ -142,5 +142,48 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when update the Order Status (DB query Error)");
         }
+
+        public async Task UpdateOrderDetailDeliveryStatus(string orderId, List<CheckOrderDetailDeliveryDTO> checkOrderDetails)
+        {
+            Ulid orderID = Ulid.Parse(orderId);
+            var order = await _unitOfWork.GetRepository<Order>()
+                .GetAsync(predicate: o => o.OrderId == orderID);
+            if (order == null) throw new BadHttpRequestException("Order is not found");
+
+            var orderDetails = await _unitOfWork.GetRepository<OrderDetail>().GetListAsync(predicate: od => od.OrderId == orderID);
+
+            bool isRemainDeliveringZero = false;
+            var updatedOrderDetails = new List<OrderDetail>();
+
+            foreach (var orderDetail in orderDetails)
+            {
+                var match = checkOrderDetails.FirstOrDefault(cd => cd.OrderDetailId == orderDetail.OrderDetailId);
+                if (match != null)
+                {
+                    orderDetail.DeliveryStatus = match.RemainDeliveryQuantity == 0 
+                        ? OrderDetailStatusEnum.DELIVERIED.ToString() : OrderDetailStatusEnum.DELIVERING.ToString();
+                    updatedOrderDetails.Add(orderDetail);
+
+                    if (!isRemainDeliveringZero && match.RemainDeliveryQuantity == 0) isRemainDeliveringZero = true;
+                }
+            }
+
+            _unitOfWork.GetRepository<OrderDetail>().UpdateRange(updatedOrderDetails);
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update the Order Detail Status (DB query Error)");
+
+            if (isRemainDeliveringZero)
+            {
+                var deliveringOrderDetails = await _unitOfWork.GetRepository<OrderDetail>()
+                    .GetListAsync(predicate: od => od.OrderId == orderID && od.DeliveryStatus == OrderDetailStatusEnum.DELIVERING.ToString());
+                if(deliveringOrderDetails == null || deliveringOrderDetails.Count == 0)
+                {
+                    order.Status = OrderStatusEnum.DELIVERED.ToString();
+                    bool isSuccessUpdate = await _unitOfWork.CommitAsync() > 0;
+                    if (!isSuccessUpdate) throw new Exception("Error occur when update the Order Status (DB query Error)");
+                }
+            }
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace CleanFoodVietAPI.Data.Enums.OrderEnums
 {
     public enum OrderDetailStatusEnum
     {
-        PARTLYDELIVERIED,
-        DELIVERING
+        DELIVERING,
+        DELIVERIED,
     }
 }

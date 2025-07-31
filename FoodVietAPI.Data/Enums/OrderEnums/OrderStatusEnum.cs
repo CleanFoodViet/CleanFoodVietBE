@@ -11,6 +11,7 @@ namespace CleanFoodVietAPI.Data.Enums.OrderEnums
         PENDING,
         PREPARING,
         DELIVERING,
+        DELIVERED,
         COMPLETED,
         CANCELLED
     }
