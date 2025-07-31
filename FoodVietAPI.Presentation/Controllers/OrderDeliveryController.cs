@@ -36,7 +36,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return StatusCode(StatusCodes.Status201Created, "Create order delivery successfully");
         }
 
-        [HttpPatch(ApiEndpointConstant.Order.OrderDeliveriesEndpoint)]
+        [HttpPatch(ApiEndpointConstant.Order.OrderDeliveryEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Updare delivery order stauts (Order Delivery Status: DELIVERING (when delivery in process), DELIVERED (when the delivery is done))")]
         public async Task<IActionResult> UpdateOrderDeliveryStatus([FromRoute] string id, [FromRoute]string orderDeliveryId, [FromQuery]string status)
