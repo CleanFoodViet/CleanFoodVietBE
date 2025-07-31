@@ -180,6 +180,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 if(deliveringOrderDetails == null || deliveringOrderDetails.Count == 0)
                 {
                     order.Status = OrderStatusEnum.DELIVERED.ToString();
+                    _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+
                     bool isSuccessUpdate = await _unitOfWork.CommitAsync() > 0;
                     if (!isSuccessUpdate) throw new Exception("Error occur when update the Order Status (DB query Error)");
                 }
