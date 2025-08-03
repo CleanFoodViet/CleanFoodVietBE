@@ -14,6 +14,8 @@ namespace CleanFoodVietAPI.Application.DTOs.AuthDTOs
         public string? Gender { get; set; }
         public string? Avatar { get; set; }
         public string Name { get; set; } = null!;
+        public string Bio { get; set; } = null!;
+
         //Address Data
         public string AddressLine { get; set; } = null!;
         public string City { get; set; } = null!;

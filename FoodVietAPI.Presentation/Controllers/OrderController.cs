@@ -52,8 +52,18 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return StatusCode(StatusCodes.Status201Created, "Create order successfully");
         }
 
+        [HttpPatch(ApiEndpointConstant.Order.OrderShippingCostEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update the order shipping cost")]
+        public async Task<IActionResult> UpdateOrderShippingCost([FromRoute] string id, [FromQuery] decimal shippingCost)
+        {
+            await _orderService.UpdateOrderShippingCost(id, shippingCost);
+
+            return Ok("Update order shipping cost successfully");
+        }
+
         [HttpPatch(ApiEndpointConstant.Order.OrderEndpoint)]
-        [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = @"Update Order Status. Order Status: 
             PENDING (Created but not approve/reject), PREPARING (after approve), 
             DELIVERING (When a Order Detail Quantity is Delivered partly), 
@@ -67,7 +77,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         [HttpPatch(ApiEndpointConstant.Order.OrderDeatilCheckEndpoint)]
-        [ProducesResponseType(typeof(OrderDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = @"Check and update the Order detail and Order Status")]
         public async Task<IActionResult> CheckAndUpdateOrderDetailStatus([FromRoute] string id, [FromBody] List<CheckOrderDetailDeliveryDTO> request)
         {

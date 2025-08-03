@@ -10,6 +10,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public Ulid GardenerId { get; set; }
         public string Status { get; set; } = null!;
         public decimal TotalAmount { get; set; }
+        public decimal ShippingCost { get; set; }
         public string PaymentMethod { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
 

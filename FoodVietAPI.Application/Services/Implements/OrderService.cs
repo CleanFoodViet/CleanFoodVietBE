@@ -38,6 +38,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         o.GardenerId,
                         o.Status,
                         o.TotalAmount,
+                        o.ShippingCost,
                         o.CreatedAt,
                         o.OrderDetails.Count()),
                     spec: spec,
@@ -70,7 +71,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Status = o.Status,
                         TotalAmount = o.TotalAmount,
                         PaymentMethod = o.PaymentMethod,
-                        CreatedAt = o.CreatedAt
+                        CreatedAt = o.CreatedAt,
+                        ShippingCost = o.ShippingCost,
                     }
                 );
             if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
@@ -120,6 +122,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when create Order (DB query Error)");
+        }
+
+        public async Task UpdateOrderShippingCost(string orderId, decimal shippingCost)
+        {
+            Ulid orderID = Ulid.Parse(orderId);
+            var order = await _unitOfWork.GetRepository<Order>()
+                .GetAsync(predicate: o => o.OrderId == orderID);
+            if (order == null) throw new BadHttpRequestException("Order is not found");
+
+            order.ShippingCost = shippingCost;
+
+            _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update the Order Shipping cost (DB query Error)");
         }
 
         public async Task UpdateOrderStatus(string orderId, string status)

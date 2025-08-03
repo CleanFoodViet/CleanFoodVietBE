@@ -57,6 +57,7 @@ namespace CleanFoodVietAPI.Data.Entities
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Bio).HasColumnType("text");
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.PhoneNumber).IsRequired().HasMaxLength(11);
                 entity.Property(e => e.Password).IsRequired().HasMaxLength(255);
@@ -367,6 +368,7 @@ namespace CleanFoodVietAPI.Data.Entities
                     .IsFixedLength();
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.TotalAmount).HasColumnType("decimal(14,2)");
+                entity.Property(e => e.ShippingCost).HasColumnType("decimal(14,2)");
                 entity.Property(e => e.PaymentMethod).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
