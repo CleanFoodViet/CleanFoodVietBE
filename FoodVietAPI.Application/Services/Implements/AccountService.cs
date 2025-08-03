@@ -164,6 +164,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var account = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.PhoneNumber == data.PhoneNumber);
             if (account == null) throw new BadHttpRequestException($"Phone number: {data.PhoneNumber} is not found");
 
+            if(data.Action == "CHANGE")
+            {
+                if (!HashUtil.VerifyPassword(data.OldPassword!, account.Password, out var rehashedPassword))
+                    throw new UnauthorizedAccessException("Incorrect Account Password");
+            }
+
             account.Password = HashUtil.PasswordHash(data.NewPassword);
             _unitOfWork.GetRepository<Account>().UpdateAsync(account);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
@@ -210,7 +216,17 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var newAccount = _mapper.Map<Account>(registerData);
             newAccount.RoleId = role.RoleId;
 
+            Address address = _mapper.Map<Address>(registerData);
+            address.AccountId = newAccount.AccountId;
+            //Get longitude and latitude
+            LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
+            if (location == null) throw new BadHttpRequestException("Cannot found the location");
+            address.Longitude = location.Lon;
+            address.Latitude = location.Lat;
+
             await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
+            await _unitOfWork.GetRepository<Address>().InsertAsync(address);
+
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");
 
