@@ -8,6 +8,7 @@
         Ulid GardenerId,
         string Status,
         decimal TotalAmount,
+        decimal ShippingCost,
         DateTime CreatedAt,
         int ProductTypeAmount
     );

@@ -43,6 +43,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 selector: acc => new AccountDTO(
                     acc.AccountId,
                     acc.Name,
+                    acc.Bio,
                     acc.Email,
                     acc.PhoneNumber,
                     acc.Gender,
@@ -76,6 +77,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 selector: acc => new AccountDTO(
                     acc.AccountId,
                     acc.Name,
+                    acc.Bio,
                     acc.Email,
                     acc.PhoneNumber,
                     acc.Gender,
@@ -102,6 +104,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                           selector: acc => new AccountDTO(
                                 acc.AccountId,
                                 acc.Name,
+                                acc.Bio,
                                 acc.Email,
                                 acc.PhoneNumber,
                                 acc.Gender,
