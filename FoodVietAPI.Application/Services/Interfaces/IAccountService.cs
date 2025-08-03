@@ -24,6 +24,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task<AccountDTO> GetAccountInformation(string id);
         Task UpdateAccountStatus(string accountId, string status);
         Task UpdateProfile(string id, UpdateAccountDTO data);
+        Task ChangePassword(ChangePasswordDto data);
         #endregion
 
         #region Authentication Functions

@@ -84,5 +84,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             await _accountService.UpdateProfile(id, data);
             return Ok("Update profile successfully");
         }
+
+        [HttpPatch(ApiEndpointConstant.Account.AccountPasswordEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Change or reset account password")]
+        public async Task<IActionResult> ChangeOrResetPassword([FromBody] ChangePasswordDto request)
+        {
+            await _accountService.ChangePassword(request);
+            return Ok("Update account password successfully");
+        }
     }
 }

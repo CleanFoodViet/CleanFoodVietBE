@@ -156,6 +156,19 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when updating profile (DB query error)");
         }
+
+        public async Task ChangePassword(ChangePasswordDto data)
+        {
+            if (data.NewPassword != data.ConfirmNewPassword) throw new BadHttpRequestException("The new password and confirm password do not match.");
+
+            var account = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.PhoneNumber == data.PhoneNumber);
+            if (account == null) throw new BadHttpRequestException($"Phone number: {data.PhoneNumber} is not found");
+
+            account.Password = HashUtil.PasswordHash(data.NewPassword);
+            _unitOfWork.GetRepository<Account>().UpdateAsync(account);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when updating account password (DB query error)");
+        }
         #endregion
 
         #region Authentication Functions
