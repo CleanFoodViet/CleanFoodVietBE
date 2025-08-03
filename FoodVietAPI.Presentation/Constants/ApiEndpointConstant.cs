@@ -31,6 +31,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string RetailerAccountsEndpoint = AccountsEndpoint + "/retailers";
             public const string GardenerAccountsEndpoint = AccountsEndpoint + "/gardeners";
             public const string AccountProfileEndpoint = AccountEndpoint + "/profile";
+            public const string AccountPasswordEndpoint = AccountsEndpoint + "/password";
 
             //Account address endpoints
             public const string AccountAddressesEndpoint = AccountEndpoint + "/addresses";
