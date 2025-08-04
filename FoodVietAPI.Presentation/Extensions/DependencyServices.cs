@@ -65,12 +65,14 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IProductService, Application.Services.Implements.ProductService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            services.AddScoped<IProductCertificateServcie, ProductCertificateServcie>();
             services.AddScoped<IReportService, ReportService>();
             services.AddScoped<IServiceFeatureService, ServiceFeatureService>();
             services.AddScoped<IServicePackageService, ServicePackageService>();
             services.AddScoped<ISubscriptionContractService, SubscriptionContractService>();
             services.AddScoped<IServicePackageOrderService, ServicePackageOrderService>();
             services.AddScoped<IReviewService, Application.Services.Implements.ReviewService>();
+            services.AddScoped<IStatisticService, StatisticService>();
             //services.AddScoped<ISubscriptionReconciler, SubscriptionReconciler>();
             //services.AddScoped<IGardenerRepository, GardenerRepository>();
             //services.AddScoped<ExpireContractsJob>();

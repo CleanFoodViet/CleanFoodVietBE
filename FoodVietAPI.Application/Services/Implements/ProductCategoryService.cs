@@ -18,13 +18,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryList(int page, int size, string gardenerId)
+        public async Task<IPaginate<GetProductCategoryDTO>> GetProductCategoryPaginateList(int page, int size)
         {
-            Ulid gardenerID = Ulid.Parse(gardenerId);
-
             var categories = await _unitOfWork.GetRepository<ProductCategory>()
                 .GetPagingListAsync(
-                predicate: pc => pc.GardenerId == gardenerID,
                 selector: pc => new GetProductCategoryDTO(
                     pc.ProductCategoryId,
                     pc.Name,
@@ -32,6 +29,18 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 page: page, size: size);
 
             return categories;
+        }
+
+        public async Task<List<GetProductCategoryDTO>> GetProductCategoryList()
+        {
+            var categories = await _unitOfWork.GetRepository<ProductCategory>()
+                .GetListAsync(
+                selector: pc => new GetProductCategoryDTO(
+                    pc.ProductCategoryId,
+                    pc.Name,
+                    pc.Description));
+
+            return categories.ToList();
         }
 
         public async Task<GetProductCategoryDTO> GetProductCategoryInformation(string id)
@@ -49,15 +58,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return category;
         }
 
-        public async Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category, string gardenerId)
+        public async Task<GetProductCategoryDTO> CreateProductCategory(CreateProductCategoryDTO category)
         {
-            Ulid gardenerID = Ulid.Parse(gardenerId);
-            var gardener = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.AccountId == gardenerID);
-            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
-
             ProductCategory newCategory = _mapper.Map<ProductCategory>(category);
-            newCategory.GardenerId = gardenerID;
-
+         
             await _unitOfWork.GetRepository<ProductCategory>().InsertAsync(newCategory);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when insert new product category (DB query error)");

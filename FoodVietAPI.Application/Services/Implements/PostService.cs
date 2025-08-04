@@ -42,7 +42,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetPagingListAsync(
                 include: po => po.Include(x => x.PostMedias.Where(pm => pm.MediumType.Equals(PostMediaTypeEnum.THUMBNAIL.ToString())))
                                  .Include(x => x.Account).ThenInclude(x => x.Addresses)
-                                 .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
+                                 .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                 .Include(x => x.Product.ProductCertificates),
                 predicate: po => po.Status.Equals(PostStatusEnum.ACTIVE.ToString()) && 
                                  accountIds != null ? accountIds.Any(x => x == po.GardenerId) : true,
                 spec: specification,
@@ -58,7 +59,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Content,
                     po.Status,
                     po.Rating,
-                    po.Product.ProductPrices.First().WeightUnit),
+                    po.Product.ProductPrices.First().WeightUnit,
+                    po.Product.ProductCertificates.Count() > 0),
                 page: page, size: size);
 
             return postList;
@@ -93,8 +95,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             var postList = await _unitOfWork.GetRepository<Post>()
                 .GetPagingListAsync(
-                include: po => po.Include(x => x.PostMedias.Where(pm => pm.MediumType.Equals(PostMediaTypeEnum.THUMBNAIL.ToString())))
-                                 .Include(x => x.Account).Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
+                include: po => po.Include(x => x.PostMedias)
+                                 .Include(x => x.Account)
+                                 .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                 .Include(x => x.Product.ProductCertificates),
                 predicate: po => po.GardenerId == gardenerID,
                 spec: specification,
                 selector: po => new PostListDTO(
@@ -102,14 +106,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Title,
                     po.Product.ProductPrices.First().Price,
                     po.Product.ProductPrices.First().Currency,
-                    po.PostMedias.First().MediumUrl,
+                    po.PostMedias.Where(pm => pm.MediumType == PostMediaTypeEnum.THUMBNAIL.ToString() && pm.PostId == po.PostId).First().MediumUrl,
                     po.Account.Name,
                     po.Account.Avatar,
                     po.CreatedAt,
                     po.Content,
                     po.Status,
                     po.Rating,
-                    po.Product.ProductPrices.First().WeightUnit),
+                    po.Product.ProductPrices.First().WeightUnit,
+                    po.Product.ProductCertificates.Count() > 0),
                 page: page, size: size);
 
             return postList;
@@ -265,6 +270,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                        .ThenInclude(p => p.PostMedias.Where(pm => pm.MediumType == PostMediaTypeEnum.THUMBNAIL.ToString()))
                                    .Include(f => f.Post.Product)
                                        .ThenInclude(pr => pr.ProductPrices.Where(pp => pp.IsCurrent))
+                                       .Include(f => f.Post.Product.ProductCertificates)
                                    .Include(f => f.Account),
                 predicate: fav => fav.RetailerId == accountId && fav.Post.Status == PostStatusEnum.ACTIVE.ToString(),
                 selector: fav => new PostListDTO(
@@ -279,7 +285,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     fav.Post.Content,
                     fav.Post.Status,
                     fav.Post.Rating,
-                    fav.Post.Product.ProductPrices.First().WeightUnit)
+                    fav.Post.Product.ProductPrices.First().WeightUnit,
+                    fav.Post.Product.ProductCertificates.Count() > 0)
             );
 
             return favoritePosts.ToList();

@@ -31,7 +31,10 @@ public class ServiceFeatureSpecification : BaseSpecification<ServiceFeature>
             if (propertyInfo.PropertyType == typeof(string))
             {
                 var constant = Expression.Constant(filterValue);
-                lambdaBody = Expression.Call(propertyExp, "Contains", Type.EmptyTypes, constant);
+                lambdaBody = Expression.Call(
+                                    propertyExp,
+                                    typeof(string).GetMethod("Equals", new[] { typeof(string) })!,
+                                    Expression.Constant(filterValue));
             }
             else if (propertyInfo.PropertyType.IsEnum)
             {

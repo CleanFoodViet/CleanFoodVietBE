@@ -43,6 +43,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 selector: acc => new AccountDTO(
                     acc.AccountId,
                     acc.Name,
+                    acc.Bio,
                     acc.Email,
                     acc.PhoneNumber,
                     acc.Gender,
@@ -76,6 +77,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 selector: acc => new AccountDTO(
                     acc.AccountId,
                     acc.Name,
+                    acc.Bio,
                     acc.Email,
                     acc.PhoneNumber,
                     acc.Gender,
@@ -87,7 +89,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     acc.Role.Name,
                     _mapper.Map<List<CertificateDTO>>(acc.Certificates.ToList()),
                     _mapper.Map<List<GetAddressDTO>>(acc.Addresses.ToList())),
-        page: page, size: size, 
+        page: page, size: size,
                 spec: accountSpecification);
 
             return accountList;
@@ -102,6 +104,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                           selector: acc => new AccountDTO(
                                 acc.AccountId,
                                 acc.Name,
+                                acc.Bio,
                                 acc.Email,
                                 acc.PhoneNumber,
                                 acc.Gender,
@@ -156,6 +159,25 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when updating profile (DB query error)");
         }
+
+        public async Task ChangePassword(ChangePasswordDto data)
+        {
+            if (data.NewPassword != data.ConfirmNewPassword) throw new BadHttpRequestException("The new password and confirm password do not match.");
+
+            var account = await _unitOfWork.GetRepository<Account>().GetAsync(predicate: acc => acc.PhoneNumber == data.PhoneNumber);
+            if (account == null) throw new BadHttpRequestException($"Phone number: {data.PhoneNumber} is not found");
+
+            if(data.Action == "CHANGE")
+            {
+                if (!HashUtil.VerifyPassword(data.OldPassword!, account.Password, out var rehashedPassword))
+                    throw new UnauthorizedAccessException("Incorrect Account Password");
+            }
+
+            account.Password = HashUtil.PasswordHash(data.NewPassword);
+            _unitOfWork.GetRepository<Account>().UpdateAsync(account);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occurs when updating account password (DB query error)");
+        }
         #endregion
 
         #region Authentication Functions
@@ -197,7 +219,17 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var newAccount = _mapper.Map<Account>(registerData);
             newAccount.RoleId = role.RoleId;
 
+            Address address = _mapper.Map<Address>(registerData);
+            address.AccountId = newAccount.AccountId;
+            //Get longitude and latitude
+            LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
+            if (location == null) throw new BadHttpRequestException("Cannot found the location");
+            address.Longitude = location.Lon;
+            address.Latitude = location.Lat;
+
             await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
+            await _unitOfWork.GetRepository<Address>().InsertAsync(address);
+
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");
 
@@ -232,9 +264,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task<RegisterResponse> GardenerRegister(GardenerRegisterDTO registerData)
         {
             Account account = await _unitOfWork.GetRepository<Account>()
-                                       .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber ||
-                                                                 a.Email == registerData.Email);
-            if (account != null) throw new BadHttpRequestException("Phone Number or Email have already been used");
+                                       .GetAsync(predicate: a => a.PhoneNumber == registerData.PhoneNumber);
+            if (account != null) throw new BadHttpRequestException("Phone Number has already been used");
 
             Role role = await _unitOfWork.GetRepository<Role>().GetAsync(predicate: r => r.Name == AccountRoleEnum.GARDENER.ToString());
 
@@ -244,20 +275,18 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Certificate certificate = _mapper.Map<Certificate>(registerData);
             certificate.GardenerId = newAccount.AccountId;
 
-            List<Address> addresses = _mapper.Map<List<Address>>(registerData);
-            foreach(var address in addresses)
-            {
-                address.AccountId = newAccount.AccountId;
-                //Get longitude and latitude
-                LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
-                if (location == null) throw new BadHttpRequestException("Cannot found the location");
-                address.Longitude = location.Lon;
-                address.Latitude = location.Lat;
-            }
+            Address address = _mapper.Map<Address>(registerData);
+            address.AccountId = newAccount.AccountId;
+            //Get longitude and latitude
+            LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
+            if (location == null) throw new BadHttpRequestException("Cannot found the location");
+            address.Longitude = location.Lon;
+            address.Latitude = location.Lat;
+
 
             await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
             await _unitOfWork.GetRepository<Certificate>().InsertAsync(certificate);
-            await _unitOfWork.GetRepository<Address>().InsertRangeAsync(addresses);
+            await _unitOfWork.GetRepository<Address>().InsertAsync(address);
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occurs when registering");

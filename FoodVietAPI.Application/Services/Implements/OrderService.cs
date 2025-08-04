@@ -2,6 +2,7 @@
 using CleanFoodVietAPI.Application.DTOs.CartDTOs;
 using CleanFoodVietAPI.Application.DTOs.OrderDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
+using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.OrderEnums;
@@ -21,21 +22,26 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
         }
 
-        public async Task<IPaginate<OrderListDTO>> GetAccountOrderList(string accountId, int page, int size)
+        public async Task<IPaginate<OrderListDTO>> GetAccountOrderList(string accountId, int page, int size, string? filterField, string? filterValue)
         {
+            OrderSpecification spec = new OrderSpecification(filterField, filterValue, "CreatedAt", "desc");
+
             Ulid accId = Ulid.Parse(accountId);
             var orders = await _unitOfWork.GetRepository<Order>()
                 .GetPagingListAsync(
-                    include: o => o.Include(x => x.OrderDetails),
+                    include: o => o.Include(x => x.OrderDetails).Include(x => x.Retailer),
                     predicate: o => o.GardenerId == accId || o.RetailerId == accId,
                     selector: o => new OrderListDTO(
                         o.OrderId,
                         o.RetailerId,
+                        o.Retailer.Name,
                         o.GardenerId,
                         o.Status,
                         o.TotalAmount,
+                        o.ShippingCost,
                         o.CreatedAt,
                         o.OrderDetails.Count()),
+                    spec: spec,
                     page: page, size: size
                 );
 
@@ -61,11 +67,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         RetailerId = o.RetailerId,
                         GardenerId = o.GardenerId,
                         AccountName = account.Role.Name == AccountRoleEnum.RETAILER.ToString() ?
-                                        o.Retailer.Name : o.Gardener.Name,
+                                        o.Gardener.Name : o.Retailer.Name,
                         Status = o.Status,
                         TotalAmount = o.TotalAmount,
                         PaymentMethod = o.PaymentMethod,
-                        CreatedAt = o.CreatedAt
+                        CreatedAt = o.CreatedAt,
+                        ShippingCost = o.ShippingCost,
                     }
                 );
             if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
@@ -87,7 +94,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                          ProductName = od.Product.ProductName,
                          WeightUnit = od.Product.ProductPrices.First().WeightUnit,
                          Currency = od.Product.ProductPrices.First().Currency,
-                         RemainDeliveredQuantity = od.Product.OrderDeliveryDetails.Sum(x => x.Quantity)
+                         DeliveredQuantity = od.Product.OrderDeliveryDetails.Sum(x => x.Quantity)
                     }
                 );
 
@@ -117,6 +124,21 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!isSuccess) throw new Exception("Error occur when create Order (DB query Error)");
         }
 
+        public async Task UpdateOrderShippingCost(string orderId, decimal shippingCost)
+        {
+            Ulid orderID = Ulid.Parse(orderId);
+            var order = await _unitOfWork.GetRepository<Order>()
+                .GetAsync(predicate: o => o.OrderId == orderID);
+            if (order == null) throw new BadHttpRequestException("Order is not found");
+
+            order.ShippingCost = shippingCost;
+            order.Status = OrderStatusEnum.PREPARING.ToString();
+
+            _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update the Order Shipping cost and status (DB query Error)");
+        }
+
         public async Task UpdateOrderStatus(string orderId, string status)
         {
             Ulid orderID = Ulid.Parse(orderId);
@@ -136,6 +158,66 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             _unitOfWork.GetRepository<Order>().UpdateAsync(order);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when update the Order Status (DB query Error)");
+        }
+
+        public async Task UpdateOrderDetailDeliveryStatus(string orderId, List<CheckOrderDetailDeliveryDTO> checkOrderDetails)
+        {
+            Ulid orderID = Ulid.Parse(orderId);
+            var order = await _unitOfWork.GetRepository<Order>()
+                .GetAsync(predicate: o => o.OrderId == orderID);
+            if (order == null) throw new BadHttpRequestException("Order is not found");
+
+            var orderDetails = await _unitOfWork.GetRepository<OrderDetail>().GetListAsync(predicate: od => od.OrderId == orderID);
+
+            bool isRemainDeliveringZero = false;
+            var updatedOrderDetails = new List<OrderDetail>();
+
+            foreach (var orderDetail in orderDetails)
+            {
+                var match = checkOrderDetails.FirstOrDefault(cd => cd.OrderDetailId == orderDetail.OrderDetailId);
+                if (match != null)
+                {
+                    orderDetail.DeliveryStatus = match.RemainDeliveryQuantity == 0 
+                        ? OrderDetailStatusEnum.DELIVERIED.ToString() : OrderDetailStatusEnum.DELIVERING.ToString();
+                    updatedOrderDetails.Add(orderDetail);
+
+                    if (!isRemainDeliveringZero && match.RemainDeliveryQuantity == 0) isRemainDeliveringZero = true;
+                }
+            }
+
+            _unitOfWork.GetRepository<OrderDetail>().UpdateRange(updatedOrderDetails);
+
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update the Order Detail Status (DB query Error)");
+
+            if (isRemainDeliveringZero)
+            {
+                var deliveringOrderDetails = await _unitOfWork.GetRepository<OrderDetail>()
+                    .GetListAsync(predicate: od => od.OrderId == orderID && od.DeliveryStatus == OrderDetailStatusEnum.DELIVERING.ToString());
+                if(deliveringOrderDetails == null || deliveringOrderDetails.Count == 0)
+                {
+                    order.Status = OrderStatusEnum.DELIVERED.ToString();
+                    _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+
+                    bool isSuccessUpdate = await _unitOfWork.CommitAsync() > 0;
+                    if (!isSuccessUpdate) throw new Exception("Error occur when update the Order Status (DB query Error)");
+                }
+            }
+        }
+
+        public async Task CancelOrder(string orderId, string reason)
+        {
+            Ulid orderID = Ulid.Parse(orderId);
+            var order = await _unitOfWork.GetRepository<Order>()
+                .GetAsync(predicate: o => o.OrderId == orderID);
+            if (order == null) throw new BadHttpRequestException("Order is not found");
+
+            order.CancelReason = reason;
+            order.Status = OrderStatusEnum.CANCELLED.ToString();
+
+            _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update the Order cancel reason and status (DB query Error)");
         }
     }
 }

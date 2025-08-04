@@ -5,25 +5,25 @@
 namespace CleanFoodVietAPI.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class DurationInContract : Migration
+    public partial class AddRejectReasonToOrder : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "DurationInDays",
-                table: "SubscriptionContract",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            migrationBuilder.AddColumn<string>(
+                name: "RejectReason",
+                table: "Order",
+                type: "varchar(256)",
+                maxLength: 256,
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "DurationInDays",
-                table: "SubscriptionContract");
+                name: "RejectReason",
+                table: "Order");
         }
     }
 }

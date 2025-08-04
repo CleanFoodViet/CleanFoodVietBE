@@ -7,6 +7,7 @@ namespace CleanFoodVietAPI.Application.DTOs.AccountDTOs
     (
         Ulid AccountId,
         string Name,
+        string Bio,
         string Email,
         string PhoneNumber,
         string Gender,

@@ -11,6 +11,6 @@
         public string ProductName { get; set; } = null!;
         public string WeightUnit { get; set; } = null!;
         public string Currency { get; set; } = null!;
-        public int RemainDeliveredQuantity { get; set; }
+        public int DeliveredQuantity { get; set; }
     }
 }

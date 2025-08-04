@@ -12,6 +12,7 @@ namespace CleanFoodVietAPI.Application.Mappers
             CreateMap<CartDTO, Order>()
                 .ForMember(des => des.OrderId, opt => opt.MapFrom(src => Ulid.NewUlid()))
                 .ForMember(des => des.Status, opt => opt.MapFrom(src => OrderStatusEnum.PENDING.ToString()))
+                .ForMember(des => des.ShippingCost, opt => opt.MapFrom(src => 0))
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             CreateMap<CartItemDTO, OrderDetail>()

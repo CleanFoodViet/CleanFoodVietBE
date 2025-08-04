@@ -8,20 +8,20 @@
 	<!-- net9.0: EF Core 9 + official MySQL provider -->
 	<ItemGroup Condition="'$(TargetFramework)'=='net9.0'">
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.*" />
-		<PackageReference Include="MySql.EntityFrameworkCore"    Version="9.0.3" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools"   Version="9.0.4">
+		<PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design"  Version="9.0.4">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 	</ItemGroup>
 
 	<!-- net8.0: EF Core 8 + Pomelo provider -->
 	<ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore"        Version="8.*" />
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql"     Version="8.0.3" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools"  Version="8.*">
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.*" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.*">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.*">
@@ -32,6 +32,9 @@
 	<!-- TF-agnostic packages -->
 	<ItemGroup>
 		<PackageReference Include="Ulid" Version="1.3.4" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
 	</ItemGroup>
 
 	<!-- … your migrations/tools/etc. here … -->

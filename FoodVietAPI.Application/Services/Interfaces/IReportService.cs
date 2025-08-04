@@ -9,6 +9,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task<IPaginate<ReportListDTO>> GetReportList(int page, int size);
         Task<ReportDTO> GetReportInformation(string reportId);
         Task CreateReport(CreateReportDTO createReportData);
+        Task CreateUserReport(CreateUserReportDTO createReportData);
         Task UpdateReportStatus(string reportId, string status);
     }
 }

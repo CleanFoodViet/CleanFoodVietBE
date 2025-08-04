@@ -8,6 +8,7 @@
         public string AccountName { get; set; } = null!;
         public string Status { get; set; } = null!;
         public decimal TotalAmount { get; set; }
+        public decimal ShippingCost { get; set; }
         public string PaymentMethod { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public List<OrderDetailDTO> orderDetails { get; set; } = null!;
