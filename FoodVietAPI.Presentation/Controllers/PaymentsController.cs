@@ -63,7 +63,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             {
                 PaymentMethodTypes = new List<string> 
                 { 
-                    "card"
+                    "card",
                 },
                 Mode = "payment",
                 CustomerEmail = email,  // For test purpose, this is email+location_XX
@@ -77,7 +77,10 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                             UnitAmount = unitAmount,
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
-                                Name = productName
+                                Name = productName,
+                                Description =
+                                    $"Test subscription: {productName} (30 days)\n" +
+                                    $" - Quantity: 1"       
                             }
                         },
                         Quantity = 1
@@ -148,7 +151,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                 {
                     PaymentMethodTypes = new List<string> 
                     { 
-                        "card"
+                        "card",
                     },
                     Mode = "payment",
                     CustomerEmail = email,
@@ -168,7 +171,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                                 Name        = packageDto.PackageName,
                                 Description =
                                     $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)\n" +
-                                    $"Quantity: {req.Quantity}"
+                                    $" - Quantity: {req.Quantity}"
                             }
                         },
                         Quantity = req.Quantity

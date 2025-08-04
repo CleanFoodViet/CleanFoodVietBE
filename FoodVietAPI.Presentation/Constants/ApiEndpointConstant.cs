@@ -186,6 +186,20 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string ContractsHistoryEndpoint = GardenerApiEndpoint + "/contracts-history";
         }
 
+        public static class Review
+        {
+            // POST /api/v1/retailer/{retailerId}/orders/{orderId}/details/{orderDetailId}/reviews
+            public const string CreateForOrderDetail =
+                RetailerApiEndpoint + "/{retailerId}/orders/{orderId}/details/{orderDetailId}/reviews";
+
+            // GET  /api/v1/retailer/{retailerId}/orders/{orderId}/details/{orderDetailId}/review
+            public const string GetForOrderDetail =
+                RetailerApiEndpoint + "/{retailerId}/orders/{orderId}/details/{orderDetailId}/review";
+
+            // GET  /api/v1/products/{productId}/reviews
+            // You already have this under Product.ProductReviewsEndpoint
+        }
+      
         public static class Statistic
         {
             public const string GardenerStatisticEndpoint = GardenerApiEndpoint + "/{id}/statistic";
