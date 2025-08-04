@@ -13,6 +13,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public decimal ShippingCost { get; set; }
         public string PaymentMethod { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
+        public string? CancelReason { get; set; }
 
         public virtual Account Retailer { get; set; } = null!;
         public virtual Account Gardener { get; set; } = null!;
