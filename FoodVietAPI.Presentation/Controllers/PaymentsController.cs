@@ -61,7 +61,10 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             // Build the session options
             var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string> { "card" },
+                PaymentMethodTypes = new List<string> 
+                { 
+                    "card"
+                },
                 Mode = "payment",
                 CustomerEmail = email,  // For test purpose, this is email+location_XX
                 LineItems = new List<SessionLineItemOptions>
@@ -143,7 +146,10 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                 // 5) create Stripe session
                 var session = await _stripeSession.CreateAsync(new SessionCreateOptions
                 {
-                    PaymentMethodTypes = new List<string> { "card" },
+                    PaymentMethodTypes = new List<string> 
+                    { 
+                        "card"
+                    },
                     Mode = "payment",
                     CustomerEmail = email,
                     ClientReferenceId = orderId.ToString(),
@@ -153,13 +159,16 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                     {
                         PriceData = new SessionLineItemPriceDataOptions
                         {
-                            Currency   = "usd",
-                            UnitAmount = (long)(packageDto.Price * 100m),
+                            //Currency   = "usd",
+                            //UnitAmount = (long)(packageDto.Price * 100m),
+                            Currency   = "vnd",
+                            UnitAmount = (long)packageDto.Price,   // price is already in VND, no scaling
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
                                 Name        = packageDto.PackageName,
                                 Description =
-                                  $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)"
+                                    $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)\n" +
+                                    $"Quantity: {req.Quantity}"
                             }
                         },
                         Quantity = req.Quantity
