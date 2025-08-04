@@ -132,10 +132,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (order == null) throw new BadHttpRequestException("Order is not found");
 
             order.ShippingCost = shippingCost;
+            order.Status = OrderStatusEnum.PREPARING.ToString();
 
             _unitOfWork.GetRepository<Order>().UpdateAsync(order);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if (!isSuccess) throw new Exception("Error occur when update the Order Shipping cost (DB query Error)");
+            if (!isSuccess) throw new Exception("Error occur when update the Order Shipping cost and status (DB query Error)");
         }
 
         public async Task UpdateOrderStatus(string orderId, string status)
@@ -202,6 +203,21 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     if (!isSuccessUpdate) throw new Exception("Error occur when update the Order Status (DB query Error)");
                 }
             }
+        }
+
+        public async Task CancelOrder(string orderId, string reason)
+        {
+            Ulid orderID = Ulid.Parse(orderId);
+            var order = await _unitOfWork.GetRepository<Order>()
+                .GetAsync(predicate: o => o.OrderId == orderID);
+            if (order == null) throw new BadHttpRequestException("Order is not found");
+
+            order.CancelReason = reason;
+            order.Status = OrderStatusEnum.CANCELLED.ToString();
+
+            _unitOfWork.GetRepository<Order>().UpdateAsync(order);
+            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess) throw new Exception("Error occur when update the Order cancel reason and status (DB query Error)");
         }
     }
 }

@@ -4,6 +4,7 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
@@ -84,6 +85,16 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             await _orderService.UpdateOrderDetailDeliveryStatus(id, request);
 
             return Ok("Update order detail status successfully");
+        }
+
+        [HttpPatch(ApiEndpointConstant.Order.OrderRejectEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Update the order shipping cost")]
+        public async Task<IActionResult> AddRejectrReason([FromRoute] string id, [FromBody] string reason)
+        {
+            await _orderService.CancelOrder(id, reason);
+
+            return Ok("Reject order successfully");
         }
     }
 }

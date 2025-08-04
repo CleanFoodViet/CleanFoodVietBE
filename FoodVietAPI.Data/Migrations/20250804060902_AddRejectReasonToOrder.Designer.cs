@@ -3,6 +3,7 @@ using System;
 using CleanFoodVietAPI.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     [DbContext(typeof(CleanFoodVietDbContext))]
-    partial class CleanFoodVietDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250804060902_AddRejectReasonToOrder")]
+    partial class AddRejectReasonToOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -459,10 +462,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.Property<string>("CancelReason")
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
@@ -475,6 +474,10 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
+
+                    b.Property<string>("RejectReason")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("RetailerId")
                         .IsRequired()

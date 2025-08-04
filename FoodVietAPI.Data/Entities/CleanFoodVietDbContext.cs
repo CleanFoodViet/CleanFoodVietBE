@@ -371,6 +371,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ShippingCost).HasColumnType("decimal(14,2)");
                 entity.Property(e => e.PaymentMethod).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CancelReason).HasMaxLength(256);
 
                 entity.HasIndex(e => e.RetailerId).HasDatabaseName("IX_Order_RetailerId");
                 entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_Order_GardenerId");

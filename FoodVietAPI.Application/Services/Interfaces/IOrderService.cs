@@ -13,5 +13,6 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task UpdateOrderShippingCost(string orderId, decimal shippingCost);
         Task UpdateOrderStatus(string orderId, string status);
         Task UpdateOrderDetailDeliveryStatus(string orderId, List<CheckOrderDetailDeliveryDTO> checkOrderDetails);
+        Task CancelOrder(string orderId, string reason);
     }
 }
