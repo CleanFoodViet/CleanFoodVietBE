@@ -186,7 +186,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 ServicePackageOrderPaymentId = paymentId,
                 ServicePackageOrderId = orderId,
                 PaymentAmount = totalAmount,
-                Currency = "USD",
+                Currency = "VND",
                 Status = "PENDING",
                 PaymentDate = now,
                 PaymentMethod = "CARD"
