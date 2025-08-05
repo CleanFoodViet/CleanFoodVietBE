@@ -54,6 +54,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var repo = _uow.GetRepository<ServicePackageOrder>();
             return await repo.GetPagingListAsync(
                 spec: spec,
+                include: so => so.Include(x => x.ServicePackage),
                 selector: so => new ServicePackageOrderDTO
                 {
                     ServicePackageOrderId = so.ServicePackageOrderId,
@@ -65,6 +66,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     GardenerPhone = so.Gardener.PhoneNumber,
 
                     ServicePackageId = so.ServicePackageId,
+                    ServicePackageName = so.ServicePackage.PackageName,
                     TotalAmount = so.TotalAmount,
                     Status = so.Status,
                     CreatedAt = so.CreatedAt,
@@ -91,6 +93,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
             var repo = _uow.GetRepository<ServicePackageOrder>();
             var dto = await repo.GetAsync(
+                include: so => so.Include(x => x.ServicePackage),
                 selector: so => new ServicePackageOrderDTO
                 {
                     ServicePackageOrderId = so.ServicePackageOrderId,
@@ -99,6 +102,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     GardenerEmail = so.Gardener.Email,
                     GardenerPhone = so.Gardener.PhoneNumber,
                     ServicePackageId = so.ServicePackageId,
+                    ServicePackageName = so.ServicePackage.PackageName,
                     TotalAmount = so.TotalAmount,
                     Status = so.Status,
                     CreatedAt = so.CreatedAt,
