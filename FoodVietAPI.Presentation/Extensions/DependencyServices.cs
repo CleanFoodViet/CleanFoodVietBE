@@ -1,4 +1,5 @@
-﻿using CleanFoodVietAPI.Application.Services.Implements;
+﻿using CleanFoodVietAPI.Application.Interfaces;
+using CleanFoodVietAPI.Application.Services.Implements;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
@@ -70,6 +71,7 @@ namespace CleanFoodVietAPI.Presentation.Extensions
             services.AddScoped<IServicePackageService, ServicePackageService>();
             services.AddScoped<ISubscriptionContractService, SubscriptionContractService>();
             services.AddScoped<IServicePackageOrderService, ServicePackageOrderService>();
+            services.AddScoped<IReviewService, Application.Services.Implements.ReviewService>();
             services.AddScoped<IStatisticService, StatisticService>();
             //services.AddScoped<ISubscriptionReconciler, SubscriptionReconciler>();
             //services.AddScoped<IGardenerRepository, GardenerRepository>();
