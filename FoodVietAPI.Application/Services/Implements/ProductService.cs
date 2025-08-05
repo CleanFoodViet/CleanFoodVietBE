@@ -104,7 +104,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             DateTime today = DateTime.UtcNow;
 
             var product = await _unitOfWork.GetRepository<Product>()
-                .GetAsync(predicate: p => p.GardenerId == id,
+                .GetAsync(predicate: p => p.ProductId == id,
                           include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                          .Include(x => x.ProductCategory)
                                          .Include(x => x.ProductTags),

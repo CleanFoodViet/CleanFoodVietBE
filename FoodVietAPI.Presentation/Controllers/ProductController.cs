@@ -53,7 +53,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.Product.ProductEndpoint)]
         [ProducesResponseType(typeof(ProductDTO), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get Gardener Product Information")]
-        public async Task<IActionResult> GetProductsList([FromRoute] string id)
+        public async Task<IActionResult> GetProductInformation([FromRoute] string id)
         {
             var res = await _productService.GetProductInformation(id);
 
