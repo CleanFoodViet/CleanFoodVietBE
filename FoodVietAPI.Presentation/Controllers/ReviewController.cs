@@ -78,13 +78,13 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         // GET /api/v1/products/{productId}/reviews
-        [HttpGet(ApiEndpointConstant.Product.ProductReviewsEndpoint)]
-        [SwaggerOperation(Summary = "Get all reviews for a product (supposed to put this in post)")]
-        [ProducesResponseType(typeof(IReadOnlyList<ProductReviewDTO>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetReviewsForProduct([FromRoute] string productId)
-        {
-            var list = await _reviewSvc.GetProductReviewsAsync(productId);
-            return Ok(list);
-        }
+        //[HttpGet(ApiEndpointConstant.Product.ProductReviewsEndpoint)]
+        //[SwaggerOperation(Summary = "Get all reviews for a product (supposed to put this in post)")]
+        //[ProducesResponseType(typeof(IReadOnlyList<ProductReviewDTO>), StatusCodes.Status200OK)]
+        //public async Task<IActionResult> GetReviewsForProduct([FromRoute] string productId)
+        //{
+        //    var list = await _reviewSvc.GetProductReviewsAsync(productId);
+        //    return Ok(list);
+        //}
     }
 }
