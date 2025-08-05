@@ -97,7 +97,5 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when update the Order Delivery Status (DB query Error)");
         }
-
-
     }
 }
