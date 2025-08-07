@@ -78,10 +78,17 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 );
             if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
 
+            var orderDeliveryIdList = await _unitOfWork.GetRepository<OrderDelivery>()
+                .GetListAsync(
+                    predicate: od => od.OrderId == orderID,
+                    selector: od => od.OrderDeliveryId
+                );
+
             var orderDetails = await _unitOfWork.GetRepository<OrderDetail>()
                 .GetListAsync(
                     include: od => od.Include(x => x.Product)
-                                     .ThenInclude(x => x.OrderDeliveryDetails.Where(odd => odd.ProductId == x.ProductId))
+                                     .ThenInclude(x => x.OrderDeliveryDetails
+                                        .Where(odd => odd.ProductId == x.ProductId))
                                      .Include(x => x.Product.ProductPrices.Where(pp => pp.IsCurrent)),
                     predicate: od => od.OrderId == orderID,
                     selector: od => new OrderDetailDTO
@@ -95,7 +102,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                          ProductName = od.Product.ProductName,
                          WeightUnit = od.Product.ProductPrices.First().WeightUnit,
                          Currency = od.Product.ProductPrices.First().Currency,
-                         DeliveredQuantity = od.Product.OrderDeliveryDetails.Sum(x => x.Quantity)
+                         DeliveredQuantity = od.Product.OrderDeliveryDetails
+                            .Where(x => orderDeliveryIdList.Contains(x.OrderDeliveryId)).Sum(x => x.Quantity)
                     }
                 );
 
