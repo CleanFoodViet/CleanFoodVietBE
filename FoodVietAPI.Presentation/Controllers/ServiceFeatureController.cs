@@ -106,6 +106,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [SwaggerOperation(Summary = "Update service feature basic information or enanle service feature")]
         public async Task<IActionResult> UpdateServiceFeature(
             [FromQuery, Required] string id,
             [FromBody] UpdateServiceFeatureDTO dto)

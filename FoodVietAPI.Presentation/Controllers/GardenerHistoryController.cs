@@ -36,6 +36,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(GardenerEndpoint.PaymentsHistoryEndpoint)]
         [ProducesResponseType(typeof(IReadOnlyList<PaymentHistoryDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [SwaggerOperation(Summary = "Get gardener's package payment history")]
         public async Task<IActionResult> GetPaymentHistory([FromQuery, Required] string gardenerId, [FromQuery]int page = 1, [FromQuery]int size = 10)
         {
             if (!ModelState.IsValid)
@@ -62,6 +63,8 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(GardenerEndpoint.ContractsHistoryEndpoint)]
         [ProducesResponseType(typeof(IReadOnlyList<ContractHistoryDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [SwaggerOperation(Summary = "Get gardener's package payment contract")]
+
         public async Task<IActionResult> GetContractHistory([FromQuery, Required] string gardenerId, [FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             if (!ModelState.IsValid)
@@ -89,6 +92,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [ProducesResponseType(typeof(SubscriptionContractDetailDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [SwaggerOperation(Summary = "Get gardener's current used subscription")]
         public async Task<IActionResult> GetYourCurrentSubscription(
             [FromQuery, Required] string gardenerId)
         {

@@ -102,7 +102,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                          WeightUnit = od.Product.ProductPrices.First().WeightUnit,
                          Currency = od.Product.ProductPrices.First().Currency,
                          DeliveredQuantity = od.OrderDeliveryDetails
-                            .Where(odd => odd.OrderDetailId == od.OrderId).Sum(x => x.Quantity)
+                            .Where(odd => odd.OrderDetailId == od.OrderDetailId).Sum(x => x.Quantity)
                     }
                 );
 
