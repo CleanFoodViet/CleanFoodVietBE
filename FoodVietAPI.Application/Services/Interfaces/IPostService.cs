@@ -19,6 +19,13 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? filterField = null,
             string? filterValue = null,
             string? search = null);
+
+        Task<List<RetailerPostDTO>> GetPostListForRetailer(
+            string? filterField = null,
+            string? filterValue = null,
+            string? search = null,
+            string? address = null,
+            double? range = null);
         Task<PostDTO> GetPostInformation(string postId);
         Task CreatePost(string gardenerId, CreatePostDTO request);
         Task UpdatePost(string postId, UpdatePostDTO request);

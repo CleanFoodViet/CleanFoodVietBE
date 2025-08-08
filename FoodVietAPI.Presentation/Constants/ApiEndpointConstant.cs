@@ -106,6 +106,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class Post
         {
             public const string PostsEndpoint = ApiEndpoint + "/posts";
+            public const string RetailerPostsEndpoint = RetailerApiEndpoint + "/posts";
             public const string PostEndpoint = PostsEndpoint + "/{id}";
             public const string PostStatusEndpoint = PostEndpoint + "/status";
 
