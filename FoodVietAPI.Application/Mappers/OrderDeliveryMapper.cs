@@ -10,7 +10,8 @@ namespace CleanFoodVietAPI.Application.Mappers
         public OrderDeliveryMapper()
         {
             CreateMap<OrderDeliveryDetail, OrderDeliveryDetailDTO>()
-                .ForMember(des => des.ProductName, opt => opt.MapFrom(src => src.Product.ProductName));
+                .ForMember(des => des.ProductId, opt => opt.MapFrom(src => src.OrderDetail.Product.ProductId))
+                .ForMember(des => des.ProductName, opt => opt.MapFrom(src => src.OrderDetail.Product.ProductName));
 
             CreateMap<OrderDeliveryDTO, OrderDelivery>()
                 .ForMember(des => des.OrderDeliveryId, opt => opt.MapFrom(src => Ulid.NewUlid()))

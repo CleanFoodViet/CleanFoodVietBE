@@ -17,7 +17,8 @@
     {
         //public Ulid OrderDeliveryDetailId { get; set; }
         //public Ulid OrderDeliveryId { get; set; }
-        public Ulid ProductId { get; set; }
+        //public Ulid ProductId { get; set; }
+        public Ulid OrderDetailId { get; set; }
         public DateTime DeliveredAt { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }

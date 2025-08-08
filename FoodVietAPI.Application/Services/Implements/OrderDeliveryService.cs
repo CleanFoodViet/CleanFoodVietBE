@@ -29,7 +29,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid orderID = Ulid.Parse(orderId);
             var orderDelivery = await _unitOfWork.GetRepository<OrderDelivery>()
                 .GetListAsync(
-                    include: odv => odv.Include(x => x.OrderDeliveryDetails).ThenInclude(x => x.Product)
+                    include: odv => odv.Include(x => x.OrderDeliveryDetails).ThenInclude(x => x.OrderDetail).ThenInclude(x => x.Product)
                         .ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
                     predicate: odv => odv.OrderId == orderID,
                     selector: odv => new OrderDeliveryDTO
