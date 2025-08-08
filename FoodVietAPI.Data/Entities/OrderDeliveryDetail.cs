@@ -12,7 +12,8 @@ namespace CleanFoodVietAPI.Data.Entities
         [Key]
         public Ulid OrderDeliveryDetailId { get; set; }
         public Ulid OrderDeliveryId { get; set; }
-        public Ulid ProductId { get; set; }
+        //public Ulid ProductId { get; set; }
+        public Ulid OrderDetailId { get; set; }
         public DateTime DeliveredAt { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
@@ -20,6 +21,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public string Currency { get; set; } = null!;
 
         public virtual OrderDelivery OrderDelivery { get; set; } = null!;
-        public virtual Product Product { get; set; } = null!;
+        public virtual OrderDetail OrderDetail { get; set; } = null!;
     }
 }

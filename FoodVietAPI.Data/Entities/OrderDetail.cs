@@ -16,5 +16,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual Order Order { get; set; } = null!;
         public virtual Product Product { get; set; } = null!;
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
+        public virtual ICollection<OrderDeliveryDetail> OrderDeliveryDetails { get; set; } = new HashSet<OrderDeliveryDetail>();
     }
 }
