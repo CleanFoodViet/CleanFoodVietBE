@@ -24,9 +24,11 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             [FromQuery] string? filterField = null,
             [FromQuery] string? filterValue = null,
             [FromQuery] string? search = null,
-            [FromQuery] string? address = null)
+            [FromQuery] string? address = null,
+            [FromQuery] double? range = null
+            )
         {
-            var res = await _postService.GetPostList(page, size, filterField, filterValue, search, address);
+            var res = await _postService.GetPostList(page, size, filterField, filterValue, search, address, range);
             return Ok(res);
         }
 
@@ -41,6 +43,20 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             [FromQuery] string? search = null)
         {
             var res = await _postService.GetGardenerPostList(id, page, size, filterField, filterValue, search);
+            return Ok(res);
+        }
+
+        [HttpGet(ApiEndpointConstant.Post.RetailerPostsEndpoint)]
+        [ProducesResponseType(typeof(List<RetailerPostDTO>), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get available Post List for retailers")]
+        public async Task<IActionResult> GetPostListForRetailer(
+            [FromQuery] string? filterField = null,
+            [FromQuery] string? filterValue = null,
+            [FromQuery] string? search = null,
+            [FromQuery] string? address = null,
+            [FromQuery] double? range = null)
+        {
+            var res = await _postService.GetPostListForRetailer(filterField, filterValue, search, address, range);
             return Ok(res);
         }
 

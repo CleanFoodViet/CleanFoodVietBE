@@ -13,8 +13,10 @@ using CleanFoodVietAPI.Data.Enums.PostMedia;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Drawing;
 using System.Security.Principal;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
@@ -45,7 +47,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                  .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                  .Include(x => x.Product.ProductCertificates),
                 predicate: po => po.Status.Equals(PostStatusEnum.ACTIVE.ToString()) && 
-                                 accountIds != null ? accountIds.Any(x => x == po.GardenerId) : true,
+                                 (accountIds != null ? accountIds.Any(x => x == po.GardenerId) : true),
                 spec: specification,
                 selector: po => new PostListDTO(
                     po.PostId,
@@ -118,6 +120,45 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 page: page, size: size);
 
             return postList;
+        }
+
+        public async Task<List<RetailerPostDTO>> GetPostListForRetailer(
+            string? filterField = null,
+            string? filterValue = null,
+            string? search = null,
+            string? address = null,
+            double? range = null)
+        {
+            var specification = new PostSpecification(filterField, filterValue, "Priority", "asc", search);
+
+            List<Ulid>? accountIds = await GetGardnerIdHaveLocationInRange(address, range);
+
+            var postList = await _unitOfWork.GetRepository<Post>()
+                .GetListAsync(
+                include: po => po.Include(x => x.PostMedias.Where(pm => pm.MediumType.Equals(PostMediaTypeEnum.THUMBNAIL.ToString())))
+                                 .Include(x => x.Account).ThenInclude(x => x.Addresses)
+                                 .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                 .Include(x => x.Product.ProductCertificates),
+                predicate: po => po.Status == PostStatusEnum.ACTIVE.ToString() &&
+                                 (accountIds != null ? accountIds.Any(x => x == po.GardenerId) : true),
+                spec: specification,
+                selector: po => new RetailerPostDTO(
+                    po.PostId,
+                    po.Title,
+                    po.Product.ProductPrices.First().Price,
+                    po.Product.ProductPrices.First().Currency,
+                    po.PostMedias.First().MediumUrl,
+                    po.Account.Name,
+                    po.Account.Avatar,
+                    po.CreatedAt,
+                    po.Content,
+                    po.Status,
+                    po.Rating,
+                    po.Product.ProductPrices.First().WeightUnit,
+                    po.Product.ProductCertificates.Count() > 0,
+                    po.ProductId));
+
+            return postList.ToList();
         }
 
         public async Task CreatePost(string gardenerId, CreatePostDTO request)
