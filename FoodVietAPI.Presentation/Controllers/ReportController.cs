@@ -48,7 +48,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPost(ApiEndpointConstant.Report.UserReportsEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
-        [SwaggerOperation(Summary = "Create a new Report to Admin")]
+        [SwaggerOperation(Summary = "Create a new User account report to Admin using account phone number")]
         public async Task<IActionResult> CreateUserReport([FromBody] CreateUserReportDTO request)
         {
             await _reportService.CreateUserReport(request);

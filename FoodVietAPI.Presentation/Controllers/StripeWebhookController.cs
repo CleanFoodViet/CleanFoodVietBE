@@ -33,6 +33,7 @@ public class StripeWebhookController : ControllerBase
     /// POST {AdminApiEndpoint}/webhook/stripe/test-post
     /// </summary>
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpointTest)]
+    [SwaggerOperation(Summary = "Test stripe payment webhook call")]
     public Task<IActionResult> TestPost()
         => HandleWebhookAsync(_testSecret, prefix: "▶️ Test");
 
@@ -41,6 +42,7 @@ public class StripeWebhookController : ControllerBase
     /// POST {AdminApiEndpoint}/webhook/stripe
     /// </summary>
     [HttpPost(ApiEndpointConstant.Webhook.StripeWebhookEndpoint)]
+    [SwaggerOperation(Summary = "Api for stripe payment webhook call (currently used)")]
     public Task<IActionResult> Post()
         => HandleWebhookAsync(_liveSecret, prefix: "▶️ Live");
 

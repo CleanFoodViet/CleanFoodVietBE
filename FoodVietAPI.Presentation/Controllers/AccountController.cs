@@ -87,7 +87,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         [HttpPatch(ApiEndpointConstant.Account.AccountPasswordEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Change or reset account password")]
+        [SwaggerOperation(Summary = @"Change or reset account password. action field = CHANGE/RESET")]
         public async Task<IActionResult> ChangeOrResetPassword([FromBody] ChangePasswordDto request)
         {
             await _accountService.ChangePassword(request);
