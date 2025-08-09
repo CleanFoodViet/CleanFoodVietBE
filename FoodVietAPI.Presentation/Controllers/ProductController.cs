@@ -126,7 +126,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         //Product Certificates
         [HttpGet(ApiEndpointConstant.Product.ProductCertificatesEndpoint)]
-        [ProducesResponseType(typeof(List<ProductPriceDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<GetProductCertificateDTO>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get Gardener Products' Certificates")]
         public async Task<IActionResult> GetProductCertificateList([FromRoute] string id)
         {

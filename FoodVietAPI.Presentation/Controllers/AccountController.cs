@@ -63,9 +63,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [SwaggerOperation(Summary = "Update status of a account (Account Status: ACTIVE, INACTIVE, BANNED) and IsVerified (optional)")]
         public async Task<IActionResult> UpdateAccountStatus([FromRoute] string id, [FromQuery] string status, [FromQuery]bool? isVerified)
         {
-            var checkVerified = isVerified == null ? false : true;
-
-            await _accountService.UpdateAccountStatus(id, status);
+            await _accountService.UpdateAccountStatus(id, status, isVerified);
             return Ok("Update status successfully");
         }
 
