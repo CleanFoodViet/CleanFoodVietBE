@@ -120,7 +120,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.ProductPrices.First().Price,
                               p.ProductPrices.First().Currency,
                               p.ProductPrices.First().AvailabledDate,
-                              p.ProductPrices.First().WeightUnit));
+                              p.ProductPrices.First().WeightUnit,
+                              p.Gardener.AccountId,
+                              p.Gardener.Name));
 
             if (product == null) throw new BadHttpRequestException("Product cannot be found");
 
