@@ -11,13 +11,13 @@ namespace CleanFoodVietAPI.Application.Mappers
             CreateMap<CartItem, CartItemDTO>()
                 .ForMember(des => des.ProductName, opt => opt.MapFrom(src => src.Product.ProductName));
 
+
+
             CreateMap<CartDTO, Cart>()
                 .ForMember(des => des.CartId, opt => opt.MapFrom(src => src.CartId ?? Ulid.NewUlid()));
 
             CreateMap<CartItemDTO, CartItem>()
                 .ForMember(des => des.CartItemId, opt => opt.MapFrom(src => src.CartItemId ?? Ulid.NewUlid()));
-
-
         }
     }
 }
