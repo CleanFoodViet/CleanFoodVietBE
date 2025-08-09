@@ -22,7 +22,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? sortOrder = "asc",
             string? search = null);
         Task<AccountDTO> GetAccountInformation(string id);
-        Task UpdateAccountStatus(string accountId, string status);
+        Task UpdateAccountStatus(string accountId, string status, bool? isVerified);
         Task UpdateProfile(string id, UpdateAccountDTO data);
         Task ChangePassword(ChangePasswordDto data);
         #endregion
