@@ -63,6 +63,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             // Add:
             foreach (var cart in cartsToAdd)
             {
+                cart.CartId = Ulid.NewUlid();
                 cart.CreatedAt = DateTime.UtcNow;
                 cart.UpdatedAt = DateTime.UtcNow;
 
@@ -70,6 +71,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 {
                     item.CreatedAt = DateTime.UtcNow;
                     item.UpdatedAt = DateTime.UtcNow;
+                    item.CartId = cart.CartId;
                 }
 
                 await _unitOfWork.GetRepository<Cart>().InsertAsync(cart);
