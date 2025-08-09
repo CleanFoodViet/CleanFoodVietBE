@@ -109,6 +109,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     keptItem.Quantity = incoming.Quantity;
                     keptItem.ProductUnit = incoming.ProductUnit;
                     keptItem.UpdatedAt = DateTime.UtcNow;
+
+                    _unitOfWork.GetRepository<CartItem>().UpdateAsync(keptItem);
                 }
             }
 
