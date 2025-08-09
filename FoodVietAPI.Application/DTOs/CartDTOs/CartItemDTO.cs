@@ -3,7 +3,7 @@
     public record CartItemDTO
     {
         public Ulid? CartItemId { get; set; }
-        public Ulid CartId { get; set; }
+        public Ulid? CartId { get; set; }
         public Ulid ProductId { get; set; }
         public string ProductName { get; set; } = null!;
         public decimal Price { get; set; }
