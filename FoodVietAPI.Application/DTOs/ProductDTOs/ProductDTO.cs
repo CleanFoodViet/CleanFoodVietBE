@@ -17,6 +17,10 @@
         decimal Price,  
         string Currency,
         DateTime AvailabledDate,
-        string WeightUnit
+        string WeightUnit,
+
+        //Gardener Field
+        Ulid GardenerId,
+        string GardenerName
     );
 }
