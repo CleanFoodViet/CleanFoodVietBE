@@ -63,7 +63,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             // Add:
             foreach (var cart in cartsToAdd)
             {
-                cart.CartId = Ulid.NewUlid();
                 cart.CreatedAt = DateTime.UtcNow;
                 cart.UpdatedAt = DateTime.UtcNow;
 
