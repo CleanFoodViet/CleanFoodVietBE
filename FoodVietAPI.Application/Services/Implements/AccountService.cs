@@ -122,7 +122,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return account!;
         }
 
-        public async Task UpdateAccountStatus(string id, string status)
+        public async Task UpdateAccountStatus(string id, string status, bool? isVerified)
         {
             Ulid accountId = Ulid.Parse(id);
             var account = await _unitOfWork.GetRepository<Account>()
@@ -137,6 +137,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             else
             {
                 account.Status = AccountStatusEnum.INACTIVE.ToString();
+            }
+
+            if(isVerified != null)
+            {
+                account.IsVerified = (bool)isVerified;
             }
 
             account.UpdatedAt = DateTime.UtcNow;
