@@ -8,9 +8,18 @@ namespace CleanFoodVietAPI.Data.Paginate
         {
             if (firstPage > page)
                 throw new ArgumentException($"Page ({page}) must greater or equal than firstPage ({firstPage})");
+
+            
             var total = await queryable.CountAsync();
             var items = await queryable.Skip((page - firstPage) * size).Take(size).ToListAsync();
             var totalPages = (int)Math.Ceiling(total / (double)size);
+
+            if(size <= 0)
+            {
+                total = 0;
+                totalPages = 0;
+            }
+
             return new Paginate<T>
             {
                 Page = page,
