@@ -24,5 +24,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 
         Task<SubscriptionContractDetailDTO?> GetActiveContractAsync(string gardenerId);
 
+        Task<CurrentSubscriptionContractBenefitDTO> GetCurrentSubscriptionContractBenefit(string gardenerId);
+
     }
 }

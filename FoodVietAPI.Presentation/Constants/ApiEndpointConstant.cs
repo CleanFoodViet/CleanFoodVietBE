@@ -183,6 +183,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class GardenerEndpoint
         {
             public const string YourCurrentSubscriptionEndpoint = GardenerApiEndpoint + "/your-current-subscription";
+            public const string CurrentSubscriptionBenefitEndpoint = GardenerApiEndpoint + "/current-subscription-benefit";
             public const string PaymentsHistoryEndpoint = GardenerApiEndpoint + "/payments-history";
             public const string ContractsHistoryEndpoint = GardenerApiEndpoint + "/contracts-history";
         }

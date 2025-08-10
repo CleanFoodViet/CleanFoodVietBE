@@ -24,6 +24,8 @@ namespace CleanFoodVietAPI.Application.Mappers
                            opt => opt.MapFrom(src => src.ServicePackageOrderPayments));
 
             CreateMap<ServicePackageOrderPayment, SubscriptionOrderPaymentDTO>();
+
+            CreateMap<SubscriptionContractBenefit, CurrentSubscriptionContractBenefitDTO>();
         }
     }
 }

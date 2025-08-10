@@ -168,10 +168,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var post = _mapper.Map<Post>(request);
 
             //Post Create
-            var today = DateTime.UtcNow;
+            //var today = DateTime.UtcNow;
             var gardenerContract = await _unitOfWork.GetRepository<SubscriptionContract>()
                 .GetAsync(include: sc => sc.Include(x => x.SubscriptionContractBenefits),
-                predicate: sc => sc.GardenerId == gardenerID && sc.StartDate < today && sc.EndDate > today);
+                predicate: sc => sc.GardenerId == gardenerID && sc.Status == SubscriptionContractStatusEnum.ACTIVE.ToString());
 
             if (gardenerContract == null)
             {
@@ -197,6 +197,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
                 post.Priority = postPriority != null ? postPriority.DefaultValue : int.MaxValue;
                 postQuota.RemainingValue = postQuota.RemainingValue - 1;
+
+                //if(postQuota.RemainingValue == 0)
+                //{
+                //    gardenerContract.Status = SubscriptionContractStatusEnum.EXPRIED.ToString();
+                //    _unitOfWork.GetRepository<SubscriptionContract>().UpdateAsync(gardenerContract);
+                //}
 
                 _unitOfWork.GetRepository<SubscriptionContractBenefit>().UpdateAsync(postQuota);
             }
