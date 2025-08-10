@@ -16,7 +16,7 @@
                 throw new ArgumentException($"Page ({page}) must be greater or equal than firstPage ({firstPage})");
             }
 
-            if (size == 0)
+            if (size <= 0)
             {
                 Page = page;
                 Size = size;
