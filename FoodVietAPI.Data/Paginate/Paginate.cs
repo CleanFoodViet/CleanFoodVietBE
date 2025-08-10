@@ -16,22 +16,34 @@
                 throw new ArgumentException($"Page ({page}) must be greater or equal than firstPage ({firstPage})");
             }
 
-            if (source is IQueryable<TResult> queryable)
+            if (size == 0)
             {
                 Page = page;
                 Size = size;
-                Total = queryable.Count();
-                Items = queryable.Skip((page - firstPage) * size).Take(size).ToList();
-                TotalPages = (int)Math.Ceiling(Total / (double)Size);
+                Total = 0;
+                Items = new List<TResult>();
+                TotalPages = 0;
             }
             else
             {
-                Page = page;
-                Size = size;
-                Total = enumerable.Length;
-                Items = enumerable.Skip((page - firstPage) * size).Take(size).ToList();
-                TotalPages = (int)Math.Ceiling(Total / (double)Size);
+                if (source is IQueryable<TResult> queryable)
+                {
+                    Page = page;
+                    Size = size;
+                    Total = queryable.Count();
+                    Items = queryable.Skip((page - firstPage) * size).Take(size).ToList();
+                    TotalPages = (int)Math.Ceiling(Total / (double)Size);
+                }
+                else
+                {
+                    Page = page;
+                    Size = size;
+                    Total = enumerable.Length;
+                    Items = enumerable.Skip((page - firstPage) * size).Take(size).ToList();
+                    TotalPages = (int)Math.Ceiling(Total / (double)Size);
+                }
             }
+
         }
 
         public Paginate()
