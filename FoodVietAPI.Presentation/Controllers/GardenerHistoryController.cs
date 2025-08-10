@@ -128,8 +128,8 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         // GET /api/v1/gardeners/current-subscription?gardenerId={id}
         [HttpGet(GardenerEndpoint.CurrentSubscriptionBenefitEndpoint)]
-        [ProducesResponseType(typeof(SubscriptionContractDetailDTO), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Get gardener's current used subscription")]
+        [ProducesResponseType(typeof(CurrentSubscriptionContractBenefitDTO), StatusCodes.Status200OK)]
+        [SwaggerOperation(Summary = "Get gardener's current used subscription contract post_quota benefit")]
         public async Task<IActionResult> GetYourCurrentSubscriptionBenefit(
             [FromQuery, Required] string gardenerId)
         {
