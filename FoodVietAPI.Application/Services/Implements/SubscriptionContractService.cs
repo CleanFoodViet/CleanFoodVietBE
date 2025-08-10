@@ -11,6 +11,7 @@ using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
+using CleanFoodVietAPI.Data.Enums.SubscriptionContract;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -158,6 +159,25 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 selector: SubscriptionContractDetailDTO.Projection);
 
             return list.SingleOrDefault();
+        }
+
+        public async Task<CurrentSubscriptionContractBenefitDTO> GetCurrentSubscriptionContractBenefit(string gardenerId)
+        {
+            Ulid gardenerID = Ulid.Parse(gardenerId);
+            var gardener = await _unitOfWork.GetRepository<Account>()
+                .GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if (gardener == null) throw new BadHttpRequestException("Gardener is not found"); ;
+
+            var subscriptionContract = await _unitOfWork.GetRepository<SubscriptionContract>()
+                .GetAsync(
+                    include: sc => sc.Include(x => x.SubscriptionContractBenefits),
+                    predicate: sc => sc.GardenerId == gardenerID && sc.Status == SubscriptionContractStatusEnum.ACTIVE.ToString()
+                );
+
+            var currentBenefit = subscriptionContract.SubscriptionContractBenefits
+                .Where(scb => scb.BenefitType == "POST_QUOTA").First();
+
+            return _mapper.Map<CurrentSubscriptionContractBenefitDTO>(currentBenefit);
         }
     }
 }
