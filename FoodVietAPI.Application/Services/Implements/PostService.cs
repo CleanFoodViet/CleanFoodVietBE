@@ -10,6 +10,7 @@ using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
 using CleanFoodVietAPI.Data.Enums.PostMedia;
+using CleanFoodVietAPI.Data.Enums.SubscriptionContract;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -195,6 +196,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 }
 
                 post.Priority = postPriority != null ? postPriority.DefaultValue : int.MaxValue;
+                postQuota.RemainingValue = postQuota.RemainingValue - 1;
+
+                _unitOfWork.GetRepository<SubscriptionContractBenefit>().UpdateAsync(postQuota);
             }
 
             //Post Media Create

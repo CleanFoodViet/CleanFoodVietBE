@@ -82,7 +82,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         public async Task<IActionResult> UpdateProfile([FromRoute]string id, [FromBody]UpdateAccountDTO data)
         {
             await _accountService.UpdateProfile(id, data);
-            return Ok("Update profile successfully");
+            return Ok("Update successfully");
         }
 
         [HttpPatch(ApiEndpointConstant.Account.AccountPasswordEndpoint)]
