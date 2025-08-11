@@ -1,4 +1,5 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ProductCaertificateDTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
 {
@@ -18,6 +19,7 @@ namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
         public List<ProductCertificateDTO> Certificates { get; set; } = null!;
 
         //Product Price Data Field
+        [Range(0, double.MaxValue, ErrorMessage = "Price must be 0 or greater.")]
         public decimal Price { get; set; }
         public string Currency { get; set; } = null!;
         public DateTime AvailabledDate { get; set; }
