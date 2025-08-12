@@ -92,6 +92,15 @@ public class StripeWebhookController : ControllerBase
                 await _orderSvc.HandlePaymentFailedAsync(intent);
                 break;
 
+            case "checkout.session.expired":
+                var expiredSession = (Session)stripeEvent.Data.Object!;
+                _logger.LogWarning(
+                    "➡️  Handling checkout.session.expired for session {SessionId} (order {OrderId})",
+                    expiredSession.Id,
+                    expiredSession.Metadata.GetValueOrDefault("orderId"));
+                await _orderSvc.HandleSessionExpiredAsync(expiredSession);
+                break;
+
             default:
                 _logger.LogDebug(
                     "↩️  Ignoring unhandled event type {Type}", stripeEvent.Type);
