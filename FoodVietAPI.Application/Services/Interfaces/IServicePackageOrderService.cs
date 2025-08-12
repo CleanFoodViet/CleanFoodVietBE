@@ -35,5 +35,8 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
 
         // Called when Stripe fires payment_intent.payment_failed
         Task HandlePaymentFailedAsync(PaymentIntent intent);
+
+        // Called when Stripe fires checkout.session.expired
+        Task HandleSessionExpiredAsync(Stripe.Checkout.Session session);
     }
 }
