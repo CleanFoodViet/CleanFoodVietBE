@@ -9,7 +9,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     {
         Task<IPaginate<OrderListDTO>> GetAccountOrderList(string accountId, int page, int size, string? filterField, string? filterValue);
         Task<OrderDTO> GetOrderInformation(string orderId, string accountId);
-        Task CreateOrder(List<CartDTO> carts, string paymentMethod);
+        Task CreateOrder(List<CartDTO> carts, string paymentMethod, string shippingAddress);
         Task UpdateOrderShippingCost(string orderId, decimal shippingCost);
         Task UpdateOrderStatus(string orderId, string status);
         Task UpdateOrderDetailDeliveryStatus(string orderId, List<CheckOrderDetailDeliveryDTO> checkOrderDetails);

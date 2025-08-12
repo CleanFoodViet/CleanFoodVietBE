@@ -68,12 +68,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         GardenerId = o.GardenerId,
                         AccountName = account.Role.Name == AccountRoleEnum.RETAILER.ToString() ?
                                         o.Gardener.Name : o.Retailer.Name,
+                        PhoneNumber = account.Role.Name == AccountRoleEnum.RETAILER.ToString() ?
+                                        o.Gardener.PhoneNumber : o.Retailer.PhoneNumber,
                         Status = o.Status,
                         TotalAmount = o.TotalAmount,
                         PaymentMethod = o.PaymentMethod,
                         CreatedAt = o.CreatedAt,
                         ShippingCost = o.ShippingCost,
                         CancelReason = o.CancelReason,
+                        ShippingAddress = o.ShippingAddress,
                     }
                 );
             if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
@@ -111,11 +114,13 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return orderInfo;
         }
 
-        public async Task CreateOrder(List<CartDTO> carts, string paymentMethod)
+        public async Task CreateOrder(List<CartDTO> carts, string paymentMethod, string shippingAddess)
         {
             foreach(var cart in carts)
             {
-                var order = _mapper.Map<Order>(cart);
+                var order = _mapper.Map<Order>(
+                    cart,
+                    opt => opt.Items["ShippingAddress"] = shippingAddess);
                 order.PaymentMethod = paymentMethod;
                 order.TotalAmount = cart.CartItems.Sum(ct => ct.Price * ct.Quantity); //Need to detailed discuss.
 

@@ -46,9 +46,12 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpPost(ApiEndpointConstant.Order.OrderEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [SwaggerOperation(Summary = "Create Order from Retailer Carts (the request is the Information in the CartDTO which use to show the Cart List in UI of Retailer)")]
-        public async Task<IActionResult> CreateOrder([FromQuery] string paymentMethod, [FromBody]List<CartDTO> request)
+        public async Task<IActionResult> CreateOrder(
+            [FromQuery] string paymentMethod,
+            [FromQuery] string shippingAddress,
+            [FromBody]List<CartDTO> request)
         {
-            await _orderService.CreateOrder(request, paymentMethod);
+            await _orderService.CreateOrder(request, paymentMethod, shippingAddress);
 
             return StatusCode(StatusCodes.Status201Created, "Create order successfully");
         }
