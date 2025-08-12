@@ -20,6 +20,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         private readonly IServicePackageOrderService _orderSvc;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
+        private readonly string _frontendDomain;
 
         public PaymentsController(
             SessionService stripeSession,
@@ -35,6 +36,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             _orderSvc = orderSvc;
             _config = config;
             _env = env;
+            _frontendDomain = config["App:FrontendDomain"]!;
         }
 
         /// <summary>
@@ -87,8 +89,10 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                     }
                 },
 
-                SuccessUrl = $"{_config["App:FrontendDomain"]}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{_config["App:FrontendDomain"]}/payment-cancelled"
+                //SuccessUrl = $"{_config["App:FrontendDomain"]}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
+                //CancelUrl = $"{_config["App:FrontendDomain"]}/payment-cancelled"
+                SuccessUrl = $"{_frontendDomain}/gardener/payment/success?session_id={{CHECKOUT_SESSION_ID}}",
+                CancelUrl = $"{_frontendDomain}/gardener/payment/fail"
             };
 
             // Create the session
@@ -177,8 +181,10 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                         Quantity = req.Quantity
                     }
                 },
-                    SuccessUrl = $"{_config["App:FrontendDomain"]}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
-                    CancelUrl = $"{_config["App:FrontendDomain"]}/payment-cancelled"
+                    //SuccessUrl = $"{_config["App:FrontendDomain"]}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
+                    //CancelUrl = $"{_config["App:FrontendDomain"]}/payment-cancelled"
+                    SuccessUrl = $"{_frontendDomain}/gardener/payment/success?session_id={{CHECKOUT_SESSION_ID}}",
+                    CancelUrl = $"{_frontendDomain}/gardener/payment/fail"
                 });
 
                 // 6) return session URL + gardener info
