@@ -21,6 +21,7 @@ namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
         decimal Rating,
         string WeightUnit,
         bool hasProductCertificate,
-        Ulid ProductId
+        Ulid ProductId,
+        string ProductCategory
     );
 }
