@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     [DbContext(typeof(CleanFoodVietDbContext))]
-    [Migration("20250808044606_ChangeOrderDeliveryDetailRelationship")]
-    partial class ChangeOrderDeliveryDetailRelationship
+    [Migration("20250812151603_AddShippingAddress")]
+    partial class AddShippingAddress
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -483,6 +483,11 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
+
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
 
                     b.Property<decimal>("ShippingCost")
                         .HasColumnType("decimal(14,2)");

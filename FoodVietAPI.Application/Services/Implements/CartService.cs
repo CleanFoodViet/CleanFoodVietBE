@@ -12,7 +12,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 {
     public class CartService : BaseService<CartService>, ICartService
     {
-        public CartService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<CartService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor) 
+        public CartService(IUnitOfWork<CleanFoodVietDbContext> unitOfWork, ILogger<CartService> logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             : base(unitOfWork, logger, mapper, httpContextAccessor)
         {
         }
@@ -39,7 +39,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return retailerCart.ToList();
         }
 
-        public async Task ModifyCart(string reatilerId, List<CartDTO> request) 
+        public async Task ModifyCart(string reatilerId, List<CartDTO> request)
         {
             Ulid retailerID = Ulid.Parse(reatilerId);
 
@@ -127,14 +127,17 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             if (carts == null) throw new Exception("Retailer don't have any carts");
 
-            foreach(var cart in carts)
+            foreach (var cart in carts)
             {
                 _unitOfWork.GetRepository<CartItem>().DeleteRangeAsync(cart.CartItems);
                 _unitOfWork.GetRepository<Cart>().DeleteAsync(cart);
             }
 
-            bool isSuccess = await _unitOfWork.CommitAsync() > 0;
-            if(!isSuccess) throw new Exception("Error occur when delete retailer carts (DB error)");
+            if (carts.Count() != 0)
+            {
+                bool isSuccess = await _unitOfWork.CommitAsync() > 0;
+                if (!isSuccess) throw new Exception("Error occur when delete retailer carts (DB error)");
+            }
         }
     }
 }
