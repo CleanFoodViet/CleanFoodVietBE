@@ -31,6 +31,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string RetailerAccountsEndpoint = AccountsEndpoint + "/retailers";
             public const string GardenerAccountsEndpoint = AccountsEndpoint + "/gardeners";
             public const string AccountProfileEndpoint = AccountEndpoint + "/profile";
+            public const string AccountPasswordEndpoint = AccountsEndpoint + "/password";
 
             //Account address endpoints
             public const string AccountAddressesEndpoint = AccountEndpoint + "/addresses";
@@ -95,6 +96,9 @@ namespace CleanFoodVietAPI.Presentation.Constants
         {
             public const string OrdersEndpoint = ApiEndpoint + "/orders";
             public const string OrderEndpoint = OrdersEndpoint + "/{id}";
+            public const string OrderShippingCostEndpoint = OrderEndpoint + "/shipping-cost";
+            public const string OrderRejectEndpoint = OrderEndpoint + "/order-reject";
+            public const string OrderDeatilCheckEndpoint = OrderEndpoint + "/order-details";
             public const string OrderDeliveriesEndpoint = OrderEndpoint + "/order-deliveries";
             public const string OrderDeliveryEndpoint = OrderDeliveriesEndpoint + "/{orderDeliveryId}";
         }
@@ -111,11 +115,14 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class Product
         {
             public const string GardenerProductsEndpoint = GardenerApiEndpoint + "/{gardenerId}/products";
+            public const string GardenerProductEndpoint = GardenerProductsEndpoint + "/{id}";
             public const string ProductsEndpoint = ApiEndpoint + "/products";
             public const string ProductEndpoint = ProductsEndpoint + "/{id}";
+            public const string ProductStatusEndpoint = ProductEndpoint + "/status";
             public const string ProductReviewsEndpoint = ProductEndpoint + "/reviews";
             public const string ProductPricesEndpoint = ProductEndpoint + "/prices";
             public const string ProductPriceEndpoint = ProductPricesEndpoint + "/{priceId}";
+            public const string ProductCertificatesEndpoint = ProductEndpoint + "/product-certificates";
         }
 
         public static class ProductCategory
@@ -128,6 +135,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
         public static class Report
         {
             public const string ReportsEndpoint = ApiEndpoint + "/reports";
+            public const string UserReportsEndpoint = ApiEndpoint + "/user-reports";
             public const string ReportEndpoint = ReportsEndpoint + "/{id}";
         }
 
@@ -190,6 +198,14 @@ namespace CleanFoodVietAPI.Presentation.Constants
 
             // GET  /api/v1/products/{productId}/reviews
             // You already have this under Product.ProductReviewsEndpoint
+        }
+      
+        public static class Statistic
+        {
+            public const string GardenerStatisticEndpoint = GardenerApiEndpoint + "/{id}/statistic";
+            public const string GardenerGeneralStatisticEndpoint = GardenerStatisticEndpoint + "/general";
+            public const string GardenerYearOrderStatisticEndpoint = GardenerStatisticEndpoint + "/year-orders";
+            public const string GardenerUpcommingAppointmentEndpoint = GardenerStatisticEndpoint + "/upcomming-appointment";
         }
     }
 }

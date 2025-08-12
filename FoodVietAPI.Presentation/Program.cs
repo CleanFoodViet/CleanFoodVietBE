@@ -1,3 +1,4 @@
+using CleanFoodVietAPI.Presentation.Converters;
 using CleanFoodVietAPI.Presentation.Extensions;
 using CleanFoodVietAPI.Presentation.Middlewares;
 using Scalar.AspNetCore;
@@ -6,6 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1) Core ASP.NET + OpenAPI
 builder.Services.AddControllers();
+    //.AddJsonOptions(options =>
+    //{
+    //    options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter());
+    //});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi("v1", opts =>
     opts.AddDocumentTransformer<BearerSecuritySchemeTransformer>());

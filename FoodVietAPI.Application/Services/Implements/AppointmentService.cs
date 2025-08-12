@@ -123,6 +123,11 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 .GetAsync(predicate: app => app.AppointmentId == appointmentID);
             if (appointment == null) throw new BadHttpRequestException("Appointment is not found");
 
+            DateTime today = new DateTime();
+            TimeSpan difference = appointment.AppointmentDate - today;
+
+            if (difference.TotalHours < 6) throw new BadHttpRequestException("The limit of timeto cancel appointment is before appointment at least 6 hours");
+
             appointment.CancellationReason = cancelData.CancellationReason;
             appointment.CancelledBy = cancelData.CancelledBy;
 
@@ -131,7 +136,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!isSuccess) throw new Exception("Error occur when update appointment status (DB query error)");
         }
 
-        public async Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId)
+        public async Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId, int page, int size)
         {
             Ulid accountId = Ulid.Parse(gardenerId);
             var appointmentList = await _unitOfWork.GetRepository<Appointment>()
@@ -151,7 +156,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Subject = ap.Subject,
                         PhoneNumber = ap.Retailer.PhoneNumber,
                         RetailerName = ap.Retailer.Name
-                    }
+                    },
+                    page: page, size: size
                 );
 
             return appointmentList;
@@ -176,7 +182,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Description = ap.Description,
                         AccountName = ap.Retailer.Name,
                         AccountAvatar = ap.Retailer.Avatar,
-                        AccountPhoneNumber = ap.Retailer.PhoneNumber
+                        AccountPhoneNumber = ap.Retailer.PhoneNumber,
+                        StartTime = ap.AppointmentDate.ToString("HH:mm"),
+                        EndTime = ap.AppointmentDate.AddMinutes(ap.Duration).ToString("HH:mm")
                     }
                 );
 

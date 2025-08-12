@@ -46,6 +46,15 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return StatusCode(StatusCodes.Status201Created, "Report create successfully");
         }
 
+        [HttpPost(ApiEndpointConstant.Report.UserReportsEndpoint)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        [SwaggerOperation(Summary = "Create a new Report to Admin")]
+        public async Task<IActionResult> CreateUserReport([FromBody] CreateUserReportDTO request)
+        {
+            await _reportService.CreateUserReport(request);
+            return StatusCode(StatusCodes.Status201Created, "Report create successfully");
+        }
+
         [HttpPatch(ApiEndpointConstant.Report.ReportEndpoint)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = @"Admin Update a Report Status. 

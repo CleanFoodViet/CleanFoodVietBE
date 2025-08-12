@@ -28,7 +28,7 @@ namespace CleanFoodVietAPI.Application.Mappers
                 .ForMember(des => des.Password, opt => opt.MapFrom(src => HashUtil.PasswordHash(src.Password)))
                 .ForMember(des => des.Gender, opt => opt.MapFrom(src => src.Gender ?? AccountGenderEnum.MALE.ToString()))
                 .ForMember(des => des.Avatar, opt => opt.MapFrom(src => "None"))
-                .ForMember(des => des.Status, opt => opt.MapFrom(src => AccountStatusEnum.ACTIVE.ToString()))
+                .ForMember(des => des.Status, opt => opt.MapFrom(src => AccountStatusEnum.PENDING.ToString()))
                 .ForMember(des => des.IsVerified, opt => opt.MapFrom(src => false))
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
@@ -41,6 +41,9 @@ namespace CleanFoodVietAPI.Application.Mappers
             CreateMap<Account, AccountDTO>();
             CreateMap<Certificate, CertificateDTO>();
             CreateMap<Address, GetAddressDTO>();
+
+            CreateMap<GardenerRegisterDTO, Address>()
+                .ForMember(des => des.AddressId, opt => opt.MapFrom(src => Ulid.NewUlid()));
         }
     }
 }

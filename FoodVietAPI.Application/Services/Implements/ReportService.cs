@@ -80,6 +80,23 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             }
         }
 
+        public async Task CreateUserReport(CreateUserReportDTO createReportData)
+        {
+            var account = await _unitOfWork.GetRepository<Account>()
+                .GetAsync(predicate: a => a.PhoneNumber == createReportData.PhoneNumber);
+            if (account == null) throw new BadHttpRequestException("Account is not found, please check the phone number again");
+
+            var newReport = _mapper.Map<Report>(createReportData);
+            newReport.TargetId = account.AccountId;
+
+            await _unitOfWork.GetRepository<Report>().InsertAsync(newReport);
+            var isSuccess = await _unitOfWork.CommitAsync() > 0;
+            if (!isSuccess)
+            {
+                throw new Exception("Error occurred while creating the Report (DB query error)");
+            }
+        }
+
         public async Task UpdateReportStatus(string reportId, string status)
         {
             Ulid rpId = Ulid.Parse(reportId);
