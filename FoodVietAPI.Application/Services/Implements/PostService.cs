@@ -139,7 +139,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 include: po => po.Include(x => x.PostMedias.Where(pm => pm.MediumType.Equals(PostMediaTypeEnum.THUMBNAIL.ToString())))
                                  .Include(x => x.Account).ThenInclude(x => x.Addresses)
                                  .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
-                                 .Include(x => x.Product.ProductCertificates),
+                                 .Include(x => x.Product.ProductCertificates)
+                                 .Include(x => x.Product.ProductCategory),
                 predicate: po => po.Status == PostStatusEnum.ACTIVE.ToString() &&
                                  (accountIds != null ? accountIds.Any(x => x == po.GardenerId) : true),
                 spec: specification,
@@ -157,7 +158,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Rating,
                     po.Product.ProductPrices.First().WeightUnit,
                     po.Product.ProductCertificates.Count() > 0,
-                    po.ProductId));
+                    po.ProductId,
+                    po.Product.ProductCategory.Name));
 
             return postList.ToList();
         }
