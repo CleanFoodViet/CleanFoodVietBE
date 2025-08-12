@@ -128,6 +128,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             if (difference.TotalHours < 6) throw new BadHttpRequestException("The limit of timeto cancel appointment is before appointment at least 6 hours");
 
+            appointment.Status = AppointmentStatusEnum.CANCELLED.ToString();
             appointment.CancellationReason = cancelData.CancellationReason;
             appointment.CancelledBy = cancelData.CancelledBy;
 
