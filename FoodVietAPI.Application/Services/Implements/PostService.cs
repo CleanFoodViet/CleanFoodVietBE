@@ -150,6 +150,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Product.ProductPrices.First().Price,
                     po.Product.ProductPrices.First().Currency,
                     po.PostMedias.First().MediumUrl,
+                    po.Account.AccountId,
                     po.Account.Name,
                     po.Account.Avatar,
                     po.CreatedAt,

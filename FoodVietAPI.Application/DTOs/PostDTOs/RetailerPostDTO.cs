@@ -13,6 +13,7 @@ namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
         decimal Price,
         string Currency,
         string ThumbNail,
+        Ulid GardenerId,
         string GardenerName,
         string GardenerAvatar,
         DateTime CreatedAt,
