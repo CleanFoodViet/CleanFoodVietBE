@@ -63,8 +63,8 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             // Build the session options
             var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string> 
-                { 
+                PaymentMethodTypes = new List<string>
+                {
                     "card",
                 },
                 Mode = "payment",
@@ -82,7 +82,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                                 Name = productName,
                                 Description =
                                     $"Test subscription: {productName} (30 days)\n" +
-                                    $" - Quantity: 1"       
+                                    $" - Quantity: 1"
                             }
                         },
                         Quantity = 1
@@ -102,8 +102,10 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok(new { sessionUrl = session.Url });
         }
 
+
         /// <summary>
         /// Creates a real Checkout Session for the specified service package.
+        /// Gardener’s email is collected by Stripe at checkout.
         /// </summary>
         [HttpPost(ApiEndpointConstant.Payment.GardenerPaymentsEndpoint)]
         [SwaggerOperation(Summary = "Creates a real Checkout Session for the specified service package.")]
@@ -111,12 +113,12 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateCheckoutSession(
-        [FromBody, Required] CreateCheckoutRequest req)
+            [FromBody, Required] CreateCheckoutRequest req)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // 1) Validate/parse the incoming packageId (string → Ulid)
+            // 1) Parse only the packageId
             if (!Ulid.TryParse(req.ServicePackageId, out var pkgId))
             {
                 return BadRequest(new ProblemDetails
@@ -128,73 +130,61 @@ namespace CleanFoodVietAPI.Presentation.Controllers
                 });
             }
 
+            // 2) GardenerId is already a Ulid, so take it directly
+            var gardenerId = req.GardenerId;
+
             try
             {
-                // 2) load gardener & package (service still expects Ulid)
-                var gardenerDto = await _accountSvc.GetAccountInformation(req.GardenerId.ToString());
+                // 3) Load package detail
                 var packageDto = await _packageSvc.GetServicePackageDetailAsync(req.ServicePackageId);
 
-                // 3) insert PENDING order+payment (still sync method)
+                // 4) Insert a PENDING order + payment
                 var orderId = _orderSvc.CreatePendingOrder(
-                    gardenerDto.AccountId,
+                    gardenerId,
                     packageDto.ServicePackageId,
                     packageDto.Price
                 );
 
-                // 4) build test email suffix (dev only)
-                var email = gardenerDto.Email;
-                if (_env.IsDevelopment() && !string.IsNullOrWhiteSpace(req.Location))
+                // 5) Build the Stripe session options (omit CustomerEmail)
+                var options = new SessionCreateOptions
                 {
-                    var at = email.IndexOf('@');
-                    if (at > 0)
-                        email = $"{email[..at]}+{req.Location}{email[at..]}";
-                }
-
-                // 5) create Stripe session
-                var session = await _stripeSession.CreateAsync(new SessionCreateOptions
-                {
-                    PaymentMethodTypes = new List<string> 
-                    { 
-                        "card",
-                    },
+                    PaymentMethodTypes = new List<string> { "card" },
                     Mode = "payment",
-                    CustomerEmail = email,
                     ClientReferenceId = orderId.ToString(),
                     LineItems = new List<SessionLineItemOptions>
-                {
-                    new()
                     {
-                        PriceData = new SessionLineItemPriceDataOptions
+                        new()
                         {
-                            //Currency   = "usd",
-                            //UnitAmount = (long)(packageDto.Price * 100m),
-                            Currency   = "vnd",
-                            UnitAmount = (long)packageDto.Price,   // price is already in VND, no scaling
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            PriceData = new SessionLineItemPriceDataOptions
                             {
-                                Name        = packageDto.PackageName,
-                                Description =
-                                    $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)\n" +
-                                    $" - Quantity: {req.Quantity}"
-                            }
-                        },
-                        Quantity = req.Quantity
-                    }
-                },
-                    //SuccessUrl = $"{_config["App:FrontendDomain"]}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
-                    //CancelUrl = $"{_config["App:FrontendDomain"]}/payment-cancelled"
+                                Currency   = "vnd",
+                                UnitAmount = (long)packageDto.Price,
+                                ProductData = new SessionLineItemPriceDataProductDataOptions
+                                {
+                                    Name        = packageDto.PackageName,
+                                    Description =
+                                        $"Subscription: {packageDto.PackageName} ({packageDto.Duration} days)\n" +
+                                        $" - Quantity: {req.Quantity}"
+                                }
+                            },
+                            Quantity = req.Quantity
+                        }
+                    },
                     SuccessUrl = $"{_frontendDomain}/gardener/payment/success?session_id={{CHECKOUT_SESSION_ID}}",
                     CancelUrl = $"{_frontendDomain}/gardener/payment/fail"
-                });
+                };
 
-                // 6) return session URL + gardener info
+                // 6) Create the Stripe session
+                var session = await _stripeSession.CreateAsync(options);
+
+                // 7) Return only session URL + gardener name & phone (no email)
+                var gardenerInfo = await _accountSvc.GetAccountInformation(gardenerId.ToString());
                 return Ok(new
                 {
                     sessionUrl = session.Url,
-                    gardenerId = gardenerDto.AccountId,
-                    gardenerName = gardenerDto.Name,
-                    gardenerEmail = gardenerDto.Email,
-                    gardenerPhone = gardenerDto.PhoneNumber
+                    gardenerId = gardenerInfo.AccountId,
+                    gardenerName = gardenerInfo.Name,
+                    gardenerPhone = gardenerInfo.PhoneNumber
                 });
             }
             catch (DomainValidationException dv)
