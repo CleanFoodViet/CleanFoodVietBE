@@ -134,7 +134,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.Description).HasColumnType("text");
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-                entity.Property(e => e.CancelledBy).HasMaxLength(10);
+                entity.Property(e => e.CancelledBy).HasMaxLength(150);
                 entity.Property(e => e.CancellationReason).HasMaxLength(255);
 
                 entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_Appointment_GardenerId");
