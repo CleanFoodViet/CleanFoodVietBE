@@ -385,5 +385,49 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 pendingContracts.Count);
         }
         #endregion
+
+        // Handle the Stripe Expired
+        // This method is called when Stripe fires the checkout.session.expired
+        #region HandleSessionExpiredAsync
+        public async Task HandleSessionExpiredAsync(Session session)
+        {
+            // 1) Extract OrderId from Session metadata
+            if (!session.Metadata.TryGetValue("orderId", out var ordStr)
+             || !Ulid.TryParse(ordStr, out var orderId))
+            {
+                _logger.LogWarning(
+                    "Could not parse orderId from Session.Metadata for session {SessionId}",
+                    session.Id);
+                return;
+            }
+
+            // 2) Load the order and its payment record
+            var orderRepo = _uow.GetRepository<ServicePackageOrder>();
+            var paymentRepo = _uow.GetRepository<ServicePackageOrderPayment>();
+
+            var order = await orderRepo.GetAsync(o => o, o => o.ServicePackageOrderId == orderId);
+            var payment = await paymentRepo.GetAsync(p => p, p => p.ServicePackageOrderId == orderId);
+
+            if (order == null || payment == null)
+            {
+                _logger.LogWarning(
+                    "Order or payment not found for expired session OrderId {OrderId}", orderId);
+                return;
+            }
+
+            // 3) Mark both as FAILED (or EXPIRED if you prefer a separate status)
+            order.Status = "FAILED";
+            payment.Status = "FAILED";
+            payment.PaymentDate = DateTime.UtcNow;
+
+            // 4) Commit
+            await _uow.CommitAsync();
+
+            _logger.LogWarning(
+                "Checkout session expired: marked Order {OrderId} and Payment {PaymentId} as FAILED",
+                orderId, payment.ServicePackageOrderPaymentId);
+        }
+        #endregion
+
     }
 }
