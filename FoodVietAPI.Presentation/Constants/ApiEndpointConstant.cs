@@ -60,7 +60,7 @@ namespace CleanFoodVietAPI.Presentation.Constants
             public const string AppointmentsEndpoint = ApiEndpoint + "/appointments";
             public const string AppointmentEndpoint = AppointmentsEndpoint + "/{id}";
             public const string StatusAppointmentEndpoint = AppointmentEndpoint + "/status";
-            public const string CancelAppointmentEndpoint = AppointmentEndpoint + "/cancel";
+            public const string CancelOrRejectAppointmentEndpoint = AppointmentEndpoint + "/cancel-or-reject";
         }
 
         public static class RetailerCart

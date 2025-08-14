@@ -31,8 +31,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         AppointmentDate = ap.AppointmentDate,
                         AppointmentId = ap.AppointmentId,
                         AppointmentType = ap.AppointmentType,
-                        CancellationReason = ap.CancellationReason,
-                        CancelledBy = ap.CancelledBy,
+                        ActionReason = ap.ActionReason,
+                        ActionedBy = ap.ActionedBy,
                         CreatedAt = ap.CreatedAt,
                         Location = ap.Location,
                         Status = ap.Status,
@@ -56,8 +56,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         AppointmentDate = ap.AppointmentDate,
                         AppointmentId = ap.AppointmentId,
                         AppointmentType = ap.AppointmentType,
-                        CancellationReason = ap.CancellationReason,
-                        CancelledBy = ap.CancelledBy,
+                        ActionReason = ap.ActionReason,
+                        ActionedBy = ap.ActionedBy,
                         CreatedAt = ap.CreatedAt,
                         Location = ap.Location,
                         Status = ap.Status,
@@ -115,7 +115,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (!isSuccess) throw new Exception("Error occur when update appointment status (DB query error)");
         }
 
-        public async Task CancelAppointment(string appointmentId, CancelAppointmentDTO cancelData)
+        public async Task CancelOrRejectAppointment(string appointmentId, CancelOrRejectAppointmentDTO cancelData, string status)
         {
             Ulid appointmentID = Ulid.Parse(appointmentId);
 
@@ -128,9 +128,16 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             if (difference.TotalHours < 6) throw new BadHttpRequestException("The limit of timeto cancel appointment is before appointment at least 6 hours");
 
-            appointment.Status = AppointmentStatusEnum.CANCELLED.ToString();
-            appointment.CancellationReason = cancelData.CancellationReason;
-            appointment.CancelledBy = cancelData.CancelledBy;
+            if (Enum.TryParse<AppointmentStatusEnum>(status.ToUpper(), out var result))
+            {
+                appointment.Status = result.ToString();
+            }
+            else
+            {
+                throw new BadHttpRequestException("Invalid appointment status");
+            }
+            appointment.ActionReason = cancelData.ActionReason;
+            appointment.ActionedBy = cancelData.ActionedBy;
 
             _unitOfWork.GetRepository<Appointment>().UpdateAsync(appointment);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;

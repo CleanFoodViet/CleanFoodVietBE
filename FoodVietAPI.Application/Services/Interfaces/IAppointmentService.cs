@@ -11,7 +11,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
         Task CreateAppointment(CreateAppointmentDTO createData);
         Task UpdateAppointment(string appointmentId, UpdateAppointmentDTO updateData);
         Task UpdateAppointmentStatus(string appointmentId, string status);
-        Task CancelAppointment(string appointmentId, CancelAppointmentDTO cancelData);
+        Task CancelOrRejectAppointment(string appointmentId, CancelOrRejectAppointmentDTO cancelData, string status);
 
         Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId, int page, int size);
         Task<List<ScheduleAppointmentDTO>> GetScheduleAppointments(string gardenerId);
