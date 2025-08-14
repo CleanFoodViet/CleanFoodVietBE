@@ -12,7 +12,7 @@
         public string AppointmentType { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public string? CancelledBy { get; set; }
-        public string? CancellationReason { get; set; }
+        public string? ActionedBy { get; set; }
+        public string? ActionReason { get; set; }
     }
 }
