@@ -9,6 +9,7 @@ namespace CleanFoodVietAPI.Application.DTOs.ProductDTOs
     public class UpdateProductDTO
     {
         public string? ProductName { get; set; }
+        public string? HarvestStatus { get; set; }
         public List<string>? Tags { get; set; }
     }
 }

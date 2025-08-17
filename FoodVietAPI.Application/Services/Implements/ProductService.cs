@@ -115,6 +115,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.UpdatedAt,
                               p.Status,
                               p.ProductCategory.Name,
+                              p.HarvestStatus,
                               p.ProductTags.Select(pt => pt.TagName).ToList(),
                               p.ProductPrices.First().ProductPriceId,
                               p.ProductPrices.First().Price,
@@ -178,6 +179,17 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (product == null) throw new BadHttpRequestException("Product is not found");
 
             product.ProductName = string.IsNullOrEmpty(updateData.ProductName) ? product.ProductName : updateData.ProductName;
+            if(updateData.HarvestStatus != null)
+            {
+                if (Enum.TryParse<ProductHarvestStatus>(updateData.HarvestStatus.ToUpper(), out var result))
+                {
+                    product.HarvestStatus = result.ToString();
+                }
+                else
+                {
+                    throw new BadHttpRequestException("Invalid order status");
+                }
+            }
 
             var currentTags = await _unitOfWork.GetRepository<ProductTag>()
                 .GetListAsync(predicate: pt => pt.ProductId == productID);

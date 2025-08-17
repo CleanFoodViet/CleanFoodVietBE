@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleanFoodVietAPI.Data.Enums.PostEnums
+namespace CleanFoodVietAPI.Data.Enums.ProductEnums
 {
-    public enum PostHarvestStatusEnum
+    public enum ProductHarvestStatus
     {
         PREORDEROPEN,
         PLANTING,
