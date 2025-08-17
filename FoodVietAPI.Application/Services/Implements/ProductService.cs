@@ -168,6 +168,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task UpdateProductBasicInformation(string gardenerId, string productId, UpdateProductDTO updateData)
         {
             Ulid gardenerID = Ulid.Parse(gardenerId);
+            var gardener = await _unitOfWork.GetRepository<Account>()
+                .GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
+
             Ulid productID = Ulid.Parse(productId);
             var product = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(predicate: p => p.ProductId == productID);

@@ -40,7 +40,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         o.TotalAmount,
                         o.ShippingCost,
                         o.CreatedAt,
-                        o.OrderDetails.Count()),
+                        o.OrderDetails.Count(),
+                        o.TotalDepositAmount),
                     spec: spec,
                     page: page, size: size
                 );
@@ -77,6 +78,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         ShippingCost = o.ShippingCost,
                         CancelReason = o.CancelReason,
                         ShippingAddress = o.ShippingAddress,
+                        TotalDepositAmount = o.TotalDepositAmount
                     }
                 );
             if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
@@ -105,7 +107,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                          WeightUnit = od.Product.ProductPrices.First().WeightUnit,
                          Currency = od.Product.ProductPrices.First().Currency,
                          DeliveredQuantity = od.OrderDeliveryDetails
-                            .Where(odd => odd.OrderDetailId == od.OrderDetailId).Sum(x => x.Quantity)
+                            .Where(odd => odd.OrderDetailId == od.OrderDetailId).Sum(x => x.Quantity),
+                         HarvestStatus = od.Product.HarvestStatus,
+                         DepositAmount = od.DepositAmount,
+                         DepositPercentage = od.DepositPercentage,
                     }
                 );
 
@@ -114,6 +119,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return orderInfo;
         }
 
+        //Check later
         public async Task CreateOrder(List<CartDTO> carts, string paymentMethod, string shippingAddess)
         {
             foreach(var cart in carts)
@@ -128,6 +134,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         cart.CartItems,
                         opt => opt.Items["OrderId"] = order.OrderId //Take the Id of newly created Order above and asign the value to OrderId Field
                     );
+
+                order.TotalDepositAmount = orderDetails.Sum(od => od.DepositAmount);
 
                 await _unitOfWork.GetRepository<Order>().InsertAsync(order);
                 await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);

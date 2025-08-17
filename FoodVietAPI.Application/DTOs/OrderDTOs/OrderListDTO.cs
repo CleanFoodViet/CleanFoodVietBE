@@ -10,6 +10,7 @@
         decimal TotalAmount,
         decimal ShippingCost,
         DateTime CreatedAt,
-        int ProductTypeAmount
+        int ProductTypeAmount,
+        decimal TotalDepositAmount
     );
 }

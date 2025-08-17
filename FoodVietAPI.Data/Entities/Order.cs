@@ -16,6 +16,8 @@ namespace CleanFoodVietAPI.Data.Entities
         public string? CancelReason { get; set; }
         public string ShippingAddress { get; set; } = null!;
 
+        public decimal TotalDepositAmount { get; set; }
+
         public virtual Account Retailer { get; set; } = null!;
         public virtual Account Gardener { get; set; } = null!;
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();

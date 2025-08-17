@@ -23,6 +23,7 @@ namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
         string WeightUnit,
         bool hasProductCertificate,
         Ulid ProductId,
-        string ProductCategory
+        string ProductCategory,
+        string HarvestStatus
     );
 }

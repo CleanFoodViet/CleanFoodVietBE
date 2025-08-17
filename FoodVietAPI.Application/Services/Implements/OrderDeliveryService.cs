@@ -41,6 +41,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         CreatedAt = odv.CreatedAt,
                         UpdatedAt = odv.UpdatedAt,
                         Note = odv.Note,
+                        TotalAmount = odv.TotalAmount,
                         OrderDeliveryDetails = _mapper.Map<List<OrderDeliveryDetailDTO>>(odv.OrderDeliveryDetails)
                     }
                 );
@@ -64,6 +65,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     request.delieryDetailsDTOs,
                     opt => opt.Items["OrderDeliveryId"] = orderDelivery.OrderDeliveryId
                 );
+
+            orderDelivery.TotalAmount = orderDeliveryDetails.Sum(odd => odd.Price * odd.Quantity);
 
             await _unitOfWork.GetRepository<OrderDelivery>().InsertAsync(orderDelivery);
             await _unitOfWork.GetRepository<OrderDeliveryDetail>().InsertRangeAsync(orderDeliveryDetails);

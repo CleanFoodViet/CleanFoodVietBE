@@ -12,6 +12,9 @@ namespace CleanFoodVietAPI.Data.Entities
         public string ProductUnit { get; set; } = null!;
         public string DeliveryStatus { get; set; } = null!;
         public Ulid ProductId { get; set; }
+        public decimal DepositAmount { get; set; }
+        public int DepositPercentage { get; set; }
+        //public string ContractImage { get; set; } = null!;
 
         public virtual Order Order { get; set; } = null!;
         public virtual Product Product { get; set; } = null!;

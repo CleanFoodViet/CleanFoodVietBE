@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class NewDBInit : Migration
+    public partial class ChangeDBConceptForBiggerLogic : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -81,6 +81,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                 {
                     AccountId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
                     Name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
+                    Bio = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     PhoneNumber = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false),
                     Password = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
@@ -172,8 +173,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CancelledBy = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true),
-                    CancellationReason = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                    ActionedBy = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: true),
+                    ActionReason = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -308,8 +309,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                     GardenerId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
                     Status = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
+                    ShippingCost = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
                     PaymentMethod = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CancelReason = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
+                    ShippingAddress = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: false),
+                    TotalDepositAmount = table.Column<decimal>(type: "decimal(14,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -339,7 +344,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     Status = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
                     ProductCategoryId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    GardenerId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false)
+                    GardenerId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    HarvestStatus = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -458,7 +464,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                     DeliveryStatus = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                    Note = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
+                    TotalAmount = table.Column<decimal>(type: "decimal(14,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -483,7 +490,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     ProductUnit = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    DepositAmount = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
+                    DepositPercentage = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -513,7 +522,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     ProductUnit = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false),
                     DeliveryStatus = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: false),
-                    ProductId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false)
+                    ProductId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    DepositAmount = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
+                    DepositPercentage = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -547,7 +558,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                     Rating = table.Column<decimal>(type: "decimal(3,2)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     PostEndDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Priority = table.Column<int>(type: "int", nullable: false)
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    DepositAmount = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
+                    DepositPercentage = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -701,7 +714,7 @@ namespace CleanFoodVietAPI.Data.Migrations
                 {
                     OrderDeliveryDetailId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
                     OrderDeliveryId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
-                    ProductId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
+                    OrderDetailId = table.Column<string>(type: "char(26)", fixedLength: true, nullable: false),
                     DeliveredAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
@@ -712,10 +725,10 @@ namespace CleanFoodVietAPI.Data.Migrations
                 {
                     table.PrimaryKey("PK_OrderDeliveryDetail", x => x.OrderDeliveryDetailId);
                     table.ForeignKey(
-                        name: "FK_OrderDeliveryDetail_Product",
-                        column: x => x.ProductId,
-                        principalTable: "Product",
-                        principalColumn: "ProductId",
+                        name: "FK_OrderDeliveryDetail_OrderDetail",
+                        column: x => x.OrderDetailId,
+                        principalTable: "OrderDetail",
+                        principalColumn: "OrderDetailId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_OrderDeliveryItem_OrderDelivery",
@@ -907,9 +920,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                 column: "OrderDeliveryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderDeliveryDetail_ProductId",
+                name: "IX_OrderDeliveryDetail_OrderDetailId",
                 table: "OrderDeliveryDetail",
-                column: "ProductId");
+                column: "OrderDetailId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetail_OrderId",

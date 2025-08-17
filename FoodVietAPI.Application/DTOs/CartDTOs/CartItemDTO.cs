@@ -15,6 +15,8 @@ namespace CleanFoodVietAPI.Application.DTOs.CartDTOs
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be 1 or greater.")]
         public int Quantity { get; set; }
         public string ProductUnit { get; set; } = null!;
+        public decimal DepositAmount { get; set; }
+        public int DepositPercentage { get; set; }
         //public DateTime CreatedAt { get; set; }
         //public DateTime UpdatedAt { get; set; }
     }

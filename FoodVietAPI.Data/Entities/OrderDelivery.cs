@@ -17,6 +17,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public string? Note { get; set; } 
+        public decimal TotalAmount { get; set; }
 
         public virtual Order Order { get; set; } = null!;
         public virtual ICollection<OrderDeliveryDetail> OrderDeliveryDetails { get; set; } = new HashSet<OrderDeliveryDetail>();

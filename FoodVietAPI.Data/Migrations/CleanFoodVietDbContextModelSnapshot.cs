@@ -265,6 +265,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(14,2)");
 
@@ -497,6 +503,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(14,2)");
 
+                    b.Property<decimal>("TotalDepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
                     b.HasKey("OrderId")
                         .HasName("PK_Order");
 
@@ -534,6 +543,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(14,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
@@ -604,6 +616,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
+
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
 
                     b.Property<string>("OrderId")
                         .IsRequired()
@@ -678,6 +696,12 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
+
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
 
                     b.Property<string>("GardenerId")
                         .IsRequired()
@@ -767,6 +791,11 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
+
+                    b.Property<string>("HarvestStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ProductCategoryId")
                         .IsRequired()

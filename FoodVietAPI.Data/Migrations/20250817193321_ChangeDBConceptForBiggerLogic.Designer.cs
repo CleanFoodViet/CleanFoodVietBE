@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     [DbContext(typeof(CleanFoodVietDbContext))]
-    [Migration("20250813134211_UpdateCancelledByLength")]
-    partial class UpdateCancelledByLength
+    [Migration("20250817193321_ChangeDBConceptForBiggerLogic")]
+    partial class ChangeDBConceptForBiggerLogic
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,6 +155,14 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
+                    b.Property<string>("ActionReason")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ActionedBy")
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("datetime");
 
@@ -162,14 +170,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
-
-                    b.Property<string>("CancellationReason")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("CancelledBy")
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
@@ -267,6 +267,12 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
+
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(14,2)");
@@ -500,6 +506,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(14,2)");
 
+                    b.Property<decimal>("TotalDepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
                     b.HasKey("OrderId")
                         .HasName("PK_Order");
 
@@ -537,6 +546,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(14,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
@@ -607,6 +619,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
+
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
 
                     b.Property<string>("OrderId")
                         .IsRequired()
@@ -681,6 +699,12 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
+
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
 
                     b.Property<string>("GardenerId")
                         .IsRequired()
@@ -770,6 +794,11 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
+
+                    b.Property<string>("HarvestStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ProductCategoryId")
                         .IsRequired()

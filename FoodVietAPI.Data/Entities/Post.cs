@@ -17,6 +17,8 @@ namespace CleanFoodVietAPI.Data.Entities
         public DateTime PostEndDate { get; set; }
         public int Priority { get; set; }
 
+        public decimal DepositAmount { get; set; }
+        public int DepositPercentage { get; set; }
 
         public virtual Account Account { get; set; } = null!;
         public virtual Product Product { get; set; } = null!;

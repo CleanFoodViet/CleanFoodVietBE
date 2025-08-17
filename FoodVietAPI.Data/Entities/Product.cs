@@ -12,6 +12,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public string Status { get; set; } = null!;
         public Ulid ProductCategoryId { get; set; }
         public Ulid GardenerId { get; set; }
+        public string HarvestStatus { get; set; } = null!;
 
         public virtual ProductCategory ProductCategory { get; set; } = null!;
         public virtual Account Gardener { get; set; } = null!;

@@ -15,6 +15,9 @@ namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
         //public DateTime CreatedAt { get; set; }
         public DateTime PostEndDate { get; set; }
         //public int Priority { get; set; }
+        public string HarvestStatus { get; set; } = null!;
+        public decimal DepositAmount { get; set; }
+        public int DepositPercentage { get; set; }
 
         public List<CreatePostMediaDTO>? postMediaDTOs { get; set; }
     }
