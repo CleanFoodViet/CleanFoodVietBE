@@ -9,7 +9,6 @@
         DateTime UpdatedAt,
         string Status,
         string ProductCategory,
-        string HarvestStatus,
 
         List<string> ProductTags,
 

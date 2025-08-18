@@ -1,5 +1,4 @@
-﻿using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
-using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
+﻿using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;

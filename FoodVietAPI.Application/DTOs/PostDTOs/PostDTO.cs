@@ -1,5 +1,4 @@
-﻿using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
-using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
+﻿using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 
 namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
 {

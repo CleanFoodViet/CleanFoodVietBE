@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
-using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
-using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
-using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
 using CleanFoodVietAPI.Application.DTOs.Gardener;
-using CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs;
-using CleanFoodVietAPI.Application.DTOs.ServicePackageDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionContractBenefitDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs;
 using CleanFoodVietAPI.Application.Exceptions;
@@ -17,8 +12,6 @@ using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {

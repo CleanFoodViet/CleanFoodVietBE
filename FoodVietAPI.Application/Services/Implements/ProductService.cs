@@ -115,7 +115,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                               p.UpdatedAt,
                               p.Status,
                               p.ProductCategory.Name,
-                              p.HarvestStatus,
                               p.ProductTags.Select(pt => pt.TagName).ToList(),
                               p.ProductPrices.First().ProductPriceId,
                               p.ProductPrices.First().Price,
@@ -179,17 +178,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             if (product == null) throw new BadHttpRequestException("Product is not found");
 
             product.ProductName = string.IsNullOrEmpty(updateData.ProductName) ? product.ProductName : updateData.ProductName;
-            if(updateData.HarvestStatus != null)
-            {
-                if (Enum.TryParse<ProductHarvestStatus>(updateData.HarvestStatus.ToUpper(), out var result))
-                {
-                    product.HarvestStatus = result.ToString();
-                }
-                else
-                {
-                    throw new BadHttpRequestException("Invalid order status");
-                }
-            }
 
             var currentTags = await _unitOfWork.GetRepository<ProductTag>()
                 .GetListAsync(predicate: pt => pt.ProductId == productID);
@@ -232,7 +220,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     var inProgressOrder = await _unitOfWork.GetRepository<Order>()
                         .GetListAsync(
                             include: o => o.Include(x => x.OrderDetails),
-                            predicate: o => o.OrderDetails.Any(od => od.ProductId == productID) &&
+                            predicate: o => o.OrderDetails.Any(od => od.PostId == productID) &&
                             (o.Status != OrderStatusEnum.COMPLETED.ToString() || o.Status != OrderStatusEnum.CANCELLED.ToString())
                         );
                     if (inProgressOrder != null && inProgressOrder?.Count() > 0) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
@@ -326,7 +314,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var reviews = await _unitOfWork.GetRepository<OrderDetail>()
                 .GetListAsync(
                     include: odt => odt.Include(x => x.Reviews).ThenInclude(x => x.Account),
-                    predicate: odt => odt.ProductId == productID,
+                    predicate: odt => odt.PostId == productID,
                     selector: odt => odt.Reviews
                 );
 

@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs;
 using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
-using CleanFoodVietAPI.Application.DTOs.AuthDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Security.Principal;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {

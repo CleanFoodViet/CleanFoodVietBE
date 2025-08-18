@@ -7,8 +7,6 @@ using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Drawing;
-using ZstdSharp.Unsafe;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {

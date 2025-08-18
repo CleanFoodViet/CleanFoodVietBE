@@ -1,12 +1,4 @@
-﻿using CleanFoodVietAPI.Application.DTOs.OrderDTOs;
-using Stripe.V2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CleanFoodVietAPI.Application.DTOs.StatisticDTOs
+﻿namespace CleanFoodVietAPI.Application.DTOs.StatisticDTOs
 {
     public record GardenerStatisticDTO
     {

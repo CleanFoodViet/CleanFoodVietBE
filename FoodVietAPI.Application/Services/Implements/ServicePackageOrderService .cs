@@ -7,14 +7,11 @@ using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
 using CleanFoodVietAPI.Data.Paginate;
-using CleanFoodVietAPI.Data.Repositories.Implements;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Stripe;
 using Stripe.Checkout;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {

@@ -1,24 +1,19 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs;
 using CleanFoodVietAPI.Application.DTOs.PostDTOs;
-using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
-using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
 using CleanFoodVietAPI.Data.Enums.PostMedia;
 using CleanFoodVietAPI.Data.Enums.SubscriptionContract;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Drawing;
-using System.Security.Principal;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -64,7 +59,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Rating,
                     po.Product.ProductPrices.First().WeightUnit,
                     po.Product.ProductCertificates.Count() > 0,
-                    po.Product.HarvestStatus,
+                    po.HarvestStatus,
                     po.DepositAmount,
                     po.DepositPercentage),
                 page: page, size: size);
@@ -121,7 +116,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Rating,
                     po.Product.ProductPrices.First().WeightUnit,
                     po.Product.ProductCertificates.Count() > 0,
-                    po.Product.HarvestStatus,
+                    po.HarvestStatus,
                     po.DepositAmount,
                     po.DepositPercentage),
                 page: page, size: size);
@@ -167,7 +162,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Product.ProductCertificates.Count() > 0,
                     po.ProductId,
                     po.Product.ProductCategory.Name,
-                    po.Product.HarvestStatus));
+                    po.HarvestStatus));
 
             return postList.ToList();
         }
@@ -217,12 +212,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 _unitOfWork.GetRepository<SubscriptionContractBenefit>().UpdateAsync(postQuota);
             }
 
-            //Product harvest status update
-            var product = await _unitOfWork.GetRepository<Product>()
-                .GetAsync(predicate: p => p.ProductId == request.ProductId);
-            if (product == null) throw new BadHttpRequestException("Product in post not found");
-            product.HarvestStatus = request.HarvestStatus;
-
             //Post Media Create
             var postMedia = _mapper.Map<List<PostMedia>>(
                     request.postMediaDTOs,
@@ -231,7 +220,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             await _unitOfWork.GetRepository<Post>().InsertAsync(post);
             await _unitOfWork.GetRepository<PostMedia>().InsertRangeAsync(postMedia);
-            _unitOfWork.GetRepository<Product>().UpdateAsync(product);
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when create post (DB query error)");
@@ -246,12 +234,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             _mapper.Map(request, post);
 
-            var product = await _unitOfWork.GetRepository<Product>()
-                .GetAsync(predicate: p => p.ProductId == post.ProductId);
-            product.HarvestStatus = request.HarvestStatus;
-
             _unitOfWork.GetRepository<Post>().UpdateAsync(post);
-            _unitOfWork.GetRepository<Product>().UpdateAsync(product);
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when update post (DB query error)");
@@ -279,7 +262,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         GardenderName = po.Account.Name,
                         GardenerAvatar = po.Account.Avatar,
                         ProductId = po.ProductId,
-                        HarvestStatus = po.Product.HarvestStatus,
+                        HarvestStatus = po.HarvestStatus,
                         DepositAmount = po.DepositAmount,
                         DepositPercentage = po.DepositPercentage,
                     }
@@ -364,7 +347,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     fav.Post.Rating,
                     fav.Post.Product.ProductPrices.First().WeightUnit,
                     fav.Post.Product.ProductCertificates.Count() > 0,
-                    fav.Post.Product.HarvestStatus,
+                    fav.Post.HarvestStatus,
                     fav.Post.DepositAmount,
                     fav.Post.DepositPercentage)
             );

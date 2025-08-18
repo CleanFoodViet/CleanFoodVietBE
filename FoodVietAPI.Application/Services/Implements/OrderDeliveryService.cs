@@ -2,18 +2,12 @@
 using CleanFoodVietAPI.Application.DTOs.OrderDeliveryDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
-using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.OrdeDeliveryEnums;
 using CleanFoodVietAPI.Data.Enums.OrderEnums;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -29,8 +23,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid orderID = Ulid.Parse(orderId);
             var orderDelivery = await _unitOfWork.GetRepository<OrderDelivery>()
                 .GetListAsync(
-                    include: odv => odv.Include(x => x.OrderDeliveryDetails).ThenInclude(x => x.OrderDetail).ThenInclude(x => x.Product)
-                        .ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
+                    include: odv => odv.Include(x => x.OrderDeliveryDetails).ThenInclude(x => x.OrderDetail).ThenInclude(x => x.Post)
+                        .ThenInclude(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent)),
                     predicate: odv => odv.OrderId == orderID,
                     selector: odv => new OrderDeliveryDTO
                     {

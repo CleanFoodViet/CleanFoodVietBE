@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanFoodVietAPI.Data.Migrations
 {
     [DbContext(typeof(CleanFoodVietDbContext))]
-    [Migration("20250817193321_ChangeDBConceptForBiggerLogic")]
-    partial class ChangeDBConceptForBiggerLogic
+    [Migration("20250818062326_UpdateDatabaseFinal")]
+    partial class UpdateDatabaseFinal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -472,6 +472,10 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
+                    b.Property<string>("ContractImage")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
@@ -631,13 +635,13 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(14,2)");
-
-                    b.Property<string>("ProductId")
+                    b.Property<string>("PostId")
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(14,2)");
 
                     b.Property<string>("ProductUnit")
                         .IsRequired()
@@ -653,8 +657,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.HasIndex("OrderId")
                         .HasDatabaseName("IX_OrderDetail_OrderId");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("IX_OrderDetail_ProductId");
+                    b.HasIndex("PostId")
+                        .HasDatabaseName("IX_OrderDetail_PostId");
 
                     b.ToTable("OrderDetail", (string)null);
                 });
@@ -713,6 +717,11 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Property<DateTime>("HarvestDate")
                         .HasColumnType("datetime");
+
+                    b.Property<string>("HarvestStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("PostEndDate")
                         .HasColumnType("datetime");
@@ -794,11 +803,6 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
-
-                    b.Property<string>("HarvestStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ProductCategoryId")
                         .IsRequired()
@@ -1550,16 +1554,16 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_OrderDetail_Order");
 
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Product", "Product")
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Post", "Post")
                         .WithMany("OrderDetail")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_OrderDetail_Product");
+                        .HasConstraintName("FK_OrderDetail_Post");
 
                     b.Navigation("Order");
 
-                    b.Navigation("Product");
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.PackageServiceFeature", b =>
@@ -1850,14 +1854,14 @@ namespace CleanFoodVietAPI.Data.Migrations
                 {
                     b.Navigation("Favorites");
 
+                    b.Navigation("OrderDetail");
+
                     b.Navigation("PostMedias");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Product", b =>
                 {
                     b.Navigation("CartItems");
-
-                    b.Navigation("OrderDetail");
 
                     b.Navigation("Posts");
 

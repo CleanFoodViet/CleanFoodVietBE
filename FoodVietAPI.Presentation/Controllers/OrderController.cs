@@ -4,7 +4,6 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
@@ -49,7 +48,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         public async Task<IActionResult> CreateOrder(
             [FromQuery] string paymentMethod,
             [FromQuery] string shippingAddress,
-            [FromBody]List<CartDTO> request)
+            [FromBody]List<CartOrderDTO> request)
         {
             await _orderService.CreateOrder(request, paymentMethod, shippingAddress);
 

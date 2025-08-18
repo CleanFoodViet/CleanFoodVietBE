@@ -1,12 +1,6 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.Gardener;
-using CleanFoodVietAPI.Application.DTOs.PaymentHistoryDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs;
 using CleanFoodVietAPI.Data.Paginate;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces
 {

@@ -2,12 +2,6 @@
 using CleanFoodVietAPI.Application.DTOs.ProductCaertificateDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Data.Entities;
-using CleanFoodVietAPI.Data.Enums.ProductEnums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Mappers
 {
@@ -17,7 +11,6 @@ namespace CleanFoodVietAPI.Application.Mappers
         {
             CreateMap<CreateProductDTO, Product>()
                 .ForMember(des => des.ProductId, opt => opt.MapFrom(src => Ulid.NewUlid()))
-                .ForMember(des => des.HarvestStatus, opt => opt.MapFrom(src => ProductHarvestStatus.PREORDEROPEN.ToString()))
                 .ForMember(des => des.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(des => des.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 

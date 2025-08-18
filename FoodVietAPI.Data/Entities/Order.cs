@@ -17,6 +17,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public string ShippingAddress { get; set; } = null!;
 
         public decimal TotalDepositAmount { get; set; }
+        public string ContractImage { get; set; } = null!;
 
         public virtual Account Retailer { get; set; } = null!;
         public virtual Account Gardener { get; set; } = null!;

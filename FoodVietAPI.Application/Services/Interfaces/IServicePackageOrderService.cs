@@ -1,15 +1,7 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.PaymentHistoryDTOs;
 using CleanFoodVietAPI.Application.DTOs.SubscriptionOrderDTOs;
 using CleanFoodVietAPI.Data.Paginate;
-using MySqlX.XDevAPI;
 using Stripe;
-using Stripe.Checkout;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces
 {

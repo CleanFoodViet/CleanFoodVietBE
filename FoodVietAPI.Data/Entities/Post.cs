@@ -16,6 +16,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime PostEndDate { get; set; }
         public int Priority { get; set; }
+        public string HarvestStatus { get; set; } = null!;
 
         public decimal DepositAmount { get; set; }
         public int DepositPercentage { get; set; }
@@ -24,5 +25,6 @@ namespace CleanFoodVietAPI.Data.Entities
         public virtual Product Product { get; set; } = null!;
         public virtual ICollection<Favorite> Favorites { get; set; } = new HashSet<Favorite>();
         public virtual ICollection<PostMedia> PostMedias { get; set; } = new HashSet<PostMedia>();
+        public virtual ICollection<OrderDetail> OrderDetail { get; set; } = new HashSet<OrderDetail>();
     }
 }

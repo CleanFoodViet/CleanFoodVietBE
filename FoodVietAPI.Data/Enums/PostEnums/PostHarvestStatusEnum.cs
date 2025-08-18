@@ -1,6 +1,6 @@
-﻿namespace CleanFoodVietAPI.Data.Enums.ProductEnums
+﻿namespace CleanFoodVietAPI.Data.Enums.PostEnums
 {
-    public enum ProductHarvestStatus
+    public enum PostHarvestStatusEnum
     {
         PREORDEROPEN,
         PLANTING,

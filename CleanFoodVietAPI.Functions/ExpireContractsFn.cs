@@ -1,8 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
+﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using CleanFoodVietAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using CleanFoodVietAPI.Data.Entities;
 

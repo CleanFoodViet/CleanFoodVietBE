@@ -3,7 +3,6 @@ using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using ZstdSharp.Unsafe;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
