@@ -5,7 +5,7 @@
         PREORDEROPEN,
         PLANTING,
         HARVESTING,
-        AVAILABLE,
-        COMPLETED
+        PROCESSING,
+        READYFORSALE
     }
 }
