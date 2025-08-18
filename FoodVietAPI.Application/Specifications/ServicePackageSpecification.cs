@@ -1,6 +1,4 @@
 ﻿using CleanFoodVietAPI.Data.Entities;
-using System;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace CleanFoodVietAPI.Data.Specifications

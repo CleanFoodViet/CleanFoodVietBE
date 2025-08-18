@@ -14,6 +14,9 @@
         string Status,
         decimal Rating,
         string WeightUnit,
-        bool hasProductCertificate
+        bool hasProductCertificate,
+        string HarvestStatus,
+        decimal DepositAmount,
+        int DepositPercentage
     );
 }

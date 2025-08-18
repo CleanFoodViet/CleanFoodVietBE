@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CleanFoodVietAPI.Application.DTOs.ReviewDTOs
+﻿namespace CleanFoodVietAPI.Application.DTOs.ReviewDTOs
 {
     public class ReviewDTO
     {

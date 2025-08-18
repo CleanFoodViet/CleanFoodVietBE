@@ -14,6 +14,7 @@
         public DateTime CreatedAt { get; set; }
         public string? CancelReason { get; set; }
         public string ShippingAddress { get; set; } = null!;
+        public decimal TotalDepositAmount { get; set; }
         public List<OrderDetailDTO> orderDetails { get; set; } = null!;
     }
 }

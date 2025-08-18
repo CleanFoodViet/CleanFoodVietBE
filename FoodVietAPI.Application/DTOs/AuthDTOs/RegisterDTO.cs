@@ -1,5 +1,4 @@
-﻿using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Application.DTOs.AuthDTOs
 {

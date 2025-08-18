@@ -1,12 +1,6 @@
-﻿using CleanFoodVietAPI.Application.Utils;
-using CleanFoodVietAPI.Data.Entities;
+﻿using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Specifications;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Specifications
 {

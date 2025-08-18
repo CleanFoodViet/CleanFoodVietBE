@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
+﻿namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
 {
     public record RetailerPostDTO
     (
@@ -23,6 +17,7 @@ namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
         string WeightUnit,
         bool hasProductCertificate,
         Ulid ProductId,
-        string ProductCategory
+        string ProductCategory,
+        string HarvestStatus
     );
 }

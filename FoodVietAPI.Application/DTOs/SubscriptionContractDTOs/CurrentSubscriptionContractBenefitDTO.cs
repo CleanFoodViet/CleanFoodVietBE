@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs
+﻿namespace CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs
 {
     public record CurrentSubscriptionContractBenefitDTO
     {

@@ -1,5 +1,4 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.PostDTOs;
-using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Paginate;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces

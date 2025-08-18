@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace CleanFoodVietAPI.Presentation.Constants
+﻿namespace CleanFoodVietAPI.Presentation.Constants
 {
     public static class ApiEndpointConstant
     {

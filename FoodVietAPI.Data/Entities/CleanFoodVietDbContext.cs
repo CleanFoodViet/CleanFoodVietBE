@@ -205,6 +205,8 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ProductUnit).IsRequired().HasMaxLength(10);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.DepositAmount).HasColumnType("decimal(14,2)");
+                entity.Property(e => e.DepositPercentage).IsRequired();
 
                 entity.HasIndex(e => e.CartId).HasDatabaseName("IX_CartItem_CartId");
                 entity.HasIndex(e => e.ProductId).HasDatabaseName("IX_CartItem_PostId");
@@ -373,6 +375,8 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.CancelReason).HasMaxLength(256);
                 entity.Property(e => e.ShippingAddress).IsRequired().HasMaxLength(256);
+                entity.Property(e => e.TotalDepositAmount).HasColumnType("decimal(14,2)");
+                entity.Property(e => e.ContractImage).IsRequired();
 
                 entity.HasIndex(e => e.RetailerId).HasDatabaseName("IX_Order_RetailerId");
                 entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_Order_GardenerId");
@@ -406,6 +410,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
                 entity.Property(e => e.Note).HasMaxLength(255);
+                entity.Property(e => e.TotalAmount).HasColumnType("decimal(14,2)");
 
                 entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderDelivery_OrderId");
 
@@ -463,16 +468,18 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.OrderId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
-                entity.Property(e => e.ProductId).HasColumnType("char(26)")
+                entity.Property(e => e.PostId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
                 entity.Property(e => e.Price).HasColumnType("decimal(14,2)");
                 entity.Property(e => e.Quantity).IsRequired();
                 entity.Property(e => e.ProductUnit).IsRequired().HasMaxLength(10);
                 entity.Property(e => e.DeliveryStatus).IsRequired().HasMaxLength(25);
+                entity.Property(e => e.DepositAmount).HasColumnType("decimal(14,2)");
+                entity.Property(e => e.DepositPercentage).IsRequired();
 
                 entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_OrderDetail_OrderId");
-                entity.HasIndex(e => e.ProductId).HasDatabaseName("IX_OrderDetail_ProductId");
+                entity.HasIndex(e => e.PostId).HasDatabaseName("IX_OrderDetail_PostId");
 
                 entity.HasOne(e => e.Order)
                       .WithMany(e => e.OrderDetails)
@@ -480,11 +487,11 @@ namespace CleanFoodVietAPI.Data.Entities
                       .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_OrderDetail_Order");
 
-                entity.HasOne(e => e.Product)
+                entity.HasOne(e => e.Post)
                       .WithMany(e => e.OrderDetail)
-                      .HasForeignKey(e => e.ProductId)
+                      .HasForeignKey(e => e.PostId)
                       .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("FK_OrderDetail_Product");
+                      .HasConstraintName("FK_OrderDetail_Post");
             });
 
             modelBuilder.Entity<Post>(entity =>
@@ -509,6 +516,9 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.PostEndDate).HasColumnType("datetime");
                 entity.Property(e => e.Priority).IsRequired();
+                entity.Property(e => e.DepositAmount).HasColumnType("decimal(14,2)");
+                entity.Property(e => e.DepositPercentage).IsRequired();
+                entity.Property(e => e.HarvestStatus).IsRequired().HasMaxLength(50);
 
                 entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_Post_GardenerId");
                 entity.HasIndex(e => e.ProductId).HasDatabaseName("IX_Post_CategoryId");

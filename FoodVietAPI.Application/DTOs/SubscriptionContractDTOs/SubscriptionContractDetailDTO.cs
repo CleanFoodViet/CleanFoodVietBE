@@ -2,10 +2,7 @@
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
 using CleanFoodVietAPI.Application.DTOs.ServicePackageDTOs;
-using System;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Collections.Generic;
 
 namespace CleanFoodVietAPI.Application.DTOs.Gardener
 {

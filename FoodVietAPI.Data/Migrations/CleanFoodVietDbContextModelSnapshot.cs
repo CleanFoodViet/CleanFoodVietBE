@@ -265,6 +265,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(14,2)");
 
@@ -463,6 +469,10 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
+                    b.Property<string>("ContractImage")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
@@ -495,6 +505,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasColumnType("varchar(20)");
 
                     b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<decimal>("TotalDepositAmount")
                         .HasColumnType("decimal(14,2)");
 
                     b.HasKey("OrderId")
@@ -534,6 +547,9 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(14,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime");
@@ -605,18 +621,24 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
+
                     b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasColumnType("char(26)")
+                        .IsFixedLength();
+
+                    b.Property<string>("PostId")
                         .IsRequired()
                         .HasColumnType("char(26)")
                         .IsFixedLength();
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(14,2)");
-
-                    b.Property<string>("ProductId")
-                        .IsRequired()
-                        .HasColumnType("char(26)")
-                        .IsFixedLength();
 
                     b.Property<string>("ProductUnit")
                         .IsRequired()
@@ -632,8 +654,8 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.HasIndex("OrderId")
                         .HasDatabaseName("IX_OrderDetail_OrderId");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("IX_OrderDetail_ProductId");
+                    b.HasIndex("PostId")
+                        .HasDatabaseName("IX_OrderDetail_PostId");
 
                     b.ToTable("OrderDetail", (string)null);
                 });
@@ -679,6 +701,12 @@ namespace CleanFoodVietAPI.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(14,2)");
+
+                    b.Property<int>("DepositPercentage")
+                        .HasColumnType("int");
+
                     b.Property<string>("GardenerId")
                         .IsRequired()
                         .HasColumnType("char(26)")
@@ -686,6 +714,11 @@ namespace CleanFoodVietAPI.Data.Migrations
 
                     b.Property<DateTime>("HarvestDate")
                         .HasColumnType("datetime");
+
+                    b.Property<string>("HarvestStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("PostEndDate")
                         .HasColumnType("datetime");
@@ -1518,16 +1551,16 @@ namespace CleanFoodVietAPI.Data.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_OrderDetail_Order");
 
-                    b.HasOne("CleanFoodVietAPI.Data.Entities.Product", "Product")
+                    b.HasOne("CleanFoodVietAPI.Data.Entities.Post", "Post")
                         .WithMany("OrderDetail")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("FK_OrderDetail_Product");
+                        .HasConstraintName("FK_OrderDetail_Post");
 
                     b.Navigation("Order");
 
-                    b.Navigation("Product");
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.PackageServiceFeature", b =>
@@ -1818,14 +1851,14 @@ namespace CleanFoodVietAPI.Data.Migrations
                 {
                     b.Navigation("Favorites");
 
+                    b.Navigation("OrderDetail");
+
                     b.Navigation("PostMedias");
                 });
 
             modelBuilder.Entity("CleanFoodVietAPI.Data.Entities.Product", b =>
                 {
                     b.Navigation("CartItems");
-
-                    b.Navigation("OrderDetail");
 
                     b.Navigation("Posts");
 

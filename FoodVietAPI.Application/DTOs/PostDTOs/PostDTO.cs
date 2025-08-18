@@ -1,5 +1,4 @@
-﻿using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
-using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
+﻿using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 
 namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
 {
@@ -15,6 +14,9 @@ namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
         public DateTime CreatedAt { get; set; }
         public DateTime PostEndDate { get; set; }
         public int Priority { get; set; }
+        public string HarvestStatus { get; set; } = null!;
+        public decimal DepositAmount { get; set; }
+        public int DepositPercentage { get; set; }
 
         // Post Media Data Field
         //public List<PostMediaDTO>? PostMedias { get; set; 
