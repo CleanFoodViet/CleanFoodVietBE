@@ -1,24 +1,19 @@
 ﻿using AutoMapper;
 using CleanFoodVietAPI.Application.DTOs;
 using CleanFoodVietAPI.Application.DTOs.PostDTOs;
-using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
 using CleanFoodVietAPI.Application.DTOs.ProductDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Application.Specifications;
 using CleanFoodVietAPI.Application.Utils;
 using CleanFoodVietAPI.Data.Entities;
-using CleanFoodVietAPI.Data.Enums.AccountEnums;
 using CleanFoodVietAPI.Data.Enums.PostEnums;
 using CleanFoodVietAPI.Data.Enums.PostMedia;
 using CleanFoodVietAPI.Data.Enums.SubscriptionContract;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Drawing;
-using System.Security.Principal;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -63,7 +58,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Status,
                     po.Rating,
                     po.Product.ProductPrices.First().WeightUnit,
-                    po.Product.ProductCertificates.Count() > 0),
+                    po.Product.ProductCertificates.Count() > 0,
+                    po.HarvestStatus,
+                    po.DepositAmount,
+                    po.DepositPercentage),
                 page: page, size: size);
 
             return postList;
@@ -117,7 +115,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Status,
                     po.Rating,
                     po.Product.ProductPrices.First().WeightUnit,
-                    po.Product.ProductCertificates.Count() > 0),
+                    po.Product.ProductCertificates.Count() > 0,
+                    po.HarvestStatus,
+                    po.DepositAmount,
+                    po.DepositPercentage),
                 page: page, size: size);
 
             return postList;
@@ -160,7 +161,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Product.ProductPrices.First().WeightUnit,
                     po.Product.ProductCertificates.Count() > 0,
                     po.ProductId,
-                    po.Product.ProductCategory.Name));
+                    po.Product.ProductCategory.Name,
+                    po.HarvestStatus));
 
             return postList.ToList();
         }
@@ -228,11 +230,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid postID = Ulid.Parse(postId);
             var post = await _unitOfWork.GetRepository<Post>()
                 .GetAsync(predicate: p => p.PostId == postID);
-
             if (post == null) throw new BadHttpRequestException("Post is not found");
 
             _mapper.Map(request, post);
+
             _unitOfWork.GetRepository<Post>().UpdateAsync(post);
+
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
             if (!isSuccess) throw new Exception("Error occur when update post (DB query error)");
         }
@@ -258,7 +261,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         GardenerId = po.GardenerId,
                         GardenderName = po.Account.Name,
                         GardenerAvatar = po.Account.Avatar,
-                        ProductId = po.ProductId
+                        ProductId = po.ProductId,
+                        HarvestStatus = po.HarvestStatus,
+                        DepositAmount = po.DepositAmount,
+                        DepositPercentage = po.DepositPercentage,
                     }
                 );
 
@@ -340,7 +346,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     fav.Post.Status,
                     fav.Post.Rating,
                     fav.Post.Product.ProductPrices.First().WeightUnit,
-                    fav.Post.Product.ProductCertificates.Count() > 0)
+                    fav.Post.Product.ProductCertificates.Count() > 0,
+                    fav.Post.HarvestStatus,
+                    fav.Post.DepositAmount,
+                    fav.Post.DepositPercentage)
             );
 
             return favoritePosts.ToList();

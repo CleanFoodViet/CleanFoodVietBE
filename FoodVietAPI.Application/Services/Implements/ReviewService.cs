@@ -2,17 +2,12 @@
 using CleanFoodVietAPI.Application.DTOs.ReviewDTOs;
 using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Interfaces;
-using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Entities;
 using CleanFoodVietAPI.Data.Enums.OrderEnums;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {
@@ -132,7 +127,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var repo = _uow.GetRepository<Review>();
 
             var reviews = await repo.GetListAsync(
-                predicate: r => r.OrderDetail.ProductId == pid,
+                predicate: r => r.OrderDetail.PostId == pid,
                 include: q => q
                     .Include(r => r.OrderDetail)
                     .Include(r => r.Account),

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs
+﻿namespace CleanFoodVietAPI.Application.DTOs.SubscriptionContractDTOs
 {
     public record ContractHistoryDTO(
         Ulid SubscriptionId,

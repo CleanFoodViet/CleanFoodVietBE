@@ -1,6 +1,4 @@
-﻿using CleanFoodVietAPI.Data.Enums.ServiceFeatureEnums;
-
-namespace CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs
+﻿namespace CleanFoodVietAPI.Application.DTOs.ServiceFeatureDTOs
 {
     public class ServiceFeatureDTO
     {

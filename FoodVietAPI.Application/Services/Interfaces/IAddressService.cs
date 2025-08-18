@@ -1,5 +1,4 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
-using CleanFoodVietAPI.Data.Entities;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces
 {

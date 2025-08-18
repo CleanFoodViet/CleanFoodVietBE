@@ -1,6 +1,4 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ReviewDTOs;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Application.Interfaces
 {

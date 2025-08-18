@@ -10,7 +10,6 @@ using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace CleanFoodVietAPI.Application.Services.Implements
 {

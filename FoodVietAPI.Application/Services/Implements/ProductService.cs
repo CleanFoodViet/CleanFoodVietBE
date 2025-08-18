@@ -168,6 +168,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task UpdateProductBasicInformation(string gardenerId, string productId, UpdateProductDTO updateData)
         {
             Ulid gardenerID = Ulid.Parse(gardenerId);
+            var gardener = await _unitOfWork.GetRepository<Account>()
+                .GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if (gardener == null) throw new BadHttpRequestException("Gardener is not found");
+
             Ulid productID = Ulid.Parse(productId);
             var product = await _unitOfWork.GetRepository<Product>()
                 .GetAsync(predicate: p => p.ProductId == productID);
@@ -216,7 +220,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     var inProgressOrder = await _unitOfWork.GetRepository<Order>()
                         .GetListAsync(
                             include: o => o.Include(x => x.OrderDetails),
-                            predicate: o => o.OrderDetails.Any(od => od.ProductId == productID) &&
+                            predicate: o => o.OrderDetails.Any(od => od.PostId == productID) &&
                             (o.Status != OrderStatusEnum.COMPLETED.ToString() || o.Status != OrderStatusEnum.CANCELLED.ToString())
                         );
                     if (inProgressOrder != null && inProgressOrder?.Count() > 0) throw new UpdateRestrictedException("Cannot disable the chosen Product because it have appeared in some in-progress order");
@@ -310,7 +314,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var reviews = await _unitOfWork.GetRepository<OrderDetail>()
                 .GetListAsync(
                     include: odt => odt.Include(x => x.Reviews).ThenInclude(x => x.Account),
-                    predicate: odt => odt.ProductId == productID,
+                    predicate: odt => odt.PostId == productID,
                     selector: odt => odt.Reviews
                 );
 

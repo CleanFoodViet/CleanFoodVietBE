@@ -1,11 +1,8 @@
-using CleanFoodVietAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Azure.Functions.Worker.Configuration;
 using CleanFoodVietAPI.Data.Entities;
-using System.Net.Http;
 
 var ip = await new HttpClient().GetStringAsync("https://api.ipify.org");
 Console.WriteLine($"App public IP: {ip}");

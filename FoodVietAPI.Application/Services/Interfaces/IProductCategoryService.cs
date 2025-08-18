@@ -1,6 +1,4 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.ProductCategoryDTOs;
-using CleanFoodVietAPI.Data.Entities;
-using CleanFoodVietAPI.Data.Exceptions;
 using CleanFoodVietAPI.Data.Paginate;
 
 namespace CleanFoodVietAPI.Application.Services.Interfaces

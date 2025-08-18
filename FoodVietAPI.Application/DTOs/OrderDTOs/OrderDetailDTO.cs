@@ -12,5 +12,8 @@
         public string WeightUnit { get; set; } = null!;
         public string Currency { get; set; } = null!;
         public int DeliveredQuantity { get; set; }
+        public string HarvestStatus { get; set; } = null!;
+        public decimal DepositAmount { get; set; }
+        public int DepositPercentage { get; set; }
     }
 }

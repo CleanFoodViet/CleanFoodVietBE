@@ -1,10 +1,4 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.AccountDTOs;
-using CleanFoodVietAPI.Application.DTOs.AddressDTOs;
-using CleanFoodVietAPI.Application.DTOs.AppointmentDTOs;
-using CleanFoodVietAPI.Application.DTOs.CertificateDTOs;
-using CleanFoodVietAPI.Application.DTOs.NotificationDTOs;
-using CleanFoodVietAPI.Application.DTOs.PostDTOs;
-using CleanFoodVietAPI.Application.Services.Implements;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Data.Paginate;
 using CleanFoodVietAPI.Presentation.Constants;

@@ -2,10 +2,8 @@
 using CleanFoodVietAPI.Application.Exceptions;
 using CleanFoodVietAPI.Application.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Threading.Tasks;
 
 namespace CleanFoodVietAPI.Presentation.Controllers
 {
