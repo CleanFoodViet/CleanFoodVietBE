@@ -171,6 +171,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
             Ulid gardenerID = Ulid.Parse(gardenerId);
             var post = _mapper.Map<Post>(request);
+            var gardener = await _unitOfWork.GetRepository<Account>()
+                .GetAsync(predicate: acc => acc.AccountId == gardenerID);
+            if(gardener == null) throw new BadHttpRequestException("Gardener is not found");
 
             //Post Create
             //var today = DateTime.UtcNow;

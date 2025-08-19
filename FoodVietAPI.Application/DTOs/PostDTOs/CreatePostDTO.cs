@@ -1,4 +1,5 @@
 ﻿using CleanFoodVietAPI.Application.DTOs.PostMediaDTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
 {
@@ -16,7 +17,10 @@ namespace CleanFoodVietAPI.Application.DTOs.PostDTOs
         public DateTime PostEndDate { get; set; }
         //public int Priority { get; set; }
         public string HarvestStatus { get; set; } = null!;
+
+        [Range(0, double.MaxValue, ErrorMessage = "Deposit Amount must be 0 or greater.")]
         public decimal DepositAmount { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "Deposit Percentage must be 0 or greater.")]
         public int DepositPercentage { get; set; }
 
         public List<CreatePostMediaDTO>? postMediaDTOs { get; set; }
