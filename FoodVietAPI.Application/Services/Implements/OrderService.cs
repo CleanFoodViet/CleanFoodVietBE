@@ -146,6 +146,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         public async Task UpdateOrderShippingCost(string orderId, decimal shippingCost)
         {
+            if (shippingCost < 0) throw new BadHttpRequestException("Shipping const must be 0 or greater.");
+
             Ulid orderID = Ulid.Parse(orderId);
             var order = await _unitOfWork.GetRepository<Order>()
                 .GetAsync(predicate: o => o.OrderId == orderID);
