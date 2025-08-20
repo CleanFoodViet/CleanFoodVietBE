@@ -117,8 +117,6 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             return orderInfo;
         }
-
-        //Check later
         public async Task CreateOrder(List<CartOrderDTO> carts, string paymentMethod, string shippingAddess)
         {
             foreach(var cart in carts)
