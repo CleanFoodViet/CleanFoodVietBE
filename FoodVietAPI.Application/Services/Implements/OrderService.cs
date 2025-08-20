@@ -128,13 +128,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     opt => opt.Items["ShippingAddress"] = shippingAddess);
                 order.PaymentMethod = paymentMethod;
                 order.TotalAmount = cart.CartItems.Sum(ct => ct.Price * ct.Quantity); //Need to detailed discuss.
+                order.TotalDepositAmount = cart.CartItems.Sum(ct => ct.DepositAmount * ct.Quantity);
 
                 var orderDetails = _mapper.Map<List<OrderDetail>>(
                         cart.CartItems,
                         opt => opt.Items["OrderId"] = order.OrderId //Take the Id of newly created Order above and asign the value to OrderId Field
                     );
-
-                order.TotalDepositAmount = orderDetails.Sum(od => od.DepositAmount);
 
                 await _unitOfWork.GetRepository<Order>().InsertAsync(order);
                 await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
