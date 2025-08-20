@@ -17,7 +17,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
 
         // POST /api/v1/retailer/{retailerId}/orders/{orderId}/details/{orderDetailId}/reviews
         [HttpPost(ApiEndpointConstant.Review.CreateForOrderDetail)]
-        [SwaggerOperation (Summary = "Create a review for an order detail")]
+        [SwaggerOperation(Summary = "Create a review for an order detail")]
         [ProducesResponseType(typeof(ReviewDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -28,15 +28,32 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             [FromBody] CreateReviewRequest req)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
-            // inject route values into the DTO
-            req.RetailerId = retailerId;
-            req.OrderDetailId = orderDetailId;
+            // Validate rating range
+            if (req.Rating < 1 || req.Rating > 5)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid rating",
+                    Detail = "Rating must be between 1 and 5.",
+                    Extensions = { ["errorCode"] = "RatingOutOfRange" }
+                });
+            }
 
             try
             {
-                var dto = await _reviewSvc.CreateReviewAsync(req);
+                var dto = await _reviewSvc.CreateReviewAsync(
+                    Ulid.Parse(retailerId),
+                    Ulid.Parse(orderId),
+                    Ulid.Parse(orderDetailId),
+                    req.Rating,
+                    req.Comment ?? string.Empty
+                );
+
                 return Ok(dto);
             }
             catch (DomainValidationException dv)
@@ -60,6 +77,7 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             }
         }
 
+
         // GET /api/v1/retailer/{retailerId}/orders/{orderId}/details/{orderDetailId}/review
         [HttpGet(ApiEndpointConstant.Review.GetForOrderDetail)]
         [SwaggerOperation(Summary = "Get a review for an order detail")]
@@ -76,13 +94,13 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         }
 
         // GET /api/v1/products/{productId}/reviews
-        //[HttpGet(ApiEndpointConstant.Product.ProductReviewsEndpoint)]
-        //[SwaggerOperation(Summary = "Get all reviews for a product (supposed to put this in post)")]
-        //[ProducesResponseType(typeof(IReadOnlyList<ProductReviewDTO>), StatusCodes.Status200OK)]
-        //public async Task<IActionResult> GetReviewsForProduct([FromRoute] string productId)
-        //{
-        //    var list = await _reviewSvc.GetProductReviewsAsync(productId);
-        //    return Ok(list);
-        //}
+        [HttpGet(ApiEndpointConstant.Review.ProductReviewDetail)]
+        [SwaggerOperation(Summary = "Get all reviews for a product (supposed to put this in post)")]
+        [ProducesResponseType(typeof(IReadOnlyList<ProductReviewDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetReviewsForProduct([FromRoute] string productId)
+        {
+            var list = await _reviewSvc.GetProductReviewsAsync(productId);
+            return Ok(list);
+        }
     }
 }
