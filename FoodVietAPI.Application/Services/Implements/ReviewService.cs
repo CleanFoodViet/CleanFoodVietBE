@@ -30,61 +30,66 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         // and prevents duplicate reviews.
         // Returns the created review as a ReviewDTO.
         #region Create Review
-        public async Task<ReviewDTO> CreateReviewAsync(CreateReviewRequest req)
+        public async Task<ReviewDTO> CreateReviewAsync(
+            Ulid retailerId,
+            Ulid orderId,
+            Ulid orderDetailId,
+            int rating,
+            string comment)
         {
-            if (!Ulid.TryParse(req.RetailerId, out var retailerId))
-                throw new DomainValidationException("Invalid retailer id.");
-            if (!Ulid.TryParse(req.OrderDetailId, out var detailId))
-                throw new DomainValidationException("Invalid order-detail id.");
-
             // Load OrderDetail and its parent Order
             var odRepo = _uow.GetRepository<OrderDetail>();
             var detail = await odRepo.GetAsync(
                 selector: od => od,
-                predicate: od => od.OrderDetailId == detailId,
+                predicate: od => od.OrderDetailId == orderDetailId,
                 include: q => q.Include(od => od.Order));
 
-            if (detail == null)
-                throw new NotFoundException("Order detail not found.");
+            // 1) Not found or wrong order
+            if (detail == null || detail.Order.OrderId != orderId)
+                throw new NotFoundException("Order detail not found for this order.");
 
+            // 2) Wrong retailer
             if (detail.Order.RetailerId != retailerId)
                 throw new DomainValidationException("Cannot review someone else’s order.");
+
+            // 3) Only completed orders
             if (!Enum.TryParse<OrderStatusEnum>(detail.Order.Status, out var orderStatus)
-              || orderStatus != OrderStatusEnum.COMPLETED)
+                || orderStatus != OrderStatusEnum.COMPLETED)
             {
                 throw new DomainValidationException(
                     "You can only review an order once it has reached the COMPLETED status.");
             }
 
-
             // Prevent duplicate
             var rvRepo = _uow.GetRepository<Review>();
             var existing = await rvRepo.GetAsync(
                 selector: r => r,
-                predicate: r => r.OrderDetailId == detailId && r.RetailerId == retailerId);
+                predicate: r => r.OrderDetailId == orderDetailId && r.RetailerId == retailerId);
 
             if (existing != null)
                 throw new DomainValidationException("Review already submitted.");
 
+            // Create and save
             var review = new Review
             {
                 ReviewId = Ulid.NewUlid(),
                 RetailerId = retailerId,
-                OrderDetailId = detailId,
-                Rating = req.Rating,
-                Comment = req.Comment ?? string.Empty,
+                OrderDetailId = orderDetailId,
+                Rating = rating,
+                Comment = comment ?? string.Empty,
                 CreatedAt = DateTime.UtcNow
             };
 
             await rvRepo.InsertAsync(review);
             await _uow.CommitAsync();
 
+            // Return DTO
             return new ReviewDTO(
                 review.ReviewId,
                 review.RetailerId,
                 review.OrderDetailId,
                 review.Rating,
-                review.Comment ?? string.Empty,
+                review.Comment,
                 review.CreatedAt);
         }
         #endregion

@@ -4,7 +4,12 @@ namespace CleanFoodVietAPI.Application.Interfaces
 {
     public interface IReviewService
     {
-        Task<ReviewDTO> CreateReviewAsync(CreateReviewRequest req);
+        Task<ReviewDTO> CreateReviewAsync(
+            Ulid retailerId,
+            Ulid orderId,
+            Ulid orderDetailId,
+            int rating,
+            string comment);
 
         Task<ReviewDTO?> GetReviewForOrderDetailAsync(string retailerId, string orderDetailId);
 
