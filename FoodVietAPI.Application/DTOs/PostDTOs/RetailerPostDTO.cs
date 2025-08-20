@@ -18,6 +18,8 @@
         bool hasProductCertificate,
         Ulid ProductId,
         string ProductCategory,
-        string HarvestStatus
+        string HarvestStatus,
+        decimal DepositAmount,
+        int DepositPercentage
     );
 }

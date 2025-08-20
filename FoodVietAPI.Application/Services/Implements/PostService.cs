@@ -162,7 +162,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.Product.ProductCertificates.Count() > 0,
                     po.ProductId,
                     po.Product.ProductCategory.Name,
-                    po.HarvestStatus));
+                    po.HarvestStatus,
+                    po.DepositAmount,
+                    po.DepositPercentage));
 
             return postList.ToList();
         }
