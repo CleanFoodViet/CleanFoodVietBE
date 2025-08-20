@@ -196,6 +196,7 @@
             public const string GetForOrderDetail =
                 RetailerApiEndpoint + "/{retailerId}/orders/{orderId}/details/{orderDetailId}/review";
 
+            public const string ProductReviewDetail = RetailerApiEndpoint + "/products/{productId}/reviews";
             // GET  /api/v1/products/{productId}/reviews
             // You already have this under Product.ProductReviewsEndpoint
         }
