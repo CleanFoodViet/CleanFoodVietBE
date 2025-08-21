@@ -113,14 +113,14 @@ namespace CleanFoodVietAPI.Presentation.Controllers
             return Ok("Product price change successfully");
         }
 
-        [HttpGet(ApiEndpointConstant.Product.ProductReviewsEndpoint)]
-        [ProducesResponseType(typeof(List<ProductReviewDTO>), StatusCodes.Status200OK)]
-        [SwaggerOperation(Summary = "Set product reviews")]
-        public async Task<IActionResult> GetProductRevies([FromRoute] string id)
-        {
-            var res = await _productService.GetProductReviews(id);
-            return Ok(res);
-        }
+        //[HttpGet(ApiEndpointConstant.Product.ProductReviewsEndpoint)]
+        //[ProducesResponseType(typeof(List<ProductReviewDTO>), StatusCodes.Status200OK)]
+        //[SwaggerOperation(Summary = "Set product reviews")]
+        //public async Task<IActionResult> GetProductRevies([FromRoute] string id)
+        //{
+        //    var res = await _productService.GetProductReviews(id);
+        //    return Ok(res);
+        //}
 
         //Product Certificates
         [HttpGet(ApiEndpointConstant.Product.ProductCertificatesEndpoint)]
