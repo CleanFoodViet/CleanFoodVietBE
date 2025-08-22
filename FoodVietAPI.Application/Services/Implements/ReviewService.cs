@@ -132,10 +132,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             var repo = _uow.GetRepository<Review>();
 
             var reviews = await repo.GetListAsync(
-                predicate: r => r.OrderDetail.PostId == pid,
                 include: q => q
                     .Include(r => r.OrderDetail)
+                        .ThenInclude(r => r.Post)
+                        .ThenInclude(r => r.Product)
                     .Include(r => r.Account),
+                predicate: r => r.OrderDetail.Post.ProductId == pid,
                 selector: r => new ProductReviewDTO
                 {
                     ProductReviewId = r.ReviewId,
