@@ -200,6 +200,9 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.ProductId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
+                entity.Property(e => e.PostId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
                 entity.Property(e => e.Price).HasColumnType("decimal(14,2)");
                 entity.Property(e => e.Quantity).IsRequired();
                 entity.Property(e => e.ProductUnit).IsRequired().HasMaxLength(10);
