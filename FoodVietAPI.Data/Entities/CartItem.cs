@@ -8,6 +8,7 @@ namespace CleanFoodVietAPI.Data.Entities
         public Ulid CartItemId { get; set; }
         public Ulid CartId { get; set; }
         public Ulid ProductId { get; set; }
+        public Ulid PostId { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public string ProductUnit { get; set; } = null!;
