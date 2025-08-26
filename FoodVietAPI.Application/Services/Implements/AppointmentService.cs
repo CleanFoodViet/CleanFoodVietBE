@@ -146,6 +146,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
         public async Task<IPaginate<GetRequestAppointmentDTO>> GetRequestAppointment(string gardenerId, int page, int size)
         {
+            await CheckExpiredRequestAppointment();
+
             Ulid accountId = Ulid.Parse(gardenerId);
             var appointmentList = await _unitOfWork.GetRepository<Appointment>()
                 .GetPagingListAsync(
@@ -169,6 +171,29 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 );
 
             return appointmentList;
+        }
+
+        private async Task CheckExpiredRequestAppointment()
+        {
+            var now = DateTime.UtcNow.AddHours(7).Date; 
+
+            var pendingAppointment = await _unitOfWork.GetRepository<Appointment>()
+                .GetListAsync(predicate: ap => ap.Status == AppointmentStatusEnum.PENDING.ToString() &&
+                                               ap.AppointmentDate.AddDays(1) < now);
+
+            foreach(var appt in pendingAppointment)
+            {
+                appt.Status = AppointmentStatusEnum.EXPIRED.ToString();
+                appt.ActionReason = "Yêu cầu bị hết hạn. (Ngày hẹn + 1 ngày < hôm nay)";
+                appt.ActionedBy = "Hệ thống";
+                appt.UpdatedAt = DateTime.UtcNow;
+            }
+
+            if (pendingAppointment.Any())
+            {
+                _unitOfWork.GetRepository<Appointment>().UpdateRange(pendingAppointment);
+                await _unitOfWork.CommitAsync();
+            }
         }
 
         public async Task<List<ScheduleAppointmentDTO>> GetScheduleAppointments(string gardenerId)
