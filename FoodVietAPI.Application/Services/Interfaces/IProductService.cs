@@ -17,7 +17,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
             string? category = null);
 
         Task<List<ProductListDTO>> GetGardenerAllProductList(string gardenerId);
-        Task<ProductDTO> GetProductInformation(string productId);
+        Task<ProductDTO> GetProductInformation(string productId, string? postId);
         Task CreateProduct(string gardenerId, CreateProductDTO createProductData);
         Task UpdateProductBasicInformation(string gardenerId, string productId, UpdateProductDTO updateData);
         Task ChangeProductStatus(string productId, string status);

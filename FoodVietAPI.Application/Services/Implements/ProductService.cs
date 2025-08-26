@@ -98,35 +98,74 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return products.ToList();
         }
 
-        public async Task<ProductDTO> GetProductInformation(string productId)
+        public async Task<ProductDTO> GetProductInformation(string productId, string? postId)
         {
             Ulid id = Ulid.Parse(productId);
             DateTime today = DateTime.UtcNow;
 
-            var product = await _unitOfWork.GetRepository<Product>()
-                .GetAsync(predicate: p => p.ProductId == id,
-                          include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
-                                         .Include(x => x.ProductCategory)
-                                         .Include(x => x.ProductTags),
-                          selector: p => new ProductDTO(
-                              p.ProductId,
-                              p.ProductName,
-                              p.CreatedAt,
-                              p.UpdatedAt,
-                              p.Status,
-                              p.ProductCategory.Name,
-                              p.ProductTags.Select(pt => pt.TagName).ToList(),
-                              p.ProductPrices.First().ProductPriceId,
-                              p.ProductPrices.First().Price,
-                              p.ProductPrices.First().Currency,
-                              p.ProductPrices.First().AvailabledDate,
-                              p.ProductPrices.First().WeightUnit,
-                              p.Gardener.AccountId,
-                              p.Gardener.Name));
+            if(postId != null)
+            {
+                Ulid postID = Ulid.Parse(postId);
+                var post = await _unitOfWork.GetRepository<Post>()
+                    .GetAsync(predicate: po => po.PostId == postID);
 
-            if (product == null) throw new BadHttpRequestException("Product cannot be found");
+                var product = await _unitOfWork.GetRepository<Product>()
+                    .GetAsync(predicate: p => p.ProductId == id,
+                              include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                             .Include(x => x.ProductCategory)
+                                             .Include(x => x.ProductTags),
+                              selector: p => new ProductDTO(
+                                  p.ProductId,
+                                  p.ProductName,
+                                  p.CreatedAt,
+                                  p.UpdatedAt,
+                                  p.Status,
+                                  p.ProductCategory.Name,
+                                  p.ProductTags.Select(pt => pt.TagName).ToList(),
+                                  p.ProductPrices.First().ProductPriceId,
+                                  p.ProductPrices.First().Price,
+                                  p.ProductPrices.First().Currency,
+                                  p.ProductPrices.First().AvailabledDate,
+                                  p.ProductPrices.First().WeightUnit,
+                                  p.Gardener.AccountId,
+                                  p.Gardener.Name,
+                                  postID,
+                                  post.DepositAmount,
+                                  post.DepositPercentage));
 
-            return product;
+                if (product == null) throw new BadHttpRequestException("Product cannot be found");
+
+                return product;
+            }
+            else
+            {
+                var product = await _unitOfWork.GetRepository<Product>()
+                    .GetAsync(predicate: p => p.ProductId == id,
+                              include: p => p.Include(x => x.ProductPrices.Where(pp => pp.IsCurrent))
+                                             .Include(x => x.ProductCategory)
+                                             .Include(x => x.ProductTags),
+                              selector: p => new ProductDTO(
+                                  p.ProductId,
+                                  p.ProductName,
+                                  p.CreatedAt,
+                                  p.UpdatedAt,
+                                  p.Status,
+                                  p.ProductCategory.Name,
+                                  p.ProductTags.Select(pt => pt.TagName).ToList(),
+                                  p.ProductPrices.First().ProductPriceId,
+                                  p.ProductPrices.First().Price,
+                                  p.ProductPrices.First().Currency,
+                                  p.ProductPrices.First().AvailabledDate,
+                                  p.ProductPrices.First().WeightUnit,
+                                  p.Gardener.AccountId,
+                                  p.Gardener.Name,
+                                  null,null,null));
+
+                if (product == null) throw new BadHttpRequestException("Product cannot be found");
+
+                return product;
+            }
+                
         }
 
         public async Task CreateProduct(string gardenerId, CreateProductDTO createProductData)
