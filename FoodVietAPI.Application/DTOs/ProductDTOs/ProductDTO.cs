@@ -21,6 +21,10 @@
 
         //Gardener Field
         Ulid GardenerId,
-        string GardenerName
+        string GardenerName,
+
+        Ulid? PostId,
+        decimal? DepositAmount,
+        int? DepositPercentage
     );
 }
