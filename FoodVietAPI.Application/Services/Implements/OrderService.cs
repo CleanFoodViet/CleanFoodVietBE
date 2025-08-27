@@ -77,7 +77,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         ShippingCost = o.ShippingCost,
                         CancelReason = o.CancelReason,
                         ShippingAddress = o.ShippingAddress,
-                        TotalDepositAmount = o.TotalDepositAmount
+                        TotalDepositAmount = o.TotalDepositAmount,
+                        ContractImage = o.ContractImage
                     }
                 );
             if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
