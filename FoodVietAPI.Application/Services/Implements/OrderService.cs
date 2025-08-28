@@ -102,7 +102,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                          Quantity = od.Quantity,
                          ProductUnit = od.ProductUnit,
                          DeliveryStatus = od.DeliveryStatus,
-                         ProductId = od.PostId,
+                         ProductId = od.Post.ProductId,
                          ProductName = od.Post.Product.ProductName,
                          WeightUnit = od.Post.Product.ProductPrices.First().WeightUnit,
                          Currency = od.Post.Product.ProductPrices.First().Currency,
