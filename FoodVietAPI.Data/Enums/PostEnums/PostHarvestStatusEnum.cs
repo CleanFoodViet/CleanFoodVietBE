@@ -6,6 +6,7 @@
         PLANTING,
         HARVESTING,
         PROCESSING,
-        READYFORSALE
+        READYFORSALE,
+        CROPFAILED
     }
 }
