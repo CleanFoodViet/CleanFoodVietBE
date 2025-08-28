@@ -6,7 +6,7 @@ namespace CleanFoodVietAPI.Application.Services.Interfaces
     public interface IStatisticService
     {
         Task<GardenerStatisticDTO> GetGardenerDashboard(string gardenerId);
-        Task<List<MonthOrderStatistic>> GetGardenerYearlyOrderAmount(string gardenerId);
+        Task<List<MonthOrderStatistic>> GetGardenerYearlyOrderAmount(string gardenerId, int? year);
         Task<List<ScheduleAppointmentDTO>> GetInMonthUpcommingAppointment(string gardenerId);
     }
 }
