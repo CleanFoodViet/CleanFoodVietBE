@@ -60,9 +60,9 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return monthlyStatistic;
         }
 
-        public async Task<List<MonthOrderStatistic>> GetGardenerYearlyOrderAmount(string gardenerId)
+        public async Task<List<MonthOrderStatistic>> GetGardenerYearlyOrderAmount(string gardenerId, int? year)
         {
-            int currentYear = DateTime.UtcNow.Year;
+            int currentYear = year ?? DateTime.UtcNow.Year;
 
             Ulid gardenerID = Ulid.Parse(gardenerId);
             var orderStatisitic = await _unitOfWork.GetRepository<Order>()

@@ -2,6 +2,7 @@
 using CleanFoodVietAPI.Application.DTOs.StatisticDTOs;
 using CleanFoodVietAPI.Application.Services.Interfaces;
 using CleanFoodVietAPI.Presentation.Constants;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -29,9 +30,9 @@ namespace CleanFoodVietAPI.Presentation.Controllers
         [HttpGet(ApiEndpointConstant.Statistic.GardenerYearOrderStatisticEndpoint)]
         [ProducesResponseType(typeof(List<MonthOrderStatistic>), StatusCodes.Status200OK)]
         [SwaggerOperation(Summary = "Get the general dashboard information of a gardener record by month")]
-        public async Task<IActionResult> GetGardenerYearlyOrderAmount([FromRoute] string id)
+        public async Task<IActionResult> GetGardenerYearlyOrderAmount([FromRoute] string id, [FromQuery]int? year)
         {
-            var res = await _statisticService.GetGardenerYearlyOrderAmount(id);
+            var res = await _statisticService.GetGardenerYearlyOrderAmount(id, year);
 
             return Ok(res);
         }
