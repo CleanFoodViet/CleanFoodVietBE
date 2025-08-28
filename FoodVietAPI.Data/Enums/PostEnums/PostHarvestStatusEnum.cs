@@ -7,6 +7,6 @@
         HARVESTING,
         PROCESSING,
         READYFORSALE,
-        CROPFAILED
+        HARVESTFAILED
     }
 }
