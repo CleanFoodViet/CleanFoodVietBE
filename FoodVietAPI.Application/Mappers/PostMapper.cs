@@ -22,7 +22,8 @@ namespace CleanFoodVietAPI.Application.Mappers
                         (src, des, member, context) => context.Items["PostId"]
                     ));
 
-            CreateMap<UpdatePostDTO, Post>();
+            CreateMap<UpdatePostDTO, Post>()
+                 .ForAllMembers(opt => opt.Condition((src, des, srcMember) => srcMember != null)); ;
         }
     }
 }
