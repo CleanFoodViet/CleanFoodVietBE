@@ -379,7 +379,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.CancelReason).HasMaxLength(256);
                 entity.Property(e => e.ShippingAddress).IsRequired().HasMaxLength(256);
                 entity.Property(e => e.TotalDepositAmount).HasColumnType("decimal(14,2)");
-                entity.Property(e => e.ContractImage).IsRequired();
+                //entity.Property(e => e.ContractImage).IsRequired();s
 
                 entity.HasIndex(e => e.RetailerId).HasDatabaseName("IX_Order_RetailerId");
                 entity.HasIndex(e => e.GardenerId).HasDatabaseName("IX_Order_GardenerId");
@@ -395,6 +395,28 @@ namespace CleanFoodVietAPI.Data.Entities
                       .HasForeignKey(e => e.GardenerId)
                       .OnDelete(DeleteBehavior.Restrict)
                       .HasConstraintName("FK_Order_Gardeners");
+            });
+
+            modelBuilder.Entity<ContractImage>(entity =>
+            {
+                entity.ToTable("ContractImage");
+                entity.HasKey(e => e.ContractImageId).HasName("PK_ContractImage");
+
+                entity.Property(e => e.ContractImageId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.OrderId).HasColumnType("char(26)")
+                    .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
+                    .IsFixedLength();
+                entity.Property(e => e.ImageUrl).IsRequired();
+
+                entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_ContractImage_OrderId");
+
+                entity.HasOne(e => e.Order)
+                      .WithMany(e => e.ContractImages)
+                      .HasForeignKey(e => e.OrderId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("FK_ContractImage_Order");
             });
 
             modelBuilder.Entity<OrderDelivery>(entity =>

@@ -7,7 +7,7 @@
         public Ulid RetailerId { get; set; }
         public Ulid GardenerId { get; set; }
         public string GardenerName { get; set; } = null!;
-        public string ContractImage { get; set; } = null!;
+        public List<string> ContractImage { get; set; } = null!;
         //public DateTime UpdatedAt { get; set; }
 
         //Cart Itens

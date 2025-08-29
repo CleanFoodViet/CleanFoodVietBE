@@ -17,11 +17,12 @@ namespace CleanFoodVietAPI.Data.Entities
         public string ShippingAddress { get; set; } = null!;
 
         public decimal TotalDepositAmount { get; set; }
-        public string ContractImage { get; set; } = null!;
+        //public string ContractImage { get; set; } = null!;
 
         public virtual Account Retailer { get; set; } = null!;
         public virtual Account Gardener { get; set; } = null!;
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();
         public virtual ICollection<OrderDelivery> OrderDeliveries { get; set; } = new HashSet<OrderDelivery>();
+        public virtual ICollection<ContractImage> ContractImages { get; set; } = new HashSet<ContractImage>();
     }
 }
