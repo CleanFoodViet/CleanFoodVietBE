@@ -59,7 +59,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Ulid orderID = Ulid.Parse(orderId);
             var orderInfo = await _unitOfWork.GetRepository<Order>()
                 .GetAsync(
-                    include: o => o.Include(x => x.OrderDetails),
+                    include: o => o.Include(x => x.OrderDetails).Include(x => x.ContractImages),
                     predicate: o => o.OrderId == orderID,
                     selector: o => new OrderDTO
                     {
@@ -78,7 +78,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         CancelReason = o.CancelReason,
                         ShippingAddress = o.ShippingAddress,
                         TotalDepositAmount = o.TotalDepositAmount,
-                        ContractImage = o.ContractImage
+                        ContractImage = (List<string>)o.ContractImages
                     }
                 );
             if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
@@ -118,6 +118,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
 
             return orderInfo;
         }
+
         public async Task CreateOrder(List<CartOrderDTO> carts, string paymentMethod, string shippingAddess)
         {
             foreach(var cart in carts)
@@ -134,8 +135,14 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         opt => opt.Items["OrderId"] = order.OrderId //Take the Id of newly created Order above and asign the value to OrderId Field
                     );
 
+                var contractImages = _mapper.Map<List<ContractImage>>(
+                        cart.ContractImage,
+                        opt => opt.Items["OrderId"] = order.OrderId
+                    );
+
                 await _unitOfWork.GetRepository<Order>().InsertAsync(order);
                 await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
+                await _unitOfWork.GetRepository<ContractImage>().InsertRangeAsync(contractImages);
             }
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
