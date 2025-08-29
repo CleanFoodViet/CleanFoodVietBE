@@ -78,9 +78,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         CancelReason = o.CancelReason,
                         ShippingAddress = o.ShippingAddress,
                         TotalDepositAmount = o.TotalDepositAmount,
-                        ContractImage = (List<string>)o.ContractImages
+                        ContractImage = (List<string>)o.ContractImages.Select(ci => ci.ImageUrl)
                     }
                 );
+
             if (orderInfo == null) throw new BadHttpRequestException("Order is not found");
 
             //var orderDeliveryIdList = await _unitOfWork.GetRepository<OrderDelivery>()
