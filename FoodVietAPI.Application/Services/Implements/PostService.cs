@@ -34,7 +34,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
             var specification = new PostSpecification(filterField, filterValue, "Priority", "asc", search);
 
-            List<Ulid>? accountIds = await GetGardnerIdHaveLocationInRange(address, range);
+            //List<Ulid>? accountIds = await GetGardnerIdHaveLocationInRange(address, range);
 
             var postList = await _unitOfWork.GetRepository<Post>()
                 .GetPagingListAsync(
@@ -42,8 +42,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                  .Include(x => x.Account).ThenInclude(x => x.Addresses)
                                  .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                  .Include(x => x.Product.ProductCertificates),
-                predicate: po => po.Status.Equals(PostStatusEnum.ACTIVE.ToString()) && 
-                                 (accountIds != null ? accountIds.Any(x => x == po.GardenerId) : true),
+                predicate: po => po.Status.Equals(PostStatusEnum.ACTIVE.ToString()),
                 spec: specification,
                 selector: po => new PostListDTO(
                     po.PostId,
@@ -67,21 +66,21 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             return postList;
         }
 
-        private async Task<List<Ulid>?> GetGardnerIdHaveLocationInRange(string? address, double? range)
-        {
-            if (address == null || range == null) return null;
+        //private async Task<List<Ulid>?> GetGardnerIdHaveLocationInRange(string? address, double? range)
+        //{
+        //    if (address == null || range == null) return null;
 
-            LocationProperties location = new LocationProperties();
-            //Get longitude and latitude
-            location = await LocationUtil.GetAddressLongLat(address);
+        //    LocationProperties location = new LocationProperties();
+        //    //Get longitude and latitude
+        //    location = await LocationUtil.GetAddressLongLat(address);
 
-             var accountIds = await _unitOfWork.GetRepository<Address>()
-                .GetListAsync(
-                    predicate: ad => LocationUtil.CheckAddressesInRange(range, location.Lon, location.Lat, ad.Longitude, ad.Latitude),
-                    selector: ad => ad.AccountId);
+        //     var accountIds = await _unitOfWork.GetRepository<Address>()
+        //        .GetListAsync(
+        //            predicate: ad => LocationUtil.CheckAddressesInRange(range, location.Lon, location.Lat, ad.Longitude, ad.Latitude),
+        //            selector: ad => ad.AccountId);
 
-            return accountIds.Distinct().ToList();
-        }
+        //    return accountIds.Distinct().ToList();
+        //}
 
         //Get Gardener Post
         public async Task<IPaginate<PostListDTO>> GetGardenerPostList(
@@ -133,7 +132,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         {
             var specification = new PostSpecification(filterField, filterValue, "Priority", "asc", search);
 
-            List<Ulid>? accountIds = await GetGardnerIdHaveLocationInRange(address, range);
+            //List<Ulid>? accountIds = await GetGardnerIdHaveLocationInRange(address, range);
 
             var postList = await _unitOfWork.GetRepository<Post>()
                 .GetListAsync(
@@ -142,8 +141,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                  .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                  .Include(x => x.Product.ProductCertificates)
                                  .Include(x => x.Product.ProductCategory),
-                predicate: po => po.Status == PostStatusEnum.ACTIVE.ToString() &&
-                                 (accountIds != null ? accountIds.Any(x => x == po.GardenerId) : true),
+                predicate: po => po.Status == PostStatusEnum.ACTIVE.ToString(),
                 spec: specification,
                 selector: po => new RetailerPostDTO(
                     po.PostId,

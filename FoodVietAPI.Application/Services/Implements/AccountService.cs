@@ -227,10 +227,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Address address = _mapper.Map<Address>(registerData);
             address.AccountId = newAccount.AccountId;
             //Get longitude and latitude
-            LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
-            if (location == null) throw new BadHttpRequestException("Cannot found the location");
-            address.Longitude = location.Lon;
-            address.Latitude = location.Lat;
+            //LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
+            //if (location == null) throw new BadHttpRequestException("Cannot found the location");
+            address.Longitude = 0;
+            address.Latitude = 0;
 
             await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
             await _unitOfWork.GetRepository<Address>().InsertAsync(address);
@@ -285,10 +285,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             Address address = _mapper.Map<Address>(registerData);
             address.AccountId = newAccount.AccountId;
             //Get longitude and latitude
-            LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
-            if (location == null) throw new BadHttpRequestException("Cannot found the location");
-            address.Longitude = location.Lon;
-            address.Latitude = location.Lat;
+            //LocationProperties location = await LocationUtil.GetAddressLongLat(address.AddressLine);
+            //if (location == null) throw new BadHttpRequestException("Cannot found the location");
+            address.Longitude = 0;
+            address.Latitude = 0;
 
 
             await _unitOfWork.GetRepository<Account>().InsertAsync(newAccount);
