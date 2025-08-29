@@ -71,10 +71,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             newAddress.AccountId = accId;
 
             //Get longitude and latitude
-            LocationProperties location = await LocationUtil.GetAddressLongLat(newAddress.AddressLine);
-            if (location == null) throw new BadHttpRequestException("Cannot found the location");
-            newAddress.Longitude = location.Lon;
-            newAddress.Latitude = location.Lat;
+            //LocationProperties location = await LocationUtil.GetAddressLongLat(newAddress.AddressLine);
+            //if (location == null) throw new BadHttpRequestException("Cannot found the location");
+            newAddress.Longitude = 0;
+            newAddress.Latitude = 0;
 
             await _unitOfWork.GetRepository<Address>().InsertAsync(newAddress);
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
@@ -97,10 +97,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
             //Get longitude and latitude
             if(updateData.AddressLine != null)
             {
-                LocationProperties location = await LocationUtil.GetAddressLongLat(updateData.AddressLine);
-                if (location == null) throw new BadHttpRequestException("Cannot found the location");
-                address.Longitude = location.Lon;
-                address.Latitude = location.Lat;
+                //LocationProperties location = await LocationUtil.GetAddressLongLat(updateData.AddressLine);
+                //if (location == null) throw new BadHttpRequestException("Cannot found the location");
+                address.Longitude = 0;
+                address.Latitude = 0;
             }
 
             _unitOfWork.GetRepository<Address>().UpdateAsync(address);
