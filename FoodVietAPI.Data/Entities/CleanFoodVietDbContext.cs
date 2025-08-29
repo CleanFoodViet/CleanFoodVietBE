@@ -408,7 +408,7 @@ namespace CleanFoodVietAPI.Data.Entities
                 entity.Property(e => e.OrderId).HasColumnType("char(26)")
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
-                entity.Property(e => e.ImageUrl).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.ImageUrl).IsRequired();
 
                 entity.HasIndex(e => e.OrderId).HasDatabaseName("IX_ContractImage_OrderId");
 
@@ -418,7 +418,6 @@ namespace CleanFoodVietAPI.Data.Entities
                       .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_ContractImage_Order");
             });
-
 
             modelBuilder.Entity<OrderDelivery>(entity =>
             {
