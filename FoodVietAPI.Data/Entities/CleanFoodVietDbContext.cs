@@ -70,8 +70,8 @@ namespace CleanFoodVietAPI.Data.Entities
                     .HasConversion(ulid => ulid.ToString(), str => Ulid.Parse(str))
                     .IsFixedLength();
 
-                entity.HasIndex(e => e.Email).IsUnique()
-                    .HasDatabaseName("IX_Account_Email");
+                //entity.HasIndex(e => e.Email).IsUnique()
+                //    .HasDatabaseName("IX_Account_Email");
                 entity.HasIndex(e => e.PhoneNumber).IsUnique()
                     .HasDatabaseName("IX_Account_PhoneNumber");
                 entity.HasIndex(e => e.RoleId).HasDatabaseName("IX_Account_RoleId");
