@@ -3,6 +3,7 @@
     public record GetRequestAppointmentDTO
     {
         public Ulid AppointmentId { get; set; }
+        public Ulid RetailerId { get; set; }
         public string RetailerName { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
         public string Avatar { get; set; } = null!;

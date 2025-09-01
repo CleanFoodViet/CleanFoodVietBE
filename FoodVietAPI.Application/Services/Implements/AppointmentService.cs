@@ -165,7 +165,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Status = ap.Status,
                         Subject = ap.Subject,
                         PhoneNumber = ap.Retailer.PhoneNumber,
-                        RetailerName = ap.Retailer.Name
+                        RetailerName = ap.Retailer.Name,
+                        RetailerId = ap.RetailerId
                     },
                     page: page, size: size
                 );
