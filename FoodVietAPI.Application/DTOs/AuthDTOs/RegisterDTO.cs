@@ -26,6 +26,7 @@ namespace CleanFoodVietAPI.Application.DTOs.AuthDTOs
     public record GardenerRegisterDTO : RegisterDTO
     {
         //Certificate Data
+        public string CertName { get; set; } = null!;
         public string ImageUrl { get; set; } = null!;
         public string IssuingAuthority { get; set; } = null!;
         public DateTime IssueDate { get; set; }
