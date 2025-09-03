@@ -246,6 +246,15 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task<PostDTO> GetPostInformation(string postId)
         {
             Ulid postID = Ulid.Parse(postId);
+
+            var listRatings = await _unitOfWork.GetRepository<OrderDetail>().GetListAsync(
+                    include: od => od.Include(x => x.Reviews),
+                    predicate: od => od.PostId == postID,
+                    selector: od => od.Reviews.Average(x => x.Rating)
+                );
+
+            var avgRating = listRatings.Average();
+
             var post = await _unitOfWork.GetRepository<Post>()
                 .GetAsync(
                     include: po => po.Include(x => x.PostMedias).Include(x => x.Account).Include(x => x.Product),
@@ -257,7 +266,7 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Content = po.Content,
                         HarvestDate = po.HarvestDate,
                         PostStatus = po.Status,
-                        Rating = po.Rating,
+                        Rating = (decimal)avgRating,
                         CreatedAt = po.CreatedAt,
                         PostEndDate = po.PostEndDate,
                         Priority = po.Priority,
