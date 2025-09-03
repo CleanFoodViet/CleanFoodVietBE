@@ -98,7 +98,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                 include: po => po.Include(x => x.PostMedias)
                                  .Include(x => x.Account)
                                  .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
-                                 .Include(x => x.Product.ProductCertificates),
+                                 .Include(x => x.Product.ProductCertificates)
+                                 .Include(x => x.OrderDetail).ThenInclude(x => x.Reviews),
                 predicate: po => po.GardenerId == gardenerID,
                 spec: specification,
                 selector: po => new PostListDTO(
@@ -112,7 +113,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.CreatedAt,
                     po.Content,
                     po.Status,
-                    po.Rating,
+                    po.OrderDetail != null && po.OrderDetail.Any() &&
+                    po.OrderDetail.SelectMany(od => od.Reviews).Any()
+                        ? (decimal?)(po.OrderDetail
+                            .SelectMany(od => od.Reviews)
+                            .Average(re => (double?)re.Rating)) ?? 0m
+                        : 0m,
                     po.Product.ProductPrices.First().WeightUnit,
                     po.Product.ProductCertificates.Count() > 0,
                     po.HarvestStatus,
@@ -140,7 +146,8 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                                  .Include(x => x.Account).ThenInclude(x => x.Addresses)
                                  .Include(x => x.Product).ThenInclude(x => x.ProductPrices.Where(pp => pp.IsCurrent))
                                  .Include(x => x.Product.ProductCertificates)
-                                 .Include(x => x.Product.ProductCategory),
+                                 .Include(x => x.Product.ProductCategory)
+                                 .Include(x => x.OrderDetail).ThenInclude(x => x.Reviews),
                 predicate: po => po.Status == PostStatusEnum.ACTIVE.ToString(),
                 spec: specification,
                 selector: po => new RetailerPostDTO(
@@ -155,7 +162,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                     po.CreatedAt,
                     po.Content,
                     po.Status,
-                    po.Rating,
+                    po.OrderDetail != null && po.OrderDetail.Any() &&
+                    po.OrderDetail.SelectMany(od => od.Reviews).Any()
+                        ? (decimal?)(po.OrderDetail
+                            .SelectMany(od => od.Reviews)
+                            .Average(re => (double?)re.Rating)) ?? 0m
+                        : 0m,
                     po.Product.ProductPrices.First().WeightUnit,
                     po.Product.ProductCertificates.Count() > 0,
                     po.ProductId,
@@ -246,18 +258,10 @@ namespace CleanFoodVietAPI.Application.Services.Implements
         public async Task<PostDTO> GetPostInformation(string postId)
         {
             Ulid postID = Ulid.Parse(postId);
-
-            var listRatings = await _unitOfWork.GetRepository<OrderDetail>().GetListAsync(
-                    include: od => od.Include(x => x.Reviews),
-                    predicate: od => od.PostId == postID,
-                    selector: od => od.Reviews.Average(x => x.Rating)
-                );
-
-            var avgRating = listRatings.Average();
-
             var post = await _unitOfWork.GetRepository<Post>()
                 .GetAsync(
-                    include: po => po.Include(x => x.PostMedias).Include(x => x.Account).Include(x => x.Product),
+                    include: po => po.Include(x => x.PostMedias).Include(x => x.Account).Include(x => x.Product)
+                                      .Include(x => x.OrderDetail).ThenInclude(x => x.Reviews),
                     predicate: po => po.PostId == postID,
                     selector: po => new PostDTO
                     {
@@ -266,7 +270,12 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         Content = po.Content,
                         HarvestDate = po.HarvestDate,
                         PostStatus = po.Status,
-                        Rating = (decimal)avgRating,
+                        Rating = po.OrderDetail != null && po.OrderDetail.Any() &&
+                        po.OrderDetail.SelectMany(od => od.Reviews).Any()
+                            ? (decimal?)(po.OrderDetail
+                                .SelectMany(od => od.Reviews)
+                                .Average(re => (double?)re.Rating)) ?? 0m
+                            : 0m,
                         CreatedAt = po.CreatedAt,
                         PostEndDate = po.PostEndDate,
                         Priority = po.Priority,
