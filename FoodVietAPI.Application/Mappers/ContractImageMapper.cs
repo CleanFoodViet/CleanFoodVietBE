@@ -14,6 +14,7 @@ namespace CleanFoodVietAPI.Application.Mappers
         {
             CreateMap<string, ContractImage>()
                 .ForMember(des => des.ContractImageId, opt => opt.MapFrom(src => Ulid.NewUlid()))
+                .ForMember(des => des.ImageUrl, opt => opt.MapFrom(src => src))
                 .ForMember(des => des.OrderId, opt => opt.MapFrom(
                         (src, des, member, context) => context.Items["OrderId"]
                     ));
