@@ -136,14 +136,20 @@ namespace CleanFoodVietAPI.Application.Services.Implements
                         opt => opt.Items["OrderId"] = order.OrderId //Take the Id of newly created Order above and asign the value to OrderId Field
                     );
 
-                var contractImages = _mapper.Map<List<ContractImage>>(
-                        cart.ContractImage,
-                        opt => opt.Items["OrderId"] = order.OrderId
-                    );
+                var images = new List<ContractImage>();
+                foreach (var url in cart.ContractImage)
+                {
+                    images.Add(new ContractImage
+                    {
+                        ContractImageId = Ulid.NewUlid(),
+                        OrderId = order.OrderId,
+                        ImageUrl = url
+                    });
+                }
 
                 await _unitOfWork.GetRepository<Order>().InsertAsync(order);
                 await _unitOfWork.GetRepository<OrderDetail>().InsertRangeAsync(orderDetails);
-                await _unitOfWork.GetRepository<ContractImage>().InsertRangeAsync(contractImages);
+                await _unitOfWork.GetRepository<ContractImage>().InsertRangeAsync(images);
             }
 
             bool isSuccess = await _unitOfWork.CommitAsync() > 0;
