@@ -19,6 +19,7 @@
 ## 🏗️ System Architecture
 
 This project follows a **N-Layer Architecture** pattern, separating concerns into distinct layers for maintainability and testability.
+```text
 CleanFoodVietBE/
 ├── FoodVietAPI.Presentation/ # API Controllers, DTOs, HTTP layer
 ├── FoodVietAPI.Application/ # Business logic, services, use cases
@@ -27,7 +28,7 @@ CleanFoodVietBE/
 ├── .github/workflows/ # CI/CD pipeline definitions (GitHub Actions)
 ├── Dockerfile # Container configuration
 └── CleanFoodVietAPI.sln # Solution file
-
+```
 
 ## 📦 Getting Started
 
